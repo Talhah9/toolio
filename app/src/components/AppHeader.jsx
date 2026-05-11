@@ -20,9 +20,11 @@ export function AppHeader() {
           <span className="muted" style={{ fontSize: 12 }}>crédits</span>
         </span>
         {plan === 'free' ? (
-          <button className="btn btn-accent btn-sm" onClick={() => navigate('/pricing')}>
-            Passer au Pro
-          </button>
+          <span className="app-header-upgrade">
+            <button className="btn btn-accent btn-sm" onClick={() => navigate('/pricing')}>
+              Passer au Pro
+            </button>
+          </span>
         ) : (
           <span className="badge badge-pro" style={{ height: 24, padding: '0 10px' }}>Pro</span>
         )}

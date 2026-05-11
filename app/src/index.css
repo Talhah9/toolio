@@ -941,3 +941,143 @@ a {
 }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ============================================================
+   MOBILE BOTTOM NAV — hidden by default, shown on mobile
+   ============================================================ */
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* ============================================================
+   MARKETING NAV — mobile elements hidden by default
+   ============================================================ */
+.mk-nav-hamburger { display: none; }
+.mk-nav-mobile-menu { display: none; }
+.mk-nav-mobile-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  font-size: var(--t-base);
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+.mk-nav-mobile-item:hover { background: var(--bg-hover); color: var(--fg); }
+
+/* ============================================================
+   ≤ 767px  (phones + small tablets)
+   ============================================================ */
+@media (max-width: 767px) {
+
+  /* Containers */
+  .container, .container-narrow { padding: 0 16px; }
+
+  /* Marketing nav — show hamburger, hide links */
+  .mk-nav-links { display: none; }
+  .mk-nav-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    color: var(--fg-2);
+    transition: background 100ms ease;
+  }
+  .mk-nav-hamburger:hover { background: var(--bg-hover); }
+  .mk-nav-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    z-index: 49;
+  }
+
+  /* Hero */
+  .hero { padding: 56px 0 40px; }
+  .hero-sub { font-size: var(--t-base); }
+  .hero-cta { flex-direction: column; align-items: stretch; }
+  .hero-cta .btn { width: 100%; }
+
+  /* Sections */
+  .section { padding: 48px 0; }
+
+  /* App shell — hide sidebar, full-width main */
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+
+  /* App header */
+  .app-header { padding: 0 16px; }
+  .app-header-upgrade { display: none; }
+
+  /* Page padding — extra bottom for bottom nav */
+  .page-pad { padding: 20px 16px 96px; }
+
+  /* Bottom nav */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    z-index: 40;
+    padding: 0 8px;
+    align-items: stretch;
+  }
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--fg-4);
+    cursor: pointer;
+    border-radius: var(--radius);
+    padding: 8px 4px;
+    transition: color 100ms ease;
+    letter-spacing: 0.01em;
+    background: none;
+    border: none;
+  }
+  .mobile-nav-item:hover { color: var(--fg-2); }
+  .mobile-nav-item.active { color: var(--fg); }
+
+  /* Banners — stack on mobile */
+  .banner { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+  /* kv-rows — tighter label column */
+  .kv-row { grid-template-columns: auto 1fr auto; padding: 12px 16px; gap: 12px; }
+
+  /* Modal — full-screen-ish on mobile */
+  .modal-overlay { padding: 16px; align-items: flex-end; }
+  .modal { border-radius: var(--radius-lg) var(--radius-lg) 0 0; max-width: 100%; }
+
+  /* Footer */
+  .mk-footer { margin-top: 48px; }
+}
+
+/* ============================================================
+   ≤ 480px  (small phones)
+   ============================================================ */
+@media (max-width: 480px) {
+  .tools-grid { grid-template-columns: 1fr; }
+  .packs-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .mk-footer-grid { grid-template-columns: 1fr; }
+  .section { padding: 40px 0; }
+}

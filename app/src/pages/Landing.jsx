@@ -53,8 +53,8 @@ export function Landing() {
         </div>
       </section>
 
-      {/* MOCK SCREENSHOT */}
-      <section style={{ padding: '0 0 64px' }}>
+      {/* MOCK SCREENSHOT — hidden on mobile, decorative only */}
+      <section className="hidden md:block" style={{ padding: '0 0 64px' }}>
         <div className="container">
           <div style={{ border: '1px solid var(--border)', borderRadius: 16, padding: 8, background: 'var(--bg-soft)' }}>
             <LandingDashboardPreview />

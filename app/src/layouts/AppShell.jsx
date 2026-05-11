@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
+import { BottomNav } from '../components/BottomNav';
 
 export function AppShell() {
   return (
@@ -8,6 +9,7 @@ export function AppShell() {
       <main>
         <Outlet />
       </main>
+      <BottomNav />
     </div>
   );
 }
