@@ -7,7 +7,7 @@ import { useApp } from '../context/AppContext';
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, plan } = useApp();
+  const { user, plan, signOut } = useApp();
 
   const isActive = (path) => location.pathname === path;
   const isToolActive = () => location.pathname.startsWith('/tools/');
@@ -60,7 +60,7 @@ export function Sidebar() {
         <Glyph name="account" />
         <span>Profil</span>
       </div>
-      <div className="sidebar-item" onClick={() => navigate('/')}>
+      <div className="sidebar-item" onClick={async () => { await signOut(); navigate('/'); }}>
         <Glyph name="logout" />
         <span>Déconnexion</span>
       </div>

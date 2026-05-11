@@ -2,23 +2,79 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { Glyph } from '../components/Glyph';
+import { useApp } from '../context/AppContext';
 
 export function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { signIn, signUp, signInWithGoogle } = useApp();
+
   const [mode, setMode] = useState(searchParams.get('mode') || 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [confirmSent, setConfirmSent] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!email || !password) return;
     setLoading(true);
-    setTimeout(() => navigate('/dashboard'), 600);
+    setError('');
+    try {
+      if (mode === 'login') {
+        await signIn(email, password);
+        navigate('/dashboard');
+      } else {
+        const needsConfirmation = await signUp(email, password, name);
+        if (needsConfirmation) {
+          setConfirmSent(true);
+          setLoading(false);
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await signInWithGoogle();
+      // OAuth redirect handles navigation
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  if (confirmSent) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+              <Logo size={20} />
+            </a>
+          </div>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
+          <h2 className="h2" style={{ marginBottom: 8 }}>Vérifiez vos emails.</h2>
+          <p className="muted" style={{ fontSize: 14, marginBottom: 24 }}>
+            Un lien de confirmation a été envoyé à <b>{email}</b>. Cliquez dessus pour activer votre compte.
+          </p>
+          <button className="btn btn-secondary btn-block" onClick={() => setConfirmSent(false)}>
+            Retour
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page">
@@ -30,10 +86,10 @@ export function Auth() {
         </div>
 
         <div className="auth-tabs">
-          <button className={`auth-tab ${mode === 'login' ? 'active' : ''}`} onClick={() => setMode('login')}>
+          <button className={`auth-tab ${mode === 'login' ? 'active' : ''}`} onClick={() => { setMode('login'); setError(''); }}>
             Connexion
           </button>
-          <button className={`auth-tab ${mode === 'register' ? 'active' : ''}`} onClick={() => setMode('register')}>
+          <button className={`auth-tab ${mode === 'register' ? 'active' : ''}`} onClick={() => { setMode('register'); setError(''); }}>
             Inscription
           </button>
         </div>
@@ -45,10 +101,7 @@ export function Auth() {
           {mode === 'login' ? 'Reprenez là où vous en étiez.' : '50 crédits offerts. Aucune carte demandée.'}
         </p>
 
-        <button
-          className="btn btn-secondary btn-lg btn-block"
-          onClick={() => { setLoading(true); setTimeout(() => navigate('/dashboard'), 500); }}
-        >
+        <button className="btn btn-secondary btn-lg btn-block" onClick={handleGoogle} disabled={loading}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M14.7 8.16c0-.55-.05-1.07-.14-1.58H8v3h3.76c-.16.85-.65 1.57-1.39 2.05v1.7h2.25c1.32-1.21 2.08-3 2.08-5.17z" fill="#4285F4"/>
             <path d="M8 15c1.88 0 3.46-.62 4.62-1.68l-2.25-1.7c-.62.42-1.42.66-2.37.66-1.82 0-3.36-1.23-3.91-2.88H1.77v1.76C2.93 13.49 5.27 15 8 15z" fill="#34A853"/>
@@ -95,6 +148,13 @@ export function Auth() {
               </button>
             </div>
           </div>
+
+          {error && (
+            <div style={{ color: 'var(--warn-fg)', background: 'var(--warn-bg)', border: '1px solid var(--warn-border)', borderRadius: 'var(--radius)', padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>
+              {error}
+            </div>
+          )}
+
           <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
             {loading ? 'Connexion…' : (mode === 'login' ? 'Se connecter' : 'Créer mon compte')}
           </button>

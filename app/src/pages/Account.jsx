@@ -7,7 +7,7 @@ import { useApp } from '../context/AppContext';
 
 export function Account() {
   const navigate = useNavigate();
-  const { user, credits, plan, cancelPro } = useApp();
+  const { user, credits, plan, cancelPro, signOut } = useApp();
   const [confirm, setConfirm] = useState(false);
   const [toast, ToastEl] = useToast();
 
@@ -97,7 +97,7 @@ export function Account() {
                   <div style={{ fontWeight: 500 }}>Déconnexion</div>
                   <div className="muted" style={{ fontSize: 13 }}>Vous reviendrez à la page d'accueil.</div>
                 </div>
-                <button className="btn btn-secondary" onClick={() => navigate('/')}>Se déconnecter</button>
+                <button className="btn btn-secondary" onClick={async () => { await signOut(); navigate('/'); }}>Se déconnecter</button>
               </div>
             </div>
           </div>
