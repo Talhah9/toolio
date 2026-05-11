@@ -26,7 +26,7 @@ export function Account() {
             <div className="card card-pad stack-4">
               <div className="field" style={{ margin: 0 }}>
                 <label className="label">Nom</label>
-                <input className="input" defaultValue={`${user.firstName} ${user.lastName}`} />
+                <input className="input" defaultValue={[user.firstName, user.lastName].filter(Boolean).join(' ')} />
               </div>
               <div className="field" style={{ margin: 0 }}>
                 <label className="label">Email</label>

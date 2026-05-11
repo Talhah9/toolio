@@ -11,7 +11,7 @@ export function AppHeader() {
   return (
     <div className="app-header">
       <div className="row" style={{ gap: 8 }}>
-        <span className="muted" style={{ fontSize: 13 }}>Bonjour, {user.firstName}</span>
+        <span className="muted" style={{ fontSize: 13 }}>Bonjour, {user.firstName || user.email}</span>
       </div>
       <div className="row" style={{ gap: 12 }}>
         <span className={`credits-pill ${crit ? 'crit' : low ? 'low' : ''}`}>
@@ -29,7 +29,7 @@ export function AppHeader() {
           <span className="badge badge-pro" style={{ height: 24, padding: '0 10px' }}>Pro</span>
         )}
         <div className="user-chip" onClick={() => navigate('/account')}>
-          <span className="avatar">{user.firstName[0]}{user.lastName[0]}</span>
+          <span className="avatar">{(user.firstName || user.email)[0].toUpperCase()}{user.lastName?.[0]?.toUpperCase() ?? ''}</span>
         </div>
       </div>
     </div>
