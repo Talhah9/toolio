@@ -1,0 +1,236 @@
+import { useState } from 'react';
+import { ToolShell } from '../../components/ToolShell';
+import { Glyph } from '../../components/Glyph';
+import { useToast } from '../../components/Toast';
+import { useApp } from '../../context/AppContext';
+import { useLang } from '../../context/LanguageContext';
+import { SAMPLE_OUTPUTS } from '../../data/catalog';
+
+const VAT_RATES = ['0%', '5%', '10%', '20%'];
+const PAYMENT_TERMS = ['On delivery', 'Net 14', 'Net 30', 'Net 45', 'Net 60'];
+
+function newLine() {
+  return { id: Date.now() + Math.random(), desc: '', qty: 1, price: '' };
+}
+
+export function DevisTool({ tool }) {
+  const { credits, consumeCredits } = useApp();
+  const { t } = useLang();
+  const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientCompany, setClientCompany] = useState('');
+  const [lines, setLines] = useState([newLine()]);
+  const [vatRate, setVatRate] = useState('0%');
+  const [paymentTerms, setPaymentTerms] = useState('Net 30');
+  const [notes, setNotes] = useState('');
+  const [output, setOutput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [toast, ToastEl] = useToast();
+
+  const updateLine = (id, field, value) =>
+    setLines(ls => ls.map(l => l.id === id ? { ...l, [field]: value } : l));
+
+  const removeLine = (id) =>
+    setLines(ls => ls.length > 1 ? ls.filter(l => l.id !== id) : ls);
+
+  const subtotal = lines.reduce((sum, l) => sum + (parseFloat(l.price) || 0) * (parseFloat(l.qty) || 0), 0);
+  const vatPct = parseFloat(vatRate) / 100;
+  const vatAmount = subtotal * vatPct;
+  const total = subtotal + vatAmount;
+
+  const fmt = (n) => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  const generate = () => {
+    if (!clientName.trim()) { toast('Enter a client name.'); return; }
+    if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
+    setLoading(true);
+    setOutput('');
+    setTimeout(() => {
+      setOutput(SAMPLE_OUTPUTS['devis'][0]);
+      setLoading(false);
+      consumeCredits(tool.credits);
+    }, 1200);
+  };
+
+  const copy = () => {
+    if (!output) return;
+    navigator.clipboard?.writeText(output);
+    toast(t('tool.copied'));
+  };
+
+  return (
+    <ToolShell tool={tool}>
+      <div className="tool-page">
+        {/* Form */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Client info */}
+          <div className="card card-pad">
+            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>Client</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">Name <span style={{ color: 'var(--accent)' }}>*</span></label>
+                <input className="input" value={clientName} onChange={e => setClientName(e.target.value)} placeholder="Sophie Lefèvre" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">Company</label>
+                <input className="input" value={clientCompany} onChange={e => setClientCompany(e.target.value)} placeholder="Atelier Marquetin" />
+              </div>
+            </div>
+            <div className="field" style={{ margin: '10px 0 0' }}>
+              <label className="label">Email</label>
+              <input className="input" value={clientEmail} onChange={e => setClientEmail(e.target.value)} placeholder="sophie@atelier.com" type="email" />
+            </div>
+          </div>
+
+          {/* Line items */}
+          <div className="card card-pad">
+            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>Services</h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6 }}>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>Description</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>Qty</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>Unit price</span>
+              <span />
+            </div>
+
+            {lines.map(line => (
+              <div key={line.id} style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6, alignItems: 'center' }}>
+                <input
+                  className="input"
+                  value={line.desc}
+                  onChange={e => updateLine(line.id, 'desc', e.target.value)}
+                  placeholder="UX design — 10 screens"
+                  style={{ fontSize: 13 }}
+                />
+                <input
+                  className="input"
+                  value={line.qty}
+                  onChange={e => updateLine(line.id, 'qty', e.target.value)}
+                  type="number"
+                  min="0"
+                  style={{ fontSize: 13 }}
+                />
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', fontSize: 12 }}>€</span>
+                  <input
+                    className="input"
+                    value={line.price}
+                    onChange={e => updateLine(line.id, 'price', e.target.value)}
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    style={{ fontSize: 13, paddingLeft: 20 }}
+                  />
+                </div>
+                <button
+                  onClick={() => removeLine(line.id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-4)', padding: 0, display: 'flex', alignItems: 'center' }}
+                >
+                  <Glyph name="x" size={14} />
+                </button>
+              </div>
+            ))}
+
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => setLines(ls => [...ls, newLine()])}
+              style={{ marginTop: 4 }}
+            >
+              <Glyph name="plus" size={12} /> Add line
+            </button>
+
+            <div className="hr" style={{ margin: '16px 0' }} />
+
+            {/* Totals */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span className="muted">Subtotal</span>
+                <span className="tabular">€{fmt(subtotal)}</span>
+              </div>
+              <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="row" style={{ gap: 8 }}>
+                  <span className="muted">VAT</span>
+                  <select
+                    className="select"
+                    value={vatRate}
+                    onChange={e => setVatRate(e.target.value)}
+                    style={{ width: 'auto', padding: '2px 8px', fontSize: 12, height: 'auto' }}
+                  >
+                    {VAT_RATES.map(r => <option key={r}>{r}</option>)}
+                  </select>
+                </div>
+                <span className="tabular">€{fmt(vatAmount)}</span>
+              </div>
+              <div className="row" style={{ justifyContent: 'space-between', fontWeight: 700, borderTop: '1px solid var(--border)', paddingTop: 8, marginTop: 4 }}>
+                <span>Total</span>
+                <span className="tabular">€{fmt(total)}</span>
+              </div>
+            </div>
+
+            <div className="hr" style={{ margin: '16px 0' }} />
+
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">Payment terms</label>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {PAYMENT_TERMS.map(pt => (
+                  <button
+                    key={pt}
+                    type="button"
+                    onClick={() => setPaymentTerms(pt)}
+                    className="btn btn-sm"
+                    style={{
+                      fontSize: 12,
+                      border: '1px solid ' + (paymentTerms === pt ? 'var(--fg)' : 'var(--border)'),
+                      background: paymentTerms === pt ? 'var(--fg)' : 'var(--bg)',
+                      color: paymentTerms === pt ? '#fff' : 'var(--fg-2)',
+                    }}
+                  >
+                    {pt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="row" style={{ justifyContent: 'space-between', fontSize: 13 }}>
+            <span className="muted">{t('tool.cost')}</span>
+            <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
+          </div>
+          <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
+            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> Generate quote</>}
+          </button>
+        </div>
+
+        {/* Result */}
+        <div>
+          <div className="result-zone">
+            <div className="result-head">
+              <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
+              <div className="row" style={{ gap: 6 }}>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}>
+                  <Glyph name="copy" size={12} /> {t('tool.copy')}
+                </button>
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}>
+                  <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
+                </button>
+              </div>
+            </div>
+            {loading ? (
+              <div className="result-empty">
+                <span className="row" style={{ gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
+                  {t('tool.result.working')}
+                </span>
+              </div>
+            ) : output ? (
+              <div className="result-body">{output}</div>
+            ) : (
+              <div className="result-empty">{t('tool.result.placeholder')}</div>
+            )}
+          </div>
+        </div>
+      </div>
+      {ToastEl}
+    </ToolShell>
+  );
+}

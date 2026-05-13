@@ -3,11 +3,13 @@ import { Logo } from './Logo';
 import { Glyph } from './Glyph';
 import { TOOLS } from '../data/catalog';
 import { useApp } from '../context/AppContext';
+import { useLang } from '../context/LanguageContext';
 
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, plan, signOut } = useApp();
+  const { plan, signOut } = useApp();
+  const { t } = useLang();
 
   const isActive = (path) => location.pathname === path;
   const isToolActive = () => location.pathname.startsWith('/tools/');
@@ -18,26 +20,29 @@ export function Sidebar() {
         <Logo />
       </div>
 
-      <div className="sidebar-section">Général</div>
+      <div className="sidebar-section">{t('nav.section.general')}</div>
       <div
         className={`sidebar-item ${isActive('/dashboard') ? 'active' : ''}`}
         onClick={() => navigate('/dashboard')}
       >
         <Glyph name="home" />
-        <span>Dashboard</span>
+        <span>{t('nav.dashboard')}</span>
       </div>
 
-      <div className="sidebar-section">Outils</div>
-      {TOOLS.map(t => (
+      <div className="sidebar-section">{t('nav.section.tools')}</div>
+      {TOOLS.map(tool => (
         <div
-          key={t.id}
-          className={`sidebar-item ${isToolActive() && location.pathname === `/tools/${t.id}` ? 'active' : ''}`}
-          onClick={() => navigate(`/tools/${t.id}`)}
-          title={t.name}
+          key={tool.id}
+          className={`sidebar-item ${isToolActive() && location.pathname === `/tools/${tool.id}` ? 'active' : ''}`}
+          onClick={() => navigate(`/tools/${tool.id}`)}
+          title={tool.name}
         >
-          <Glyph name={t.glyph} />
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.short}</span>
-          {t.plan === 'pro' && plan === 'free' && (
+          <Glyph name={tool.glyph} />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tool.short}</span>
+          {tool.franceOnly && (
+            <span style={{ marginLeft: 'auto', fontSize: 11 }} title="France only">🇫🇷</span>
+          )}
+          {tool.plan === 'pro' && plan === 'free' && !tool.franceOnly && (
             <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--accent)' }}>Pro</span>
           )}
         </div>
@@ -45,24 +50,24 @@ export function Sidebar() {
 
       <div style={{ flex: 1 }} />
 
-      <div className="sidebar-section">Compte</div>
+      <div className="sidebar-section">{t('nav.section.account')}</div>
       <div
         className={`sidebar-item ${isActive('/pricing') ? 'active' : ''}`}
         onClick={() => navigate('/pricing')}
       >
         <Glyph name="billing" />
-        <span>Plan & crédits</span>
+        <span>{t('nav.plan')}</span>
       </div>
       <div
         className={`sidebar-item ${isActive('/account') ? 'active' : ''}`}
         onClick={() => navigate('/account')}
       >
         <Glyph name="account" />
-        <span>Profil</span>
+        <span>{t('nav.profile')}</span>
       </div>
       <div className="sidebar-item" onClick={async () => { await signOut(); navigate('/'); }}>
         <Glyph name="logout" />
-        <span>Déconnexion</span>
+        <span>{t('nav.logout')}</span>
       </div>
     </aside>
   );

@@ -1,13 +1,87 @@
 export const TOOLS = [
-  { id: 'audit', name: 'Audit CRO + SEO', short: 'Audit', desc: 'Analyse votre site et identifie les leviers de conversion et de référencement.', credits: 15, plan: 'pro', glyph: 'audit' },
-  { id: 'products', name: 'Fiches produits en masse', short: 'Fiches produits', desc: 'Génère des fiches produits optimisées pour la conversion à partir d’un CSV.', credits: 5, plan: 'pro', glyph: 'product', unit: 'fiche' },
-  { id: 'compete', name: 'Analyse de concurrents', short: 'Concurrents', desc: 'Décortique le positionnement, l’offre et les mots-clés de vos concurrents.', credits: 15, plan: 'pro', glyph: 'compete' },
-  { id: 'legal', name: 'CGV & mentions légales', short: 'CGV', desc: 'Génère vos CGV et mentions légales conformes au droit français.', credits: 10, plan: 'pro', glyph: 'legal' },
-  { id: 'contract', name: 'Contrat freelance', short: 'Contrat', desc: 'Crée un contrat de prestation freelance personnalisé et sécurisé.', credits: 10, plan: 'pro', glyph: 'contract' },
-  { id: 'invoice', name: 'Générateur de facture', short: 'Facture', desc: 'Édite une facture PDF prête à envoyer en moins d’une minute.', credits: 5, plan: 'free', glyph: 'invoice' },
-  { id: 'status', name: 'Choix du statut juridique', short: 'Statut', desc: 'Compare les statuts (micro, EI, SASU, EURL) selon votre projet.', credits: 5, plan: 'free', glyph: 'status' },
-  { id: 'linkedin-content', name: 'Contenu LinkedIn', short: 'LinkedIn', desc: 'Rédige des posts LinkedIn engageants adaptés à votre niche et votre ton.', credits: 10, plan: 'free', glyph: 'linkedin-content' },
-  { id: 'linkedin-profile', name: 'Optimisation profil LinkedIn', short: 'Profil LinkedIn', desc: 'Réécrit titre, à-propos et expériences pour maximiser votre visibilité.', credits: 10, plan: 'pro', glyph: 'linkedin-profile' },
+  {
+    id: 'audit',
+    name: 'SEO & CRO Audit',
+    short: 'Audit',
+    desc: 'Analyse any website and surface conversion and SEO improvement opportunities.',
+    credits: 15,
+    plan: 'pro',
+    glyph: 'audit',
+  },
+  {
+    id: 'compete',
+    name: 'Competitor Analysis',
+    short: 'Competitors',
+    desc: 'Dissect a competitor\'s positioning, offer, and keyword strategy.',
+    credits: 15,
+    plan: 'pro',
+    glyph: 'compete',
+  },
+  {
+    id: 'legal',
+    name: 'Terms & Legal Pages',
+    short: 'Legal',
+    desc: 'Generate terms of service, privacy policy, and legal notice for your business.',
+    credits: 10,
+    plan: 'pro',
+    glyph: 'legal',
+  },
+  {
+    id: 'contract',
+    name: 'Freelance Contract',
+    short: 'Contract',
+    desc: 'Create a personalised, professionally worded freelance service agreement.',
+    credits: 10,
+    plan: 'pro',
+    glyph: 'contract',
+  },
+  {
+    id: 'linkedin-content',
+    name: 'LinkedIn Post',
+    short: 'LinkedIn',
+    desc: 'Write engaging LinkedIn posts tailored to your niche and tone of voice.',
+    credits: 10,
+    plan: 'free',
+    glyph: 'linkedin-content',
+  },
+  {
+    id: 'devis',
+    name: 'Quote Generator',
+    short: 'Quote',
+    desc: 'Build a professional client quote with line items, totals, and payment terms.',
+    credits: 5,
+    plan: 'free',
+    glyph: 'invoice',
+  },
+  {
+    id: 'relance',
+    name: 'Follow-up Message',
+    short: 'Follow-up',
+    desc: 'Write the perfect follow-up for unpaid invoices or ghosted proposals.',
+    credits: 5,
+    plan: 'free',
+    glyph: 'contract',
+  },
+  {
+    id: 'statut',
+    name: 'Définir ton statut',
+    short: 'Statut',
+    desc: 'Réponds à quelques questions et découvre le statut juridique le plus adapté à ta situation.',
+    credits: 5,
+    plan: 'free',
+    glyph: 'status',
+    franceOnly: true,
+  },
+  {
+    id: 'urssaf',
+    name: 'Comprendre l\'URSSAF',
+    short: 'URSSAF',
+    desc: 'Saisis ton CA et ton régime pour savoir exactement ce que tu dois payer, quand et combien.',
+    credits: 0,
+    plan: 'free',
+    glyph: 'billing',
+    franceOnly: true,
+  },
 ];
 
 export const PACKS = [
@@ -18,14 +92,14 @@ export const PACKS = [
 
 export const SAMPLE_OUTPUTS = {
   'linkedin-content': [
-    `Il y a 18 mois, je facturais 350€ la journée.\n\nAujourd'hui, c'est 1 200€. Et j'ai moins de clients.\n\nVoici ce qui a changé :\n\n→ J'ai arrêté de vendre des heures. Je vends un résultat.\n→ J'ai dit non aux missions floues. Cahier des charges ou rien.\n→ J'ai posé un acompte de 30%. Sans ça, on ne démarre pas.\n→ J'ai documenté chaque livrable. Photo avant/après, métriques, ROI.\n\nLe vrai déclic ? Comprendre que mes clients n'achètent pas mon temps.\nIls achètent la tranquillité d'esprit.\n\nEt ça, ça vaut bien plus que 350€ la journée.\n\nVous en êtes où sur vos tarifs ?`,
-    `Trois choses que personne ne vous dit quand vous lancez votre activité freelance :\n\n1. Les premiers clients sont les plus durs. Ensuite ça roule.\n2. Votre réseau pèse plus que votre portfolio.\n3. Le "non" est votre meilleur allié commercial.\n\nJ'ai mis trois ans à comprendre la troisième.\n\nDire non à un projet mal cadré, c'est protéger les bons clients déjà signés.\n\nEt vous, quel "non" vous a fait avancer cette année ?`,
-    `Un client m'a écrit ce matin : "Combien pour refaire mon site ?"\n\nMa réponse : "Combien vaut un client supplémentaire pour vous ?"\n\nSilence radio pendant deux heures.\n\nPuis : "Environ 8 000€ par an."\n\n"Ok. Si on en gagne 3 de plus, ça fait 24 000€. Mon devis est à 7 500€."\n\nIl a signé.\n\nLeçon : ne jamais parler prix avant valeur.`,
+    `18 months ago I was charging €350/day.\n\nToday it's €1,200. And I have fewer clients.\n\nHere's what changed:\n\n→ I stopped selling hours. I sell outcomes.\n→ I said no to vague briefs. Scope document or nothing.\n→ I require a 30% deposit. No deposit, no start.\n→ I documented every deliverable. Before/after, metrics, ROI.\n\nThe real shift? Understanding my clients aren't buying my time.\nThey're buying peace of mind.\n\nAnd that's worth a lot more than €350/day.\n\nWhere are you at with your rates?`,
+    `Three things nobody tells you when you go freelance:\n\n1. The first clients are the hardest. Then it flows.\n2. Your network matters more than your portfolio.\n3. "No" is your best sales tool.\n\nI spent three years learning the third one.\n\nSaying no to a poorly scoped project protects the good clients already signed.\n\nWhich "no" moved you forward this year?`,
+    `A client messaged me this morning: "How much to redo my website?"\n\nMy reply: "How much is one new client worth to you?"\n\nRadio silence for two hours.\n\nThen: "About €8,000 a year."\n\n"OK. If we land 3 more, that's €24,000. My quote is €7,500."\n\nHe signed.\n\nLesson: never talk price before value.`,
   ],
-  'invoice': [
-    `FACTURE N° 2026-042\n\nÉmise le 03/05/2026\nÉchéance : 02/06/2026\n\n— De —\nLéa Marchand — EI\nSIRET : 893 421 002 00012\n\n— À —\nAtelier Marquetin\n12 rue du Faubourg, 75011 Paris\n\nDésignation                   Qté     PU       Total\nRéfonte UI app mobile         1      4 500€   4 500€\nIntégration Stripe             1        800€     800€\n\nTotal HT                                       5 300€\nTVA non applicable, art. 293 B du CGI\nTotal à régler                                 5 300€\n\nMode de paiement : virement IBAN FR76 ...`,
+  'devis': [
+    `QUOTE No. 2026-042\n\nDate: 03/05/2026\nValid until: 02/06/2026\n\n— From —\nLéa Marchand — Sole trader\n\n— To —\nAtelier Marquetin\n12 Faubourg Street, London E1 6RF\n\nDescription                   Qty     Unit price   Total\nMobile app UI redesign         1       €4,500       €4,500\nStripe integration             1       €800         €800\n\nSubtotal                                            €5,300\nVAT: 0% (reverse charge / outside EU)               €0\nTotal due                                           €5,300\n\nPayment: bank transfer within 30 days of invoice date.`,
   ],
-  'status': [
+  'statut': [
     `Recommandation : Micro-entreprise (BNC)\n\nPourquoi ce statut\n→ Démarches simplifiées, démarrage en 24h\n→ Charges sociales proportionnelles au CA (~22%)\n→ Comptabilité allégée (livre de recettes)\n\nÀ surveiller\n→ Plafond CA 77 700€/an pour prestations de services\n→ Pas de récupération de TVA\n→ Protection sociale limitée\n\nQuand passer en SASU\n→ Au-delà de 60 000€ de CA\n→ Si vous embauchez ou levez des fonds\n→ Si vous voulez optimiser rémunération/dividendes`,
   ],
 };

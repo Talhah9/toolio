@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppShell } from './layouts/AppShell';
 import { Landing } from './pages/Landing';
@@ -11,6 +12,7 @@ import { Account } from './pages/Account';
 
 export function App() {
   return (
+    <LanguageProvider>
     <AppProvider>
       <BrowserRouter>
         <Routes>
@@ -28,5 +30,6 @@ export function App() {
         </Routes>
       </BrowserRouter>
     </AppProvider>
+    </LanguageProvider>
   );
 }

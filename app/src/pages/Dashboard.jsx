@@ -5,10 +5,12 @@ import { ToolIcon } from '../components/ToolIcon';
 import { PlanBadge } from '../components/PlanBadge';
 import { TOOLS } from '../data/catalog';
 import { useApp } from '../context/AppContext';
+import { useLang } from '../context/LanguageContext';
 
 export function Dashboard() {
   const navigate = useNavigate();
   const { credits, plan } = useApp();
+  const { t } = useLang();
   const low = credits < 50;
 
   return (
@@ -16,18 +18,18 @@ export function Dashboard() {
       <AppHeader />
       <div className="page-pad">
         <div style={{ marginBottom: 28 }}>
-          <h1 className="h1" style={{ marginBottom: 6 }}>Vos outils</h1>
-          <p className="muted">Choisissez un outil pour commencer. Les crédits sont décomptés au moment de la génération.</p>
+          <h1 className="h1" style={{ marginBottom: 6 }}>{t('dashboard.title')}</h1>
+          <p className="muted">{t('dashboard.subtitle')}</p>
         </div>
 
         {low && (
           <div className="banner">
             <span className="row" style={{ gap: 10 }}>
               <Glyph name="lightning" size={14} />
-              Vous approchez de la limite — il vous reste <b style={{ marginLeft: 4 }}>{credits} crédits</b>.
+              {t('dashboard.banner.low')} <b style={{ marginLeft: 4, marginRight: 4 }}>{credits}</b> {t('dashboard.banner.low.credits')}
             </span>
             <button className="btn btn-sm" style={{ background: 'var(--warn-fg)', color: '#fff' }} onClick={() => navigate('/pricing')}>
-              Recharger
+              {t('dashboard.banner.low.cta')}
             </button>
           </div>
         )}
@@ -36,35 +38,53 @@ export function Dashboard() {
           <div className="banner banner-accent">
             <span className="row" style={{ gap: 10 }}>
               <Glyph name="sparkle" size={14} />
-              Débloquez les 6 outils Pro et 500 crédits/mois pour 49€.
+              {t('dashboard.banner.pro')}
             </span>
             <button className="btn btn-sm" onClick={() => navigate('/pricing')}>
-              Passer au Pro
+              {t('dashboard.banner.pro.cta')}
             </button>
           </div>
         )}
 
         <div className="tools-grid">
-          {TOOLS.map(t => {
-            const locked = t.plan === 'pro' && plan === 'free';
+          {TOOLS.map(tool => {
+            const locked = tool.plan === 'pro' && plan === 'free';
             return (
               <div
-                key={t.id}
+                key={tool.id}
                 className="tool-card"
-                onClick={() => locked ? navigate('/pricing') : navigate(`/tools/${t.id}`)}
+                onClick={() => locked ? navigate('/pricing') : navigate(`/tools/${tool.id}`)}
                 style={locked ? { opacity: 0.7 } : {}}
               >
                 <div className="tool-card-head">
-                  <ToolIcon tool={t} size="lg" />
-                  <PlanBadge plan={t.plan} />
+                  <ToolIcon tool={tool} size="lg" />
+                  <div className="row" style={{ gap: 6 }}>
+                    {tool.franceOnly && (
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 600,
+                          padding: '2px 7px',
+                          borderRadius: 20,
+                          border: '1px solid #dbeafe',
+                          background: '#eff6ff',
+                          color: '#1d4ed8',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        🇫🇷 France
+                      </span>
+                    )}
+                    <PlanBadge plan={tool.plan} />
+                  </div>
                 </div>
-                <h3 className="tool-card-title">{t.name}</h3>
-                <p className="tool-card-desc">{t.desc}</p>
+                <h3 className="tool-card-title">{tool.name}</h3>
+                <p className="tool-card-desc">{tool.desc}</p>
                 <div className="tool-card-foot">
-                  <span className="tabular">{t.credits} crédits{t.unit ? ` / ${t.unit}` : ''}</span>
+                  <span className="tabular">{tool.credits} {t('tool.credits')}{tool.unit ? ` / ${tool.unit}` : ''}</span>
                   {locked
                     ? <span className="row" style={{ gap: 4, color: 'var(--fg-4)' }}><Glyph name="lock" size={12} /> Pro</span>
-                    : <span className="row" style={{ gap: 4 }}>Utiliser <Glyph name="arrow-right" size={12} /></span>
+                    : <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
                   }
                 </div>
               </div>

@@ -1,9 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Glyph } from './Glyph';
+import { useLang } from '../context/LanguageContext';
 
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLang();
 
   const isActive = (path) =>
     path === '/dashboard'
@@ -17,21 +19,21 @@ export function BottomNav() {
         onClick={() => navigate('/dashboard')}
       >
         <Glyph name="home" size={20} />
-        <span>Outils</span>
+        <span>{t('mobile.tools')}</span>
       </button>
       <button
         className={`mobile-nav-item ${isActive('/pricing') ? 'active' : ''}`}
         onClick={() => navigate('/pricing')}
       >
         <Glyph name="billing" size={20} />
-        <span>Plan</span>
+        <span>{t('mobile.plan')}</span>
       </button>
       <button
         className={`mobile-nav-item ${isActive('/account') ? 'active' : ''}`}
         onClick={() => navigate('/account')}
       >
         <Glyph name="account" size={20} />
-        <span>Compte</span>
+        <span>{t('mobile.account')}</span>
       </button>
     </nav>
   );

@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useLang } from '../context/LanguageContext';
 
 export function AppHeader() {
   const navigate = useNavigate();
   const { user, credits, plan } = useApp();
+  const { lang, toggleLang, t } = useLang();
 
   const low = credits < 50;
   const crit = credits < 20;
@@ -11,18 +13,35 @@ export function AppHeader() {
   return (
     <div className="app-header">
       <div className="row" style={{ gap: 8 }}>
-        <span className="muted" style={{ fontSize: 13 }}>Bonjour, {user.firstName || user.email}</span>
+        <span className="muted" style={{ fontSize: 13 }}>{t('header.hello')} {user.firstName || user.email}</span>
       </div>
       <div className="row" style={{ gap: 12 }}>
+        <button
+          onClick={toggleLang}
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            padding: '3px 10px',
+            borderRadius: 20,
+            border: '1px solid var(--border)',
+            background: 'var(--bg)',
+            color: 'var(--fg-2)',
+            cursor: 'pointer',
+            lineHeight: 1.6,
+          }}
+        >
+          {lang === 'en' ? 'FR' : 'EN'}
+        </button>
         <span className={`credits-pill ${crit ? 'crit' : low ? 'low' : ''}`}>
           <span className="dot" />
           <span className="tabular">{credits}</span>
-          <span className="muted" style={{ fontSize: 12 }}>crédits</span>
+          <span className="muted" style={{ fontSize: 12 }}>{t('header.credits')}</span>
         </span>
         {plan === 'free' ? (
           <span className="app-header-upgrade">
             <button className="btn btn-accent btn-sm" onClick={() => navigate('/pricing')}>
-              Passer au Pro
+              {t('header.upgrade')}
             </button>
           </span>
         ) : (
