@@ -12,7 +12,14 @@ export function Auth() {
   const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
   const { t } = useLang();
 
-  const [mode, setMode] = useState(searchParams.get('mode') || 'login');
+  // Check hash synchronously so the first render already shows the reset form.
+  // Supabase fires PASSWORD_RECOVERY during getSession() in AppContext (which runs
+  // before this component mounts), so the event is gone by the time our listener
+  // registers. Reading the hash directly avoids that race.
+  const [mode, setMode] = useState(() => {
+    if (window.location.hash.includes('type=recovery')) return 'reset';
+    return searchParams.get('mode') || 'login';
+  });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,7 +30,7 @@ export function Auth() {
   const [confirmSent, setConfirmSent] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
 
-  // Switch to reset mode when user arrives via the password-recovery email link
+  // Fallback: catch PASSWORD_RECOVERY if it fires after mount
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
