@@ -5,6 +5,7 @@ import { CreditGate } from '../../components/CreditGate';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
+import { exportPdf } from '../../lib/exportPdf';
 
 const FOCUS_OPTIONS = [
   { id: 'positioning', key: 'tool.compete.focus.positioning' },
@@ -14,8 +15,8 @@ const FOCUS_OPTIONS = [
 ];
 
 export function ConcurrentsTool({ tool }) {
-  const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { credits, logGeneration, session, user } = useApp();
+  const { t, lang } = useLang();
   const [competitorUrl, setCompetitorUrl] = useState('');
   const [yourUrl, setYourUrl] = useState('');
   const [focus, setFocus] = useState(['positioning', 'keywords', 'content']);
@@ -53,6 +54,13 @@ export function ConcurrentsTool({ tool }) {
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
+
+  const downloadPdf = () => exportPdf({
+    toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
+    userEmail: user?.email,
+    output,
+    filename: `toolio-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+  });
 
   return (
     <ToolShell tool={tool}>
@@ -104,6 +112,7 @@ export function ConcurrentsTool({ tool }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>

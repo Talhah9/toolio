@@ -4,6 +4,7 @@ import { Glyph } from '../../components/Glyph';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
+import { exportPdf } from '../../lib/exportPdf';
 
 const DOC_KEYS = [
   { id: 'tos',     key: 'tool.legal.doc.tos' },
@@ -13,8 +14,8 @@ const DOC_KEYS = [
 ];
 
 export function LegalTool({ tool }) {
-  const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { credits, logGeneration, session, user } = useApp();
+  const { t, lang } = useLang();
   const [company, setCompany] = useState('');
   const [type, setType] = useState('sole');
   const [country, setCountry] = useState('');
@@ -52,6 +53,13 @@ export function LegalTool({ tool }) {
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
+
+  const downloadPdf = () => exportPdf({
+    toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
+    userEmail: user?.email,
+    output,
+    filename: `toolio-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+  });
 
   const TYPE_KEYS = ['sole', 'ltd', 'llc', 'partnership', 'other'];
 
@@ -116,6 +124,7 @@ export function LegalTool({ tool }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>

@@ -52,6 +52,7 @@ export const en = {
   'tool.error.credits': 'Not enough credits. Top up your account.',
   'tool.error.generic': 'Something went wrong. Please try again.',
   'tool.download': 'Download',
+  'tool.pdf': 'PDF',
   'tool.nocredits.message': 'Not enough credits to run this tool.',
   'tool.nocredits.cta': 'Recharge credits',
   'tool.copied': 'Copied to clipboard',
