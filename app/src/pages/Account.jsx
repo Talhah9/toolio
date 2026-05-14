@@ -8,9 +8,11 @@ import { useLang } from '../context/LanguageContext';
 
 export function Account() {
   const navigate = useNavigate();
-  const { user, session, credits, plan, cancelPro, signOut } = useApp();
+  const { user, session, credits, plan, refreshCredits, signOut } = useApp();
   const { t } = useLang();
   const [confirm, setConfirm] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelAt, setCancelAt] = useState(null);
   const [toast, ToastEl] = useToast();
   const [payments, setPayments] = useState(null); // null = loading
 
@@ -58,7 +60,9 @@ export function Account() {
             <div className="kv-list">
               <div className="kv-row">
                 <span className="k">{t('account.plan')}</span>
-                <span className="v">{plan === 'pro' ? 'Pro' : 'Free'}</span>
+                <span className="v">
+                  {plan === 'pro' ? 'Pro' : plan === 'cancelled' ? t('account.plan.cancelled') : 'Free'}
+                </span>
                 <button className="btn btn-secondary btn-sm" onClick={() => navigate('/pricing')}>{t('account.manage')}</button>
               </div>
               <div className="kv-row">
@@ -100,9 +104,14 @@ export function Account() {
               <div className="row" style={{ justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ fontWeight: 500 }}>{t('account.cancel.title')}</div>
-                  <div className="muted" style={{ fontSize: 13 }}>{t('account.cancel.desc')}</div>
+                  <div className="muted" style={{ fontSize: 13 }}>
+                    {cancelAt
+                      ? `${t('account.cancel.until')} ${cancelAt}`
+                      : t('account.cancel.desc')}
+                  </div>
                 </div>
-                <button className="btn btn-secondary" onClick={() => setConfirm(true)} disabled={plan !== 'pro'}>
+                <button className="btn btn-secondary" onClick={() => setConfirm(true)}
+                  disabled={plan !== 'pro' || !!cancelAt}>
                   {t('account.cancel.btn')}
                 </button>
               </div>
@@ -131,9 +140,31 @@ export function Account() {
                 <p className="muted" style={{ fontSize: 14 }}>{t('account.modal.body')}</p>
               </div>
               <div className="modal-foot">
-                <button className="btn btn-secondary" onClick={() => setConfirm(false)}>{t('account.modal.cancel')}</button>
-                <button className="btn btn-primary" onClick={() => { cancelPro(); setConfirm(false); toast(t('account.toast.cancelled')); }}>
-                  {t('account.modal.confirm')}
+                <button className="btn btn-secondary" onClick={() => setConfirm(false)} disabled={cancelling}>
+                  {t('account.modal.cancel')}
+                </button>
+                <button className="btn btn-primary" disabled={cancelling} onClick={async () => {
+                  setCancelling(true);
+                  try {
+                    const res = await fetch('/api/cancel-subscription', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
+                    });
+                    const json = await res.json();
+                    if (!json.success) throw new Error(json.error || 'Cancellation failed');
+                    setCancelAt(json.cancelAt);
+                    setConfirm(false);
+                    await refreshCredits();
+                    toast(t('account.toast.cancelled'));
+                  } catch (err) {
+                    toast(err.message);
+                    setConfirm(false);
+                  } finally {
+                    setCancelling(false);
+                  }
+                }}>
+                  {cancelling ? t('account.cancel.processing') : t('account.modal.confirm')}
                 </button>
               </div>
             </div>
