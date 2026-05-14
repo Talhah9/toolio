@@ -53,12 +53,12 @@ const AUDIT_CHECK_LABELS = {
 };
 
 const MAX_TOKENS = {
-  audit:              1800,
-  compete:            1800,
-  legal:              4000,
-  contract:           2000,
-  'linkedin-content': 1000,
-  devis:              1000,
+  audit:              1000,
+  compete:            1000,
+  legal:              1500,
+  contract:           1500,
+  'linkedin-content':  600,
+  devis:               800,
 };
 
 function buildUserMessage(toolId, input) {
