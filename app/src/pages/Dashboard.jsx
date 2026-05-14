@@ -1,17 +1,31 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
 import { ToolIcon } from '../components/ToolIcon';
 import { PlanBadge } from '../components/PlanBadge';
+import { useToast } from '../components/Toast';
 import { TOOLS, getToolText } from '../data/catalog';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { credits } = useApp();
+  const location = useLocation();
+  const { credits, refreshCredits } = useApp();
   const { lang, t } = useLang();
+  const [toast, ToastEl] = useToast();
   const low = credits !== null && credits < 15;
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('payment') === 'success') {
+      toast(t('payment.success'));
+      refreshCredits();
+      navigate('/dashboard', { replace: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -71,6 +85,7 @@ export function Dashboard() {
           })}
         </div>
       </div>
+      {ToastEl}
     </>
   );
 }

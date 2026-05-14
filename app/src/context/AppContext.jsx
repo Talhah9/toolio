@@ -185,6 +185,7 @@ export function AppProvider({ children }) {
       upgrade,
       cancelPro,
       addPack,
+      refreshCredits: fetchUserData,
     }}>
       {children}
     </AppContext.Provider>

@@ -297,7 +297,10 @@ export const fr = {
   'checkout.holder': 'Titulaire',
   'checkout.secure': 'Sécurisé par Stripe',
   'checkout.pay': 'Payer',
-  'checkout.processing': 'Traitement…',
+  'checkout.processing': 'Redirection vers Stripe…',
+  'checkout.error': 'Une erreur est survenue. Veuillez réessayer.',
+
+  'payment.success': 'Paiement confirmé — vos crédits ont été mis à jour !',
 
   // ── Landing page ─────────────────────────────────────────────
   'landing.eyebrow.badge': 'Nouveau',

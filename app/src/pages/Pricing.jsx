@@ -1,20 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Checkout } from '../components/Checkout';
 import { Glyph } from '../components/Glyph';
 import { PlanBadge } from '../components/PlanBadge';
-import { useToast } from '../components/Toast';
 import { PACKS } from '../data/catalog';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
 export function Pricing() {
-  const navigate = useNavigate();
-  const { credits, plan, upgrade, addPack } = useApp();
+  const { credits, plan } = useApp();
   const { t } = useLang();
   const [showCheckout, setShowCheckout] = useState(null);
-  const [toast, ToastEl] = useToast();
 
   return (
     <>
@@ -115,14 +111,8 @@ export function Pricing() {
           <Checkout
             data={showCheckout}
             onClose={() => setShowCheckout(null)}
-            onSuccess={() => {
-              if (showCheckout.type === 'pro') { upgrade(); toast(t('pricing.toast.pro')); }
-              else { addPack(showCheckout.pack.credits); toast(`+${showCheckout.pack.credits} ${t('pricing.toast.pack')}`); }
-              setShowCheckout(null);
-            }}
           />
         )}
-        {ToastEl}
       </div>
     </>
   );

@@ -3,15 +3,18 @@ import { Glyph } from './Glyph';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
-export function Checkout({ data, onClose, onSuccess }) {
-  const { user } = useApp();
+const PRO_PRICE_ID = 'price_1TWwVeAFTm9a9DATGNn4FO2g';
+const PACK_PRICES = {
+  small:  'price_1TWwWxAFTm9a9DATtpAaaemv',
+  medium: 'price_1TWwZRAFTm9a9DATOmAb6KjN',
+  large:  'price_1TWwa2AFTm9a9DATrycG9Lqj',
+};
+
+export function Checkout({ data, onClose }) {
+  const { user, session } = useApp();
   const { t } = useLang();
-  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
-  const [card, setCard] = useState('4242 4242 4242 4242');
-  const [exp, setExp] = useState('12 / 28');
-  const [cvc, setCvc] = useState('123');
-  const [name, setName] = useState(fullName);
   const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState('');
 
   const total = data.type === 'pro' ? 49 : data.pack.price;
   const label = data.type === 'pro'
@@ -19,9 +22,34 @@ export function Checkout({ data, onClose, onSuccess }) {
     : `Pack ${data.pack.label} — ${data.pack.credits} ${t('checkout.label.pack')}`;
   const sub = data.type === 'pro' ? t('checkout.sub.monthly') : t('checkout.sub.once');
 
-  const pay = () => {
+  const pay = async () => {
     setProcessing(true);
-    setTimeout(() => onSuccess(), 1300);
+    setError('');
+    try {
+      const priceId = data.type === 'pro' ? PRO_PRICE_ID : PACK_PRICES[data.pack.id];
+      const mode    = data.type === 'pro' ? 'subscription' : 'payment';
+      const credits = data.type === 'pack' ? data.pack.credits : 0;
+
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          mode,
+          userId:    session?.user?.id,
+          userEmail: user?.email,
+          credits,
+        }),
+      });
+
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      window.location.href = json.url;
+    } catch (err) {
+      console.error('[Checkout] error:', err.message);
+      setError(t('checkout.error') || 'Something went wrong. Please try again.');
+      setProcessing(false);
+    }
   };
 
   return (
@@ -36,6 +64,7 @@ export function Checkout({ data, onClose, onSuccess }) {
             <Glyph name="x" size={14} />
           </button>
         </div>
+
         <div className="modal-body">
           <div style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 8, padding: 14, marginBottom: 20 }}>
             <div className="row" style={{ justifyContent: 'space-between', marginBottom: 4 }}>
@@ -45,33 +74,27 @@ export function Checkout({ data, onClose, onSuccess }) {
             <div className="muted" style={{ fontSize: 12 }}>{sub}</div>
           </div>
 
-          <div className="field">
-            <label className="label">{t('checkout.email')}</label>
-            <input className="input" defaultValue={user?.email ?? ''} />
-          </div>
-
-          <div className="field">
-            <label className="label">{t('checkout.card')}</label>
-            <div className="card-field">
-              <input value={card} onChange={e => setCard(e.target.value)} placeholder="1234 1234 1234 1234" />
-              <div className="card-field-row">
-                <input value={exp} onChange={e => setExp(e.target.value)} placeholder="MM / YY" />
-                <input value={cvc} onChange={e => setCvc(e.target.value)} placeholder="CVC" />
-              </div>
+          {user?.email && (
+            <div className="field" style={{ marginBottom: 0 }}>
+              <label className="label">{t('checkout.email')}</label>
+              <input className="input" value={user.email} readOnly style={{ color: 'var(--fg-3)', cursor: 'default' }} />
             </div>
-          </div>
+          )}
 
-          <div className="field" style={{ marginBottom: 0 }}>
-            <label className="label">{t('checkout.holder')}</label>
-            <input className="input" value={name} onChange={e => setName(e.target.value)} />
-          </div>
+          {error && (
+            <p style={{ color: 'var(--error, #EF4444)', fontSize: 13, marginTop: 12, marginBottom: 0 }}>{error}</p>
+          )}
         </div>
+
         <div className="modal-foot">
           <span className="row muted" style={{ gap: 6, fontSize: 12 }}>
             <Glyph name="lock" size={12} /> {t('checkout.secure')}
           </span>
           <button className="btn btn-accent" onClick={pay} disabled={processing}>
-            {processing ? t('checkout.processing') : `${t('checkout.pay')} ${total},00€`}
+            {processing
+              ? t('checkout.processing')
+              : <><Glyph name="lock" size={13} /> {t('checkout.pay')} {total},00€</>
+            }
           </button>
         </div>
       </div>
