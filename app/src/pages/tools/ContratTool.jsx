@@ -5,61 +5,12 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 
-const SAMPLE = `FREELANCE SERVICE AGREEMENT
-
-Parties
-This agreement is entered into between:
-• Service Provider: Léa Marchand, sole trader (hereinafter "Provider")
-• Client: Atelier Marquetin, registered company (hereinafter "Client")
-
-Effective date: May 14, 2026
-
-1. SCOPE OF WORK
-The Provider agrees to deliver the following services:
-
-"Full redesign of the Atelier Marquetin mobile application, covering UX research (user interviews, competitive analysis), wireframing, UI design (all screens), and handoff to development team via Figma."
-
-Deliverables:
-→ UX research report
-→ Wireframes (all flows)
-→ High-fidelity UI design (Figma)
-→ Developer handoff with component library
-
-2. TIMELINE
-The project will commence on June 1, 2026 and is estimated to complete within 6 weeks.
-
-3. COMPENSATION
-Total project fee: €9,500 (excl. VAT)
-Payment schedule:
-• 30% deposit (€2,850) due before project start
-• 40% milestone payment (€3,800) due on wireframe approval
-• 30% final payment (€2,850) due on delivery
-
-4. PAYMENT TERMS
-Invoices are payable within 30 days of issue.
-
-5. REVISIONS
-Up to 2 rounds of revisions are included per deliverable. Additional revisions are billed at €350/day.
-
-6. INTELLECTUAL PROPERTY
-Full ownership of deliverables transfers to the Client upon receipt of final payment.
-
-7. CONFIDENTIALITY
-Both parties agree to keep all project details confidential for a period of 2 years.
-
-8. GOVERNING LAW
-This agreement is governed by the laws of England and Wales.
-
-Signatures
-Provider: _____________________ Date: _______
-Client:  _____________________ Date: _______`;
-
 const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
 const DURATION_UNIT_KEYS = ['days', 'weeks', 'months'];
 const PAYMENT_TERM_KEYS = ['30 days', '45 days', '60 days', 'On delivery'];
 
 export function ContratTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
   const [client, setClient] = useState('');
   const [clientCompany, setClientCompany] = useState('');
@@ -74,13 +25,28 @@ export function ContratTool({ tool }) {
   const [loading, setLoading] = useState(false);
   const [toast, ToastEl] = useToast();
 
-  const generate = () => {
+  const generate = async () => {
     if (!client.trim() || !mission.trim()) { toast(t('tool.contract.error')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => { setOutput(SAMPLE); setLoading(false); consumeCredits(tool.credits); }, 1400);
+    try {
+      const input = { client, clientCompany, mission, rate, rateType, duration, durationUnit, deliverables, paymentTerms };
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setOutput(json.output);
+      await logGeneration(tool.id, input, json.output, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };

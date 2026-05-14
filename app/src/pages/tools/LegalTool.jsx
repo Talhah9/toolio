@@ -5,35 +5,6 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 
-const SAMPLE = `TERMS OF SERVICE
-Last updated: May 14, 2026
-
-1. ACCEPTANCE OF TERMS
-By accessing or using the services provided by Acme Studio ("Company", "we", "us"), you agree to be bound by these Terms of Service.
-
-2. SERVICES
-Acme Studio provides UX design consulting and digital product design services to clients on a project and retainer basis.
-
-3. PAYMENT TERMS
-Invoices are due within 30 days of issue. A deposit of 30% is required before project commencement. Late payments incur a 1.5% monthly interest charge.
-
-4. INTELLECTUAL PROPERTY
-Upon full payment, the client receives full ownership of all deliverables. Acme Studio retains the right to display the work in its portfolio unless otherwise agreed in writing.
-
-5. CONFIDENTIALITY
-Both parties agree to keep confidential any proprietary information shared during the engagement.
-
-6. LIMITATION OF LIABILITY
-Acme Studio's total liability shall not exceed the total fees paid by the client in the three months preceding the claim.
-
-7. GOVERNING LAW
-These terms are governed by the laws of England and Wales.
-
----
-
-PRIVACY POLICY
-Acme Studio collects only the data necessary to deliver services (name, email, billing information). Data is never sold to third parties. You may request deletion of your data at any time by emailing privacy@acmestudio.co.`;
-
 const DOC_KEYS = [
   { id: 'tos',     key: 'tool.legal.doc.tos' },
   { id: 'privacy', key: 'tool.legal.doc.privacy' },
@@ -42,7 +13,7 @@ const DOC_KEYS = [
 ];
 
 export function LegalTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
   const [company, setCompany] = useState('');
   const [type, setType] = useState('sole');
@@ -56,13 +27,28 @@ export function LegalTool({ tool }) {
 
   const toggleDoc = (id) => setDocs(d => d.includes(id) ? d.filter(x => x !== id) : [...d, id]);
 
-  const generate = () => {
+  const generate = async () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => { setOutput(SAMPLE); setLoading(false); consumeCredits(tool.credits); }, 1400);
+    try {
+      const input = { company, type, country, address, activity, docs };
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setOutput(json.output);
+      await logGeneration(tool.id, input, json.output, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };

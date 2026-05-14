@@ -17,41 +17,8 @@ const CHECK_KEYS = [
   'tool.audit.check.schema',
 ];
 
-const SAMPLE = `SEO & CRO AUDIT REPORT
-━━━━━━━━━━━━━━━━━━━━━
-
-✅ Title Tags — Good
-Your homepage title is within the 50–60 character sweet spot and includes your primary keyword.
-
-⚠️  Meta Descriptions — Needs work
-3 pages are missing meta descriptions. These pages lose click-through potential in search results.
-→ Action: Write unique meta descriptions for /pricing, /about, and /contact.
-
-❌ Page Speed — Critical
-Your Largest Contentful Paint (LCP) is 4.2s (threshold: < 2.5s). This hurts both UX and rankings.
-→ Action: Compress hero images (currently 1.2MB), enable lazy loading, defer non-critical JS.
-
-✅ H1 Structure — Good
-Every page has exactly one H1. No duplicates detected.
-
-⚠️  CTA Placement — Needs work
-Primary CTA appears only at the bottom of the page. Users who don't scroll will miss it.
-→ Action: Add a sticky header CTA and a mid-page CTA above the fold.
-
-✅ Mobile — Good
-Fully responsive across tested breakpoints (375px, 768px, 1280px).
-
-❌ Internal Links — Critical
-The /services page has 0 internal links pointing to it. It's an orphan page.
-→ Action: Link to /services from the homepage, navbar, and 3 relevant blog posts.
-
-PRIORITY ACTIONS
-1. Fix page speed (LCP < 2.5s)
-2. Add internal links to orphan pages
-3. Write missing meta descriptions`;
-
 export function AuditTool({ tool }) {
-  const { credits, logGeneration } = useApp();
+  const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
   const [url, setUrl] = useState('');
   const [checks, setChecks] = useState(CHECK_KEYS.map(() => true));
@@ -59,17 +26,31 @@ export function AuditTool({ tool }) {
   const [loading, setLoading] = useState(false);
   const [toast, ToastEl] = useToast();
 
-  const generate = () => {
+  const generate = async () => {
     if (!url.trim()) { toast(t('tool.audit.error.url')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(async () => {
-      setOutput(SAMPLE);
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toolId: tool.id,
+          input: { url, checks: CHECK_KEYS.filter((_, i) => checks[i]) },
+          userId: session?.user?.id,
+        }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setOutput(json.output);
+      await logGeneration(tool.id, { url }, json.output, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
       setLoading(false);
-      await logGeneration(tool.id, { url }, SAMPLE, tool.credits);
-    }, 1800);
+    }
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };

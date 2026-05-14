@@ -13,38 +13,8 @@ const FOCUS_OPTIONS = [
   { id: 'content',     key: 'tool.compete.focus.content' },
 ];
 
-const SAMPLE = `COMPETITOR ANALYSIS
-━━━━━━━━━━━━━━━━━━
-
-POSITIONING
-They position as "the affordable option for small teams." Their hero copy focuses on price, not outcomes. This is a weakness you can exploit by leading with results.
-
-OFFER STRUCTURE
-→ 3 pricing tiers (Free / Growth / Enterprise)
-→ Free tier has strong feature parity — they're using it as top-of-funnel
-→ No annual discount offered (opportunity for you)
-→ Key missing feature: no mobile app
-
-KEYWORDS THEY RANK FOR
-Top 20 keywords driving their organic traffic:
-• "project management for freelancers" — pos. 4 (vol. 8,400/mo)
-• "simple invoicing tool" — pos. 2 (vol. 5,200/mo)
-• "freelance CRM" — pos. 11 (vol. 3,100/mo)
-
-CONTENT STRATEGY
-Posting 3x/week on LinkedIn. Topics: productivity tips, client management, freelance finance. Low engagement (avg. 12 likes). No YouTube presence.
-
-WEAKNESSES TO EXPLOIT
-1. Slow onboarding — 7 steps to first value
-2. No integrations with Stripe or Wise
-3. Support only via email (48h response time)
-4. No localisation for non-English markets
-
-YOUR MOVE
-Lead with speed-to-value ("live in 60 seconds"), highlight Stripe integration, and target their #2 keyword "simple invoicing tool" with a dedicated landing page.`;
-
 export function ConcurrentsTool({ tool }) {
-  const { credits, logGeneration } = useApp();
+  const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
   const [competitorUrl, setCompetitorUrl] = useState('');
   const [yourUrl, setYourUrl] = useState('');
@@ -55,17 +25,31 @@ export function ConcurrentsTool({ tool }) {
 
   const toggleFocus = (id) => setFocus(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
 
-  const generate = () => {
+  const generate = async () => {
     if (!competitorUrl.trim()) { toast(t('tool.compete.error.url')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(async () => {
-      setOutput(SAMPLE);
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toolId: tool.id,
+          input: { competitorUrl, yourUrl, focus },
+          userId: session?.user?.id,
+        }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setOutput(json.output);
+      await logGeneration(tool.id, { competitorUrl, yourUrl, focus }, json.output, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
       setLoading(false);
-      await logGeneration(tool.id, { competitorUrl, yourUrl, focus }, SAMPLE, tool.credits);
-    }, 1600);
+    }
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };

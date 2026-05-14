@@ -5,7 +5,6 @@ import { CreditGate } from '../../components/CreditGate';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
-import { SAMPLE_OUTPUTS } from '../../data/catalog';
 
 const VAT_RATES = ['0%', '5%', '10%', '20%'];
 const PAYMENT_TERMS = [
@@ -21,7 +20,7 @@ function newLine() {
 }
 
 export function DevisTool({ tool }) {
-  const { credits, logGeneration } = useApp();
+  const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -44,26 +43,30 @@ export function DevisTool({ tool }) {
   const vatPct = parseFloat(vatRate) / 100;
   const vatAmount = subtotal * vatPct;
   const total = subtotal + vatAmount;
-
   const fmt = (n) => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-  const generate = () => {
+  const generate = async () => {
     if (!clientName.trim()) { toast(t('tool.devis.error.client')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(async () => {
-      const result = SAMPLE_OUTPUTS['devis'][0];
-      setOutput(result);
+    try {
+      const input = { clientName, clientCompany, clientEmail, lines, vatRate, paymentTerms, notes };
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setOutput(json.output);
+      await logGeneration(tool.id, input, json.output, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
       setLoading(false);
-      await logGeneration(
-        tool.id,
-        { clientName, clientCompany, clientEmail, lines, vatRate, paymentTerms },
-        result,
-        tool.credits,
-      );
-    }, 1200);
+    }
   };
 
   const copy = () => {
@@ -75,9 +78,7 @@ export function DevisTool({ tool }) {
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
-        {/* Form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Client info */}
           <div className="card card-pad">
             <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>{t('tool.devis.client.section')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -96,7 +97,6 @@ export function DevisTool({ tool }) {
             </div>
           </div>
 
-          {/* Line items */}
           <div className="card card-pad">
             <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>{t('tool.devis.services.section')}</h3>
 
@@ -109,53 +109,24 @@ export function DevisTool({ tool }) {
 
             {lines.map(line => (
               <div key={line.id} style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6, alignItems: 'center' }}>
-                <input
-                  className="input"
-                  value={line.desc}
-                  onChange={e => updateLine(line.id, 'desc', e.target.value)}
-                  placeholder="UX design — 10 screens"
-                  style={{ fontSize: 13 }}
-                />
-                <input
-                  className="input"
-                  value={line.qty}
-                  onChange={e => updateLine(line.id, 'qty', e.target.value)}
-                  type="number"
-                  min="0"
-                  style={{ fontSize: 13 }}
-                />
+                <input className="input" value={line.desc} onChange={e => updateLine(line.id, 'desc', e.target.value)} placeholder="UX design — 10 screens" style={{ fontSize: 13 }} />
+                <input className="input" value={line.qty} onChange={e => updateLine(line.id, 'qty', e.target.value)} type="number" min="0" style={{ fontSize: 13 }} />
                 <div style={{ position: 'relative' }}>
                   <span style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', fontSize: 12 }}>€</span>
-                  <input
-                    className="input"
-                    value={line.price}
-                    onChange={e => updateLine(line.id, 'price', e.target.value)}
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    style={{ fontSize: 13, paddingLeft: 20 }}
-                  />
+                  <input className="input" value={line.price} onChange={e => updateLine(line.id, 'price', e.target.value)} type="number" min="0" placeholder="0" style={{ fontSize: 13, paddingLeft: 20 }} />
                 </div>
-                <button
-                  onClick={() => removeLine(line.id)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-4)', padding: 0, display: 'flex', alignItems: 'center' }}
-                >
+                <button onClick={() => removeLine(line.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-4)', padding: 0, display: 'flex', alignItems: 'center' }}>
                   <Glyph name="x" size={14} />
                 </button>
               </div>
             ))}
 
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => setLines(ls => [...ls, newLine()])}
-              style={{ marginTop: 4 }}
-            >
+            <button className="btn btn-ghost btn-sm" onClick={() => setLines(ls => [...ls, newLine()])} style={{ marginTop: 4 }}>
               <Glyph name="plus" size={12} /> {t('tool.devis.add-line')}
             </button>
 
             <div className="hr" style={{ margin: '16px 0' }} />
 
-            {/* Totals */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
               <div className="row" style={{ justifyContent: 'space-between' }}>
                 <span className="muted">{t('tool.devis.subtotal')}</span>
@@ -164,12 +135,7 @@ export function DevisTool({ tool }) {
               <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="row" style={{ gap: 8 }}>
                   <span className="muted">{t('tool.devis.vat')}</span>
-                  <select
-                    className="select"
-                    value={vatRate}
-                    onChange={e => setVatRate(e.target.value)}
-                    style={{ width: 'auto', padding: '2px 8px', fontSize: 12, height: 'auto' }}
-                  >
+                  <select className="select" value={vatRate} onChange={e => setVatRate(e.target.value)} style={{ width: 'auto', padding: '2px 8px', fontSize: 12, height: 'auto' }}>
                     {VAT_RATES.map(r => <option key={r}>{r}</option>)}
                   </select>
                 </div>
@@ -187,18 +153,8 @@ export function DevisTool({ tool }) {
               <label className="label">{t('tool.devis.payment.label')}</label>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {PAYMENT_TERMS.map(pt => (
-                  <button
-                    key={pt.id}
-                    type="button"
-                    onClick={() => setPaymentTerms(pt.id)}
-                    className="btn btn-sm"
-                    style={{
-                      fontSize: 12,
-                      border: '1px solid ' + (paymentTerms === pt.id ? 'var(--fg)' : 'var(--border)'),
-                      background: paymentTerms === pt.id ? 'var(--fg)' : 'var(--bg)',
-                      color: paymentTerms === pt.id ? '#fff' : 'var(--fg-2)',
-                    }}
-                  >
+                  <button key={pt.id} type="button" onClick={() => setPaymentTerms(pt.id)} className="btn btn-sm"
+                    style={{ fontSize: 12, border: '1px solid ' + (paymentTerms === pt.id ? 'var(--fg)' : 'var(--border)'), background: paymentTerms === pt.id ? 'var(--fg)' : 'var(--bg)', color: paymentTerms === pt.id ? '#fff' : 'var(--fg-2)' }}>
                     {t(pt.key)}
                   </button>
                 ))}
@@ -217,27 +173,17 @@ export function DevisTool({ tool }) {
           </CreditGate>
         </div>
 
-        {/* Result */}
         <div>
           <div className="result-zone">
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}>
-                  <Glyph name="copy" size={12} /> {t('tool.copy')}
-                </button>
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}>
-                  <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
-                </button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>
             {loading ? (
-              <div className="result-empty">
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
-                  {t('tool.result.working')}
-                </span>
-              </div>
+              <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : output ? (
               <div className="result-body">{output}</div>
             ) : (

@@ -5,7 +5,6 @@ import { CreditGate } from '../../components/CreditGate';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
-import { SAMPLE_OUTPUTS } from '../../data/catalog';
 
 const TONES = [
   { id: 'direct',       labelKey: 'tool.linkedin.tone.direct.label', descKey: 'tool.linkedin.tone.direct.desc' },
@@ -24,33 +23,43 @@ const FORMATS = [
 const LI_LIMIT = 3000;
 
 export function LinkedinTool({ tool }) {
-  const { credits, logGeneration } = useApp();
+  const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
   const [topic, setTopic] = useState('');
   const [tone, setTone] = useState('direct');
   const [format, setFormat] = useState('storytelling');
   const [output, setOutput] = useState('');
-  const [outIndex, setOutIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const charCount = output.length;
   const overLimit = charCount > LI_LIMIT;
 
-  const generate = () => {
+  const generate = async () => {
     if (!topic.trim()) { toast(t('tool.linkedin.error.topic')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(async () => {
-      const samples = SAMPLE_OUTPUTS['linkedin-content'];
-      const result = samples[outIndex % samples.length];
-      setOutput(result);
-      setOutIndex(i => i + 1);
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toolId: tool.id,
+          input: { topic, tone, format },
+          userId: session?.user?.id,
+        }),
+      });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      setOutput(json.output);
+      await logGeneration(tool.id, { topic, tone, format }, json.output, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
       setLoading(false);
-      await logGeneration(tool.id, { topic, tone, format }, result, tool.credits);
-    }, 1200);
+    }
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
