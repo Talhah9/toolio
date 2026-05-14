@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
@@ -8,10 +8,23 @@ import { useLang } from '../context/LanguageContext';
 
 export function Account() {
   const navigate = useNavigate();
-  const { user, credits, plan, cancelPro, signOut } = useApp();
+  const { user, session, credits, plan, cancelPro, signOut } = useApp();
   const { t } = useLang();
   const [confirm, setConfirm] = useState(false);
   const [toast, ToastEl] = useToast();
+  const [payments, setPayments] = useState(null); // null = loading
+
+  useEffect(() => {
+    if (!session?.user?.id || !user?.email) return;
+    fetch('/api/payment-history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
+    })
+      .then(r => r.json())
+      .then(json => setPayments(json.payments ?? []))
+      .catch(() => setPayments([]));
+  }, [session, user]);
 
   return (
     <>
@@ -64,14 +77,14 @@ export function Account() {
           <div>
             <h2 className="h3" style={{ marginBottom: 12 }}>{t('account.payments.title')}</h2>
             <div className="kv-list">
-              {[
-                { date: '01/05/2026', label: 'Toolio Pro — May 2026', amount: '€49.00', status: 'Paid' },
-                { date: '17/04/2026', label: 'Pack Medium — 250 credits', amount: '€19.00', status: 'Paid' },
-                { date: '01/04/2026', label: 'Toolio Pro — April 2026', amount: '€49.00', status: 'Paid' },
-              ].map((row, i) => (
+              {payments === null ? (
+                <div className="kv-row"><span className="muted" style={{ fontSize: 13 }}>{t('account.payments.loading')}</span></div>
+              ) : payments.length === 0 ? (
+                <div className="kv-row"><span className="muted" style={{ fontSize: 13 }}>{t('account.payments.empty')}</span></div>
+              ) : payments.map((row, i) => (
                 <div className="kv-row" key={i}>
                   <span className="k tabular">{row.date}</span>
-                  <span className="v">{row.label}</span>
+                  <span className="v">{row.description}</span>
                   <span className="row" style={{ gap: 12 }}>
                     <span className="tabular">{row.amount}</span>
                     <span className="badge badge-outline" style={{ color: '#10B981', borderColor: '#A7F3D0', background: '#ECFDF5' }}>{row.status}</span>

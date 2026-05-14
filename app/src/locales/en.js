@@ -266,6 +266,8 @@ export const en = {
   'account.renewal': 'Renewal',
   'account.renewal.monthly': 'Monthly',
   'account.payments.title': 'Payment history',
+  'account.payments.loading': 'Loading…',
+  'account.payments.empty': 'No payments yet.',
   'account.danger.title': 'Danger zone',
   'account.cancel.title': 'Cancel Pro subscription',
   'account.cancel.desc': 'You will keep access until the end of the current period.',

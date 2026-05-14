@@ -266,6 +266,8 @@ export const fr = {
   'account.renewal': 'Renouvellement',
   'account.renewal.monthly': 'Mensuel',
   'account.payments.title': 'Historique des paiements',
+  'account.payments.loading': 'Chargement…',
+  'account.payments.empty': 'Aucun paiement pour l\'instant.',
   'account.danger.title': 'Zone sensible',
   'account.cancel.title': "Résilier l'abonnement Pro",
   'account.cancel.desc': "Vous garderez l'accès jusqu'à la fin de la période en cours.",
