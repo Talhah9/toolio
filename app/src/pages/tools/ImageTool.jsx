@@ -32,7 +32,7 @@ export function ImageTool({ tool }) {
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState('photorealistic');
   const [size, setSize] = useState('1080x1080');
-  const [output, setOutput] = useState(null); // { url, prompt, style, size }
+  const [output, setOutput] = useState(null); // { image (base64), prompt, style, size }
   const [loading, setLoading] = useState(false);
   const [toast, ToastEl] = useToast();
 
@@ -52,8 +52,8 @@ export function ImageTool({ tool }) {
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
-      setOutput({ url: json.url, prompt, style, size });
-      await logGeneration(tool.id, { prompt, style, size }, json.url, tool.credits);
+      setOutput({ image: json.image, prompt, style, size });
+      await logGeneration(tool.id, { prompt, style, size }, '[image]', tool.credits);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -62,12 +62,16 @@ export function ImageTool({ tool }) {
   };
 
   const download = () => {
-    if (!output?.url) return;
+    if (!output?.image) return;
+    const byteStr = atob(output.image);
+    const bytes = new Uint8Array(byteStr.length);
+    for (let i = 0; i < byteStr.length; i++) bytes[i] = byteStr.charCodeAt(i);
+    const blob = new Blob([bytes], { type: 'image/png' });
     const a = document.createElement('a');
-    a.href = output.url;
+    a.href = URL.createObjectURL(blob);
     a.download = `toolio-image-${Date.now()}.png`;
-    a.target = '_blank';
     a.click();
+    URL.revokeObjectURL(a.href);
   };
 
   const colors = LOADING_COLORS[style];
@@ -153,7 +157,7 @@ export function ImageTool({ tool }) {
             ) : output ? (
               <div style={{ padding: 16 }}>
                 <img
-                  src={output.url}
+                  src={`data:image/png;base64,${output.image}`}
                   alt={output.prompt}
                   style={{ width: '100%', aspectRatio: selectedSize?.ratio || '1/1', objectFit: 'cover', borderRadius: 10, display: 'block' }}
                 />
