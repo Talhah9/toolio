@@ -29,11 +29,14 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing prompt or userId' });
   }
 
+  const keyPrefix = process.env.OPENAI_API_KEY.slice(0, 8);
+  console.log('[image] key prefix:', keyPrefix, '| userId:', userId, '| size:', size, '| style:', style);
+
   const dalleSize = SIZE_MAP[size] || '1024x1024';
   const styleDesc = STYLE_SUFFIX[style] || '';
   const fullPrompt = styleDesc ? `${prompt}. ${styleDesc}` : prompt;
 
-  console.log('[image] userId:', userId, '| dalleSize:', dalleSize, '| style:', style, '| promptLength:', fullPrompt.length);
+  console.log('[image] dalleSize:', dalleSize, '| promptLength:', fullPrompt.length);
 
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -60,11 +63,13 @@ export default async function handler(req, res) {
     const errBody = err.error  ?? null;
     const errMsg  = errBody?.message ?? err.message ?? 'Image generation failed';
 
-    console.error('[image] OpenAI error | status:', status);
-    console.error('[image] error.message:', err.message);
-    console.error('[image] error.error:', JSON.stringify(errBody));
-    console.error('[image] error.type:', errBody?.type);
-    console.error('[image] error.code:', errBody?.code);
+    console.error('[image] OpenAI error | status:', status, '| key prefix:', keyPrefix);
+    console.error('[image] err.message:', err.message);
+    console.error('[image] err.error (full):', JSON.stringify(errBody, null, 2));
+    console.error('[image] err.error.type:', errBody?.type);
+    console.error('[image] err.error.code:', errBody?.code);
+    console.error('[image] err.error.param:', errBody?.param);
+    console.error('[image] err.headers:', JSON.stringify(err.headers ?? null));
 
     res.status(status >= 400 && status < 600 ? status : 500).json({ error: errMsg });
   }
