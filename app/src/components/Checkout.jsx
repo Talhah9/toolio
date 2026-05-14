@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Glyph } from './Glyph';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
@@ -15,6 +15,7 @@ export function Checkout({ data, onClose }) {
   const { t } = useLang();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
+  const inFlight = useRef(false); // synchronous guard against double-submit
 
   const total = data.type === 'pro' ? 49 : data.pack.price;
   const label = data.type === 'pro'
@@ -23,6 +24,8 @@ export function Checkout({ data, onClose }) {
   const sub = data.type === 'pro' ? t('checkout.sub.monthly') : t('checkout.sub.once');
 
   const pay = async () => {
+    if (inFlight.current) return; // block any second call before React re-renders
+    inFlight.current = true;
     setProcessing(true);
     setError('');
     try {
@@ -49,18 +52,19 @@ export function Checkout({ data, onClose }) {
       console.error('[Checkout] error:', err.message);
       setError(t('checkout.error') || 'Something went wrong. Please try again.');
       setProcessing(false);
+      inFlight.current = false;
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={processing ? undefined : onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-head">
           <div>
             <h3 className="h3" style={{ fontSize: 16 }}>{t('checkout.title')}</h3>
             <p className="muted" style={{ fontSize: 13, margin: 0 }}>{t('checkout.subtitle')}</p>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm" style={{ width: 30, padding: 0 }}>
+          <button onClick={onClose} className="btn btn-ghost btn-sm" style={{ width: 30, padding: 0 }} disabled={processing}>
             <Glyph name="x" size={14} />
           </button>
         </div>
