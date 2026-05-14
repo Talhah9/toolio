@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
+import { CreditGate } from '../../components/CreditGate';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -86,7 +87,7 @@ export function AuditTool({ tool }) {
               onKeyDown={e => e.key === 'Enter' && generate()}
             />
           </div>
-          <button className="btn btn-accent" onClick={generate} disabled={loading} style={{ whiteSpace: 'nowrap' }}>
+          <button className="btn btn-accent" onClick={generate} disabled={loading || credits < tool.credits} style={{ whiteSpace: 'nowrap' }}>
             {loading ? t('tool.generating') : t('tool.audit.btn')}
           </button>
         </div>
@@ -113,6 +114,7 @@ export function AuditTool({ tool }) {
             <span className="muted">{t('tool.cost')}</span>
             <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
           </div>
+          <CreditGate cost={tool.credits}><></></CreditGate>
         </div>
 
         <div>

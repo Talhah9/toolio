@@ -9,9 +9,9 @@ import { useLang } from '../context/LanguageContext';
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { credits, plan } = useApp();
+  const { credits } = useApp();
   const { lang, t } = useLang();
-  const low = credits < 50;
+  const low = credits < 15;
 
   return (
     <>
@@ -34,28 +34,14 @@ export function Dashboard() {
           </div>
         )}
 
-        {plan === 'free' && !low && (
-          <div className="banner banner-accent">
-            <span className="row" style={{ gap: 10 }}>
-              <Glyph name="sparkle" size={14} />
-              {t('dashboard.banner.pro')}
-            </span>
-            <button className="btn btn-sm" onClick={() => navigate('/pricing')}>
-              {t('dashboard.banner.pro.cta')}
-            </button>
-          </div>
-        )}
-
         <div className="tools-grid">
           {TOOLS.map(tool => {
-            const locked = tool.plan === 'pro' && plan === 'free';
             const { name, desc } = getToolText(tool, lang);
             return (
               <div
                 key={tool.id}
                 className="tool-card"
-                onClick={() => locked ? navigate('/pricing') : navigate(`/tools/${tool.id}`)}
-                style={locked ? { opacity: 0.7 } : {}}
+                onClick={() => navigate(`/tools/${tool.id}`)}
               >
                 <div className="tool-card-head">
                   <ToolIcon tool={tool} size="lg" />
@@ -78,10 +64,7 @@ export function Dashboard() {
                     ? <span style={{ color: '#10B981', fontWeight: 600, fontSize: 13 }}>{t('tool.free')}</span>
                     : <span className="tabular">{tool.credits} {t('tool.credits')}{tool.unit ? ` / ${tool.unit}` : ''}</span>
                   }
-                  {locked
-                    ? <span className="row" style={{ gap: 4, color: 'var(--fg-4)' }}><Glyph name="lock" size={12} /> Pro</span>
-                    : <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
-                  }
+                  <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
                 </div>
               </div>
             );

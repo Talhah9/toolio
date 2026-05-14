@@ -50,6 +50,8 @@ export const fr = {
   'tool.history': 'Historique récent',
   'tool.history.seeall': 'Tout voir',
   'tool.error.credits': 'Crédits insuffisants. Rechargez votre compte.',
+  'tool.nocredits.message': 'Crédits insuffisants pour utiliser cet outil.',
+  'tool.nocredits.cta': 'Recharger les crédits',
   'tool.copied': 'Copié dans le presse-papier',
   'tool.params': 'Paramètres',
   'tool.required': 'requis',

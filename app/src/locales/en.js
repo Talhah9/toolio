@@ -50,6 +50,8 @@ export const en = {
   'tool.history': 'Recent history',
   'tool.history.seeall': 'See all',
   'tool.error.credits': 'Not enough credits. Top up your account.',
+  'tool.nocredits.message': 'Not enough credits to run this tool.',
+  'tool.nocredits.cta': 'Recharge credits',
   'tool.copied': 'Copied to clipboard',
   'tool.params': 'Parameters',
   'tool.required': 'required',

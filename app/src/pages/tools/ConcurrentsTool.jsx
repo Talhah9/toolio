@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
+import { CreditGate } from '../../components/CreditGate';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -101,9 +102,11 @@ export function ConcurrentsTool({ tool }) {
             <span className="muted">{t('tool.cost')}</span>
             <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
           </div>
-          <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.compete.btn')}</>}
-          </button>
+          <CreditGate cost={tool.credits}>
+            <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
+              {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.compete.btn')}</>}
+            </button>
+          </CreditGate>
         </div>
 
         <div>

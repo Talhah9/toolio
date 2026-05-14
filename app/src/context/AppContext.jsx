@@ -8,7 +8,7 @@ export const useApp = () => useContext(AppContext);
 export function AppProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [credits, setCredits] = useState(320);
+  const [credits, setCredits] = useState(50);
   const [plan, setPlan] = useState('free');
 
   useEffect(() => {
