@@ -5,43 +5,77 @@ const AppContext = createContext(null);
 
 export const useApp = () => useContext(AppContext);
 
+// Wraps a promise so it rejects after `ms` milliseconds.
+function withTimeout(promise, ms) {
+  const timer = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms)
+  );
+  return Promise.race([promise, timer]);
+}
+
 export function AppProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [credits, setCredits] = useState(null);
   const [plan, setPlan] = useState('free');
 
-  // ── Fetch profile + credits via SECURITY DEFINER RPC ─────────
-  // Also creates the rows on the fly for users who signed up
-  // before the on_auth_user_created trigger existed.
+  // ── Fetch profile + credits ───────────────────────────────────
+  // Never throws — always resolves, using fallback values on error.
+  // Gives up after 5 s so a hanging RPC can't freeze the app.
   const fetchUserData = useCallback(async () => {
-    const { data, error } = await supabase.rpc('ensure_user_data');
-    if (error) {
-      console.error('ensure_user_data:', error.message);
+    console.log('[AppContext] fetchUserData: calling ensure_user_data RPC');
+    try {
+      const { data, error } = await withTimeout(
+        supabase.rpc('ensure_user_data'),
+        5000
+      );
+
+      if (error) {
+        console.error('[AppContext] ensure_user_data RPC returned error:', error.message, error);
+        throw error;
+      }
+
+      console.log('[AppContext] fetchUserData: success —', data);
+      setCredits(data.balance);
+      setPlan(data.plan || 'free');
+    } catch (err) {
+      console.error('[AppContext] fetchUserData failed, falling back to defaults:', err.message);
       setCredits(50);
       setPlan('free');
-      return;
     }
-    setCredits(data.balance);
-    setPlan(data.plan || 'free');
   }, []);
 
   // ── Auth bootstrap ────────────────────────────────────────────
   useEffect(() => {
-    // 1. Restore session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // Restore session on mount, then fetch user data.
+    // setLoading(false) is in a finally block — it ALWAYS fires
+    // regardless of whether fetchUserData succeeds or times out.
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+      if (error) console.error('[AppContext] getSession error:', error.message);
+      console.log('[AppContext] getSession: session =', session ? 'exists' : 'none');
       setSession(session);
-      if (session) await fetchUserData();
+      if (session) {
+        try {
+          await fetchUserData();
+        } finally {
+          // fetchUserData never throws, but belt-and-suspenders:
+          // loading must be cleared no matter what.
+        }
+      }
       setLoading(false);
+      console.log('[AppContext] loading set to false');
     });
 
-    // 2. React to future auth events
+    // React to future auth events.
+    // fetchUserData is fire-and-forget here — don't await it so the
+    // auth state machine isn't blocked by a slow or failing RPC.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('[AppContext] onAuthStateChange:', event);
         setSession(session);
 
         if (event === 'SIGNED_IN') {
-          await fetchUserData();
+          fetchUserData(); // intentionally not awaited
         }
 
         if (event === 'SIGNED_OUT') {
@@ -56,17 +90,28 @@ export function AppProvider({ children }) {
 
   // ── Auth actions ──────────────────────────────────────────────
   const signIn = async (email, password) => {
+    console.log('[AppContext] signIn: start');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (error) {
+      console.error('[AppContext] signIn error:', error.message);
+      throw error;
+    }
+    console.log('[AppContext] signIn: auth succeeded (fetchUserData will follow via onAuthStateChange)');
+    // fetchUserData is triggered by the SIGNED_IN event, not here.
+    // signIn() returns as soon as auth resolves so the UI can navigate.
   };
 
   const signUp = async (email, password, name) => {
+    console.log('[AppContext] signUp: start');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: name } },
     });
-    if (error) throw error;
+    if (error) {
+      console.error('[AppContext] signUp error:', error.message);
+      throw error;
+    }
     return !data.session; // true = email confirmation required
   };
 
@@ -83,12 +128,10 @@ export function AppProvider({ children }) {
   };
 
   // ── Credit + generation logging ───────────────────────────────
-  // Call this after every paid generation instead of consumeCredits().
-  // Atomically deducts credits and logs the generation in Supabase,
-  // then syncs local state with the returned balance.
   const logGeneration = useCallback(async (toolId, input, output, creditsUsed) => {
     if (!session) return;
 
+    console.log('[AppContext] logGeneration:', toolId, creditsUsed, 'credits');
     const { data, error } = await supabase.rpc('log_generation', {
       p_tool_id:      toolId,
       p_input:        input,
@@ -97,23 +140,23 @@ export function AppProvider({ children }) {
     });
 
     if (error) {
-      console.error('log_generation:', error.message);
-      // Optimistic fallback so UI stays responsive
+      console.error('[AppContext] log_generation error:', error.message);
       if (creditsUsed > 0) setCredits(c => Math.max(0, (c ?? 0) - creditsUsed));
       return;
     }
 
+    console.log('[AppContext] logGeneration: new balance =', data.balance);
     setCredits(data.balance);
   }, [session]);
 
-  // Kept for 0-credit free tools that don't call logGeneration
+  // Kept for 0-credit free tools
   const consumeCredits = useCallback((n) => {
     if (n > 0) setCredits(c => Math.max(0, (c ?? 0) - n));
   }, []);
 
-  const upgrade  = () => setPlan('pro');
+  const upgrade   = () => setPlan('pro');
   const cancelPro = () => setPlan('free');
-  const addPack  = (n) => setCredits(c => (c ?? 0) + n);
+  const addPack   = (n) => setCredits(c => (c ?? 0) + n);
 
   // ── Derived user object ───────────────────────────────────────
   const rawUser = session?.user ?? null;
