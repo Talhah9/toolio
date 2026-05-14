@@ -2,7 +2,25 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(vercel --yes)",
+      "Bash(curl -s -X PATCH https://api.vercel.com/v2/projects/prj_JNkWWSYrLkJrLKJUO30BvB4h9JJI -H 'Authorization: Bearer gULaf1MRUbND7nN10sHL6Rb2' -H 'Content-Type: application/json' -d '{\"name\":\"toolio\"}')",
+      "Bash(python -m json.tool)",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npx vercel *)",
+      "Bash(VERCEL_TOKEN=gULaf1MRUbND7nN10sHL6Rb2 npx vercel --prod --token gULaf1MRUbND7nN10sHL6Rb2)",
+      "Bash(start *)",
+      "Bash(Get-ChildItem -Recurse -Depth 2)",
+      "Bash(Select-Object FullName)",
+      "Bash(Start-Process npm *)",
+      "Bash(Select-Object Id)",
+      "Bash(Start-Sleep -Seconds 4)",
+      "Bash(Write-Output \"Server started\")",
+      "Bash(git -C . ls-files app/src/)",
+      "Bash(git commit *)"
     ]
   }
 }
