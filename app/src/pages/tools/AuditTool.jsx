@@ -51,7 +51,7 @@ PRIORITY ACTIONS
 3. Write missing meta descriptions`;
 
 export function AuditTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration } = useApp();
   const { t } = useLang();
   const [url, setUrl] = useState('');
   const [checks, setChecks] = useState(CHECK_KEYS.map(() => true));
@@ -61,10 +61,15 @@ export function AuditTool({ tool }) {
 
   const generate = () => {
     if (!url.trim()) { toast(t('tool.audit.error.url')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => { setOutput(SAMPLE); setLoading(false); consumeCredits(tool.credits); }, 1800);
+    setTimeout(async () => {
+      setOutput(SAMPLE);
+      setLoading(false);
+      await logGeneration(tool.id, { url }, SAMPLE, tool.credits);
+    }, 1800);
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
@@ -87,7 +92,7 @@ export function AuditTool({ tool }) {
               onKeyDown={e => e.key === 'Enter' && generate()}
             />
           </div>
-          <button className="btn btn-accent" onClick={generate} disabled={loading || credits < tool.credits} style={{ whiteSpace: 'nowrap' }}>
+          <button className="btn btn-accent" onClick={generate} disabled={loading || credits === null || credits < tool.credits} style={{ whiteSpace: 'nowrap' }}>
             {loading ? t('tool.generating') : t('tool.audit.btn')}
           </button>
         </div>

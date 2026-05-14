@@ -21,7 +21,7 @@ function newLine() {
 }
 
 export function DevisTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration } = useApp();
   const { t } = useLang();
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -49,13 +49,20 @@ export function DevisTool({ tool }) {
 
   const generate = () => {
     if (!clientName.trim()) { toast(t('tool.devis.error.client')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => {
-      setOutput(SAMPLE_OUTPUTS['devis'][0]);
+    setTimeout(async () => {
+      const result = SAMPLE_OUTPUTS['devis'][0];
+      setOutput(result);
       setLoading(false);
-      consumeCredits(tool.credits);
+      await logGeneration(
+        tool.id,
+        { clientName, clientCompany, clientEmail, lines, vatRate, paymentTerms },
+        result,
+        tool.credits,
+      );
     }, 1200);
   };
 

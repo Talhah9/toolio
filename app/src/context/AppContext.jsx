@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AppContext = createContext(null);
@@ -8,22 +8,53 @@ export const useApp = () => useContext(AppContext);
 export function AppProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [credits, setCredits] = useState(50);
+  const [credits, setCredits] = useState(null);
   const [plan, setPlan] = useState('free');
 
+  // ── Fetch profile + credits via SECURITY DEFINER RPC ─────────
+  // Also creates the rows on the fly for users who signed up
+  // before the on_auth_user_created trigger existed.
+  const fetchUserData = useCallback(async () => {
+    const { data, error } = await supabase.rpc('ensure_user_data');
+    if (error) {
+      console.error('ensure_user_data:', error.message);
+      setCredits(50);
+      setPlan('free');
+      return;
+    }
+    setCredits(data.balance);
+    setPlan(data.plan || 'free');
+  }, []);
+
+  // ── Auth bootstrap ────────────────────────────────────────────
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // 1. Restore session on mount
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
+      if (session) await fetchUserData();
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    // 2. React to future auth events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+
+        if (event === 'SIGNED_IN') {
+          await fetchUserData();
+        }
+
+        if (event === 'SIGNED_OUT') {
+          setCredits(null);
+          setPlan('free');
+        }
+      }
+    );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchUserData]);
 
+  // ── Auth actions ──────────────────────────────────────────────
   const signIn = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
@@ -51,12 +82,40 @@ export function AppProvider({ children }) {
     await supabase.auth.signOut();
   };
 
-  const consumeCredits = (n) => setCredits(c => Math.max(0, c - n));
-  const upgrade = () => { setPlan('pro'); setCredits(500); };
-  const cancelPro = () => setPlan('free');
-  const addPack = (n) => setCredits(c => c + n);
+  // ── Credit + generation logging ───────────────────────────────
+  // Call this after every paid generation instead of consumeCredits().
+  // Atomically deducts credits and logs the generation in Supabase,
+  // then syncs local state with the returned balance.
+  const logGeneration = useCallback(async (toolId, input, output, creditsUsed) => {
+    if (!session) return;
 
-  // Derive a display-friendly user object from the Supabase session
+    const { data, error } = await supabase.rpc('log_generation', {
+      p_tool_id:      toolId,
+      p_input:        input,
+      p_output:       output,
+      p_credits_used: creditsUsed,
+    });
+
+    if (error) {
+      console.error('log_generation:', error.message);
+      // Optimistic fallback so UI stays responsive
+      if (creditsUsed > 0) setCredits(c => Math.max(0, (c ?? 0) - creditsUsed));
+      return;
+    }
+
+    setCredits(data.balance);
+  }, [session]);
+
+  // Kept for 0-credit free tools that don't call logGeneration
+  const consumeCredits = useCallback((n) => {
+    if (n > 0) setCredits(c => Math.max(0, (c ?? 0) - n));
+  }, []);
+
+  const upgrade  = () => setPlan('pro');
+  const cancelPro = () => setPlan('free');
+  const addPack  = (n) => setCredits(c => (c ?? 0) + n);
+
+  // ── Derived user object ───────────────────────────────────────
   const rawUser = session?.user ?? null;
   const user = rawUser
     ? {
@@ -78,6 +137,7 @@ export function AppProvider({ children }) {
       signUp,
       signInWithGoogle,
       signOut,
+      logGeneration,
       consumeCredits,
       upgrade,
       cancelPro,

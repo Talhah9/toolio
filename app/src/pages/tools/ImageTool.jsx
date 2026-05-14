@@ -27,7 +27,7 @@ const PLACEHOLDER_COLORS = {
 };
 
 export function ImageTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration } = useApp();
   const { t } = useLang();
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState('photorealistic');
@@ -40,13 +40,15 @@ export function ImageTool({ tool }) {
 
   const generate = () => {
     if (!prompt.trim()) { toast(t('tool.image.error.prompt')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput(null);
-    setTimeout(() => {
-      setOutput({ prompt, style, size });
+    setTimeout(async () => {
+      const result = { prompt, style, size };
+      setOutput(result);
       setLoading(false);
-      consumeCredits(tool.credits);
+      await logGeneration(tool.id, { prompt, style, size }, prompt, tool.credits);
     }, 2000);
   };
 

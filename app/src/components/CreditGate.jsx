@@ -8,7 +8,7 @@ export function CreditGate({ cost, children }) {
   const navigate = useNavigate();
   const { t } = useLang();
 
-  if (cost === 0 || credits >= cost) return children;
+  if (cost === 0 || credits === null || credits >= cost) return children;
 
   return (
     <div>

@@ -61,6 +61,7 @@ export function RelanceTool({ tool }) {
 
   const generate = () => {
     if (!context.trim()) { toast(t('tool.relance.error.context')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');

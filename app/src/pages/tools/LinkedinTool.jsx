@@ -24,7 +24,7 @@ const FORMATS = [
 const LI_LIMIT = 3000;
 
 export function LinkedinTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration } = useApp();
   const { t } = useLang();
   const [topic, setTopic] = useState('');
   const [tone, setTone] = useState('direct');
@@ -39,15 +39,17 @@ export function LinkedinTool({ tool }) {
 
   const generate = () => {
     if (!topic.trim()) { toast(t('tool.linkedin.error.topic')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => {
+    setTimeout(async () => {
       const samples = SAMPLE_OUTPUTS['linkedin-content'];
-      setOutput(samples[outIndex % samples.length]);
+      const result = samples[outIndex % samples.length];
+      setOutput(result);
       setOutIndex(i => i + 1);
       setLoading(false);
-      consumeCredits(tool.credits);
+      await logGeneration(tool.id, { topic, tone, format }, result, tool.credits);
     }, 1200);
   };
 

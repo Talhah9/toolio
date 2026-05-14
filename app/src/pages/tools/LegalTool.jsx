@@ -58,6 +58,7 @@ export function LegalTool({ tool }) {
 
   const generate = () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');

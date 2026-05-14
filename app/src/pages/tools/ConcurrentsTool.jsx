@@ -44,7 +44,7 @@ YOUR MOVE
 Lead with speed-to-value ("live in 60 seconds"), highlight Stripe integration, and target their #2 keyword "simple invoicing tool" with a dedicated landing page.`;
 
 export function ConcurrentsTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
+  const { credits, logGeneration } = useApp();
   const { t } = useLang();
   const [competitorUrl, setCompetitorUrl] = useState('');
   const [yourUrl, setYourUrl] = useState('');
@@ -57,10 +57,15 @@ export function ConcurrentsTool({ tool }) {
 
   const generate = () => {
     if (!competitorUrl.trim()) { toast(t('tool.compete.error.url')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => { setOutput(SAMPLE); setLoading(false); consumeCredits(tool.credits); }, 1600);
+    setTimeout(async () => {
+      setOutput(SAMPLE);
+      setLoading(false);
+      await logGeneration(tool.id, { competitorUrl, yourUrl, focus }, SAMPLE, tool.credits);
+    }, 1600);
   };
 
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };

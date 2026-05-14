@@ -11,7 +11,7 @@ export function Dashboard() {
   const navigate = useNavigate();
   const { credits } = useApp();
   const { lang, t } = useLang();
-  const low = credits < 15;
+  const low = credits !== null && credits < 15;
 
   return (
     <>

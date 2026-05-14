@@ -76,6 +76,7 @@ export function ContratTool({ tool }) {
 
   const generate = () => {
     if (!client.trim() || !mission.trim()) { toast(t('tool.contract.error')); return; }
+    if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
