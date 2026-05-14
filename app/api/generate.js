@@ -79,15 +79,25 @@ Analysis focus: ${focus}
 Provide a complete competitive analysis.`;
     }
 
-    case 'legal':
+    case 'legal': {
+      const DOC_LABELS = {
+        tos:     'Terms of Service',
+        privacy: 'Privacy Policy',
+        notice:  'Legal Notice',
+        cookies: 'Cookie Policy',
+      };
+      const docList = Array.isArray(input.docs) && input.docs.length > 0
+        ? input.docs.map(d => DOC_LABELS[d] ?? d).join(', ')
+        : 'Terms of Service, Privacy Policy';
       return `Company name: ${input.company}
 Business type: ${input.type || 'not specified'}
 Country/jurisdiction: ${input.country || 'not specified'}
 Address: ${input.address || 'not specified'}
 Business activity: ${input.activity || 'not specified'}
-Documents needed: ${Array.isArray(input.docs) ? input.docs.join(', ') : 'terms of service, privacy policy'}
+Documents needed: ${docList}
 
 Generate the complete requested legal documents.`;
+    }
 
     case 'contract':
       return `Client name: ${input.client}
@@ -147,11 +157,18 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: `Unknown tool: ${toolId}` });
   }
 
+  let userMessage;
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const userMessage = buildUserMessage(toolId, input);
+    userMessage = buildUserMessage(toolId, input);
 
-    console.log('[generate] toolId:', toolId, '| userId:', userId, '| prompt length:', userMessage.length);
+    console.log('[generate] toolId:', toolId, '| userId:', userId, '| max_tokens:', MAX_TOKENS[toolId] ?? 2048, '| prompt length:', userMessage.length);
+
+    // Extra diagnostic logging for the legal tool
+    if (toolId === 'legal') {
+      console.log('[generate] legal raw input:', JSON.stringify(input));
+      console.log('[generate] legal userMessage:\n', userMessage);
+    }
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
@@ -165,7 +182,16 @@ export default async function handler(req, res) {
 
     res.json({ output });
   } catch (err) {
-    console.error('[generate] Error:', err.message);
-    res.status(500).json({ error: err.message || 'Generation failed' });
+    const status   = err.status  ?? 500;
+    const errBody  = err.error   ?? null;
+    const errMsg   = errBody?.message ?? err.message ?? 'Generation failed';
+
+    console.error('[generate] error | toolId:', toolId, '| http status:', status, '| message:', err.message);
+    console.error('[generate] err.error (full):', JSON.stringify(errBody, null, 2));
+    if (userMessage) {
+      console.error('[generate] userMessage that caused error:\n', userMessage);
+    }
+
+    res.status(status >= 400 && status < 600 ? status : 500).json({ error: errMsg });
   }
 }
