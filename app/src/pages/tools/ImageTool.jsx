@@ -8,8 +8,8 @@ import { useLang } from '../../context/LanguageContext';
 
 const STYLES = [
   { id: 'photorealistic', key: 'tool.image.style.photo' },
-  { id: 'illustration',   key: 'tool.image.style.illustration' },
-  { id: 'minimalist',     key: 'tool.image.style.minimalist' },
+  { id: 'illustration',   key: 'tool.image.style.illu' },
+  { id: 'minimalist',     key: 'tool.image.style.mini' },
   { id: 'bold',           key: 'tool.image.style.bold' },
 ];
 
@@ -197,7 +197,7 @@ export function ImageTool({ tool }) {
                       padding: '3px 10px', borderRadius: 20,
                       border: '1px solid rgba(255,255,255,0.2)',
                     }}>
-                      {t(`tool.image.style.${output.style.split('').slice(0,4).join('')}`)} · {output.size}px · {t('tool.image.mock')}
+                      {t(STYLES.find(s => s.id === output.style)?.key ?? '')} · {output.size}px · {t('tool.image.mock')}
                     </span>
                   </div>
                 </div>
