@@ -286,6 +286,16 @@ export const fr = {
   'auth.login': 'Se connecter',
   'auth.register': 'Créer un compte',
   'auth.check-email': 'Vérifiez vos emails pour confirmer votre adresse.',
+  'auth.password.confirm': 'Confirmer le mot de passe',
+  'auth.password.mismatch': 'Les mots de passe ne correspondent pas.',
+  'auth.forgot.link': 'Oublié ?',
+  'auth.forgot.title': 'Mot de passe oublié ?',
+  'auth.forgot.desc': 'Entrez votre email et nous vous enverrons un lien de réinitialisation.',
+  'auth.forgot.btn': 'Envoyer le lien',
+  'auth.forgot.sent': 'Vérifiez vos emails',
+  'auth.reset.title': 'Définir un nouveau mot de passe',
+  'auth.reset.new-password': 'Nouveau mot de passe',
+  'auth.reset.btn': 'Mettre à jour',
 
   // ── Checkout ─────────────────────────────────────────────────
   'checkout.title': 'Confirmer le paiement',

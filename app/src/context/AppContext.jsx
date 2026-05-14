@@ -123,6 +123,18 @@ export function AppProvider({ children }) {
     if (error) throw error;
   };
 
+  const resetPassword = async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    if (error) throw error;
+  };
+
+  const updatePassword = async (newPassword) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
@@ -179,6 +191,8 @@ export function AppProvider({ children }) {
       signIn,
       signUp,
       signInWithGoogle,
+      resetPassword,
+      updatePassword,
       signOut,
       logGeneration,
       consumeCredits,

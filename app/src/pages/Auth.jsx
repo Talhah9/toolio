@@ -1,45 +1,82 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { Glyph } from '../components/Glyph';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 
 export function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { signIn, signUp, signInWithGoogle } = useApp();
+  const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
   const { t } = useLang();
 
   const [mode, setMode] = useState(searchParams.get('mode') || 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [confirmSent, setConfirmSent] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+
+  // Switch to reset mode when user arrives via the password-recovery email link
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setMode('reset');
+        setError('');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!email || !password) return;
-    setLoading(true);
     setError('');
+
+    if ((mode === 'register' || mode === 'reset') && password !== confirmPassword) {
+      setError(t('auth.password.mismatch'));
+      return;
+    }
+
+    setLoading(true);
     try {
       if (mode === 'login') {
         await signIn(email, password);
         navigate('/dashboard');
-      } else {
+      } else if (mode === 'register') {
         const needsConfirmation = await signUp(email, password, name);
         if (needsConfirmation) {
           setConfirmSent(true);
-          setLoading(false);
         } else {
           navigate('/dashboard');
         }
+        setLoading(false);
+      } else if (mode === 'reset') {
+        await updatePassword(password);
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const submitForgot = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    setError('');
+    try {
+      await resetPassword(email);
+      setForgotSent(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -55,35 +92,128 @@ export function Auth() {
     }
   };
 
+  const ErrorBanner = ({ msg }) => msg ? (
+    <div style={{ color: 'var(--warn-fg)', background: 'var(--warn-bg)', border: '1px solid var(--warn-border)', borderRadius: 'var(--radius)', padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>
+      {msg}
+    </div>
+  ) : null;
+
+  // ── Email confirmation sent ──────────────────────────────────
   if (confirmSent) {
     return (
       <div className="auth-page">
         <div className="auth-card" style={{ textAlign: 'center' }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-              <Logo size={20} />
-            </a>
+            <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}><Logo size={20} /></a>
           </div>
           <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
           <h2 className="h2" style={{ marginBottom: 8 }}>{t('auth.check-email')}</h2>
-          <p className="muted" style={{ fontSize: 14, marginBottom: 24 }}>
-            {email}
-          </p>
+          <p className="muted" style={{ fontSize: 14, marginBottom: 24 }}>{email}</p>
           <button className="btn btn-secondary btn-block" onClick={() => setConfirmSent(false)}>
-            ← Back
+            ← {t('auth.login')}
           </button>
         </div>
       </div>
     );
   }
 
+  // ── Forgot password ──────────────────────────────────────────
+  if (mode === 'forgot') {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}><Logo size={20} /></a>
+          </div>
+          {forgotSent ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
+              <h2 className="h2" style={{ marginBottom: 8 }}>{t('auth.forgot.sent')}</h2>
+              <p className="muted" style={{ fontSize: 14, marginBottom: 24 }}>{email}</p>
+              <button className="btn btn-secondary btn-block" onClick={() => { setMode('login'); setForgotSent(false); setError(''); }}>
+                ← {t('auth.login')}
+              </button>
+            </div>
+          ) : (
+            <>
+              <h1 className="h2" style={{ marginBottom: 6 }}>{t('auth.forgot.title')}</h1>
+              <p className="muted" style={{ marginBottom: 24, fontSize: 13 }}>{t('auth.forgot.desc')}</p>
+              <form onSubmit={submitForgot}>
+                <div className="field">
+                  <label className="label">{t('auth.email')}</label>
+                  <input className="input" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                </div>
+                <ErrorBanner msg={error} />
+                <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
+                  {loading ? '…' : t('auth.forgot.btn')}
+                </button>
+              </form>
+              <button className="btn btn-ghost btn-sm" style={{ marginTop: 16, width: '100%' }} onClick={() => { setMode('login'); setError(''); }}>
+                ← {t('auth.login')}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Reset password ───────────────────────────────────────────
+  if (mode === 'reset') {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}><Logo size={20} /></a>
+          </div>
+          <h1 className="h2" style={{ marginBottom: 6 }}>{t('auth.reset.title')}</h1>
+          <p className="muted" style={{ marginBottom: 24, fontSize: 13 }}></p>
+          <form onSubmit={submit}>
+            <div className="field">
+              <label className="label">{t('auth.reset.new-password')}</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  className="input"
+                  type={showPwd ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  style={{ paddingRight: 40 }}
+                />
+                <button type="button" onClick={() => setShowPwd(!showPwd)}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', display: 'flex' }}>
+                  <Glyph name="eye" size={14} />
+                </button>
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">{t('auth.password.confirm')}</label>
+              <input
+                className="input"
+                type={showPwd ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            <ErrorBanner msg={error} />
+            <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
+              {loading ? '…' : t('auth.reset.btn')}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Login / Register ─────────────────────────────────────────
   return (
     <div className="auth-page">
       <div className="auth-card">
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <Logo size={20} />
-          </a>
+          <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}><Logo size={20} /></a>
         </div>
 
         <div className="auth-tabs">
@@ -128,7 +258,11 @@ export function Auth() {
           <div className="field">
             <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
               <label className="label" style={{ marginBottom: 0 }}>{t('auth.password')}</label>
-              {mode === 'login' && <a className="muted" style={{ fontSize: 12, cursor: 'pointer' }}>Forgot?</a>}
+              {mode === 'login' && (
+                <a className="muted" style={{ fontSize: 12, cursor: 'pointer' }} onClick={() => { setMode('forgot'); setError(''); }}>
+                  {t('auth.forgot.link')}
+                </a>
+              )}
             </div>
             <div style={{ position: 'relative' }}>
               <input
@@ -140,21 +274,28 @@ export function Auth() {
                 required
                 style={{ paddingRight: 40 }}
               />
-              <button
-                type="button"
-                onClick={() => setShowPwd(!showPwd)}
-                style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', display: 'flex' }}
-              >
+              <button type="button" onClick={() => setShowPwd(!showPwd)}
+                style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', display: 'flex' }}>
                 <Glyph name="eye" size={14} />
               </button>
             </div>
           </div>
 
-          {error && (
-            <div style={{ color: 'var(--warn-fg)', background: 'var(--warn-bg)', border: '1px solid var(--warn-border)', borderRadius: 'var(--radius)', padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>
-              {error}
+          {mode === 'register' && (
+            <div className="field">
+              <label className="label">{t('auth.password.confirm')}</label>
+              <input
+                className="input"
+                type={showPwd ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+              />
             </div>
           )}
+
+          <ErrorBanner msg={error} />
 
           <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={loading}>
             {loading ? '…' : (mode === 'login' ? t('auth.login') : t('auth.register'))}

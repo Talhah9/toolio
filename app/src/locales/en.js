@@ -286,6 +286,16 @@ export const en = {
   'auth.login': 'Log in',
   'auth.register': 'Create account',
   'auth.check-email': 'Check your inbox to confirm your email.',
+  'auth.password.confirm': 'Confirm password',
+  'auth.password.mismatch': 'Passwords do not match.',
+  'auth.forgot.link': 'Forgot?',
+  'auth.forgot.title': 'Forgot your password?',
+  'auth.forgot.desc': 'Enter your email and we\'ll send you a reset link.',
+  'auth.forgot.btn': 'Send reset link',
+  'auth.forgot.sent': 'Check your inbox',
+  'auth.reset.title': 'Set a new password',
+  'auth.reset.new-password': 'New password',
+  'auth.reset.btn': 'Update password',
 
   // ── Checkout ─────────────────────────────────────────────────
   'checkout.title': 'Confirm payment',
