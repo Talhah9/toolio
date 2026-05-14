@@ -67,6 +67,21 @@ export default async function handler(req, res) {
         return res.json({ received: true });
       }
 
+      // Idempotency check — insert session ID; if it already exists, skip processing
+      const { error: insertError } = await supabase
+        .from('processed_payments')
+        .insert({ session_id: session.id });
+
+      if (insertError) {
+        if (insertError.code === '23505') {
+          // Unique violation — this session was already processed
+          console.log('[stripe-webhook] Duplicate session', session.id, '— skipping');
+          return res.json({ received: true });
+        }
+        // Unexpected insert error — log but continue so credits aren't silently lost
+        console.error('[stripe-webhook] processed_payments insert error:', JSON.stringify(insertError));
+      }
+
       if (session.mode === 'payment' && credits > 0) {
         console.log('[stripe-webhook] Calling add_credits for user', userId, 'amount', credits);
         const { data, error } = await supabase.rpc('add_credits', {
