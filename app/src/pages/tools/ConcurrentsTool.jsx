@@ -5,6 +5,13 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 
+const FOCUS_OPTIONS = [
+  { id: 'positioning', key: 'tool.compete.focus.positioning' },
+  { id: 'keywords',    key: 'tool.compete.focus.keywords' },
+  { id: 'offer',       key: 'tool.compete.focus.offer' },
+  { id: 'content',     key: 'tool.compete.focus.content' },
+];
+
 const SAMPLE = `COMPETITOR ANALYSIS
 ━━━━━━━━━━━━━━━━━━
 
@@ -30,7 +37,7 @@ WEAKNESSES TO EXPLOIT
 1. Slow onboarding — 7 steps to first value
 2. No integrations with Stripe or Wise
 3. Support only via email (48h response time)
-4. French market: zero localisation
+4. No localisation for non-English markets
 
 YOUR MOVE
 Lead with speed-to-value ("live in 60 seconds"), highlight Stripe integration, and target their #2 keyword "simple invoicing tool" with a dedicated landing page.`;
@@ -45,84 +52,45 @@ export function ConcurrentsTool({ tool }) {
   const [loading, setLoading] = useState(false);
   const [toast, ToastEl] = useToast();
 
-  const focusOptions = [
-    { id: 'positioning', label: 'Positioning' },
-    { id: 'keywords', label: 'Keywords' },
-    { id: 'offer', label: 'Offer & pricing' },
-    { id: 'content', label: 'Content strategy' },
-  ];
-
-  const toggleFocus = (id) =>
-    setFocus(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
+  const toggleFocus = (id) => setFocus(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
 
   const generate = () => {
-    if (!competitorUrl.trim()) { toast('Enter a competitor URL.'); return; }
+    if (!competitorUrl.trim()) { toast(t('tool.compete.error.url')); return; }
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => {
-      setOutput(SAMPLE);
-      setLoading(false);
-      consumeCredits(tool.credits);
-    }, 1600);
+    setTimeout(() => { setOutput(SAMPLE); setLoading(false); consumeCredits(tool.credits); }, 1600);
   };
 
-  const copy = () => {
-    if (!output) return;
-    navigator.clipboard?.writeText(output);
-    toast(t('tool.copied'));
-  };
+  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
-        {/* Form */}
         <div className="card card-pad">
           <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.params')}</h3>
 
           <div className="field">
-            <label className="label">Competitor URL <span style={{ color: 'var(--accent)' }}>*</span></label>
+            <label className="label">{t('tool.compete.competitor.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }}>
-                <Glyph name="compete" size={14} />
-              </span>
-              <input
-                className="input"
-                value={competitorUrl}
-                onChange={e => setCompetitorUrl(e.target.value)}
-                placeholder="https://competitor.com"
-                style={{ paddingLeft: 34 }}
-              />
+              <span style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)' }}><Glyph name="compete" size={14} /></span>
+              <input className="input" value={competitorUrl} onChange={e => setCompetitorUrl(e.target.value)} placeholder={t('tool.compete.competitor.placeholder')} style={{ paddingLeft: 34 }} />
             </div>
           </div>
 
           <div className="field">
-            <label className="label">Your website <span className="muted" style={{ fontWeight: 400 }}>(optional — for comparison)</span></label>
-            <input
-              className="input"
-              value={yourUrl}
-              onChange={e => setYourUrl(e.target.value)}
-              placeholder="https://yoursite.com"
-            />
+            <label className="label">{t('tool.compete.yours.label')} <span className="muted" style={{ fontWeight: 400 }}>{t('tool.compete.yours.hint')}</span></label>
+            <input className="input" value={yourUrl} onChange={e => setYourUrl(e.target.value)} placeholder={t('tool.compete.yours.placeholder')} />
           </div>
 
           <div className="field">
-            <label className="label">Analyse</label>
+            <label className="label">{t('tool.compete.analyse.label')}</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {focusOptions.map(opt => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => toggleFocus(opt.id)}
-                  className="btn btn-sm"
-                  style={{
-                    border: '1px solid ' + (focus.includes(opt.id) ? 'var(--fg)' : 'var(--border)'),
-                    background: focus.includes(opt.id) ? 'var(--fg)' : 'var(--bg)',
-                    color: focus.includes(opt.id) ? '#fff' : 'var(--fg-2)',
-                  }}
-                >
+              {FOCUS_OPTIONS.map(opt => (
+                <button key={opt.id} type="button" onClick={() => toggleFocus(opt.id)} className="btn btn-sm"
+                  style={{ border: '1px solid ' + (focus.includes(opt.id) ? 'var(--fg)' : 'var(--border)'), background: focus.includes(opt.id) ? 'var(--fg)' : 'var(--bg)', color: focus.includes(opt.id) ? '#fff' : 'var(--fg-2)' }}>
                   {focus.includes(opt.id) && <Glyph name="check" size={11} />}
-                  {opt.label}
+                  {t(opt.key)}
                 </button>
               ))}
             </div>
@@ -134,36 +102,22 @@ export function ConcurrentsTool({ tool }) {
             <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
           </div>
           <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> Analyse competitor</>}
+            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.compete.btn')}</>}
           </button>
         </div>
 
-        {/* Result */}
         <div>
           <div className="result-zone">
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}>
-                  <Glyph name="copy" size={12} /> {t('tool.copy')}
-                </button>
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}>
-                  <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
-                </button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>
             {loading ? (
-              <div className="result-empty">
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
-                  {t('tool.result.working')}
-                </span>
-              </div>
-            ) : output ? (
-              <div className="result-body">{output}</div>
-            ) : (
-              <div className="result-empty">{t('tool.result.placeholder')}</div>
-            )}
+              <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
+            ) : output ? <div className="result-body">{output}</div> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
       </div>

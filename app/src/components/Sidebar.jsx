@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Logo } from './Logo';
 import { Glyph } from './Glyph';
-import { TOOLS } from '../data/catalog';
+import { TOOLS, getToolText } from '../data/catalog';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
@@ -9,7 +9,7 @@ export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { plan, signOut } = useApp();
-  const { t } = useLang();
+  const { lang, t } = useLang();
 
   const isActive = (path) => location.pathname === path;
   const isToolActive = () => location.pathname.startsWith('/tools/');
@@ -30,23 +30,26 @@ export function Sidebar() {
       </div>
 
       <div className="sidebar-section">{t('nav.section.tools')}</div>
-      {TOOLS.map(tool => (
-        <div
-          key={tool.id}
-          className={`sidebar-item ${isToolActive() && location.pathname === `/tools/${tool.id}` ? 'active' : ''}`}
-          onClick={() => navigate(`/tools/${tool.id}`)}
-          title={tool.name}
-        >
-          <Glyph name={tool.glyph} />
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tool.short}</span>
-          {tool.franceOnly && (
-            <span style={{ marginLeft: 'auto', fontSize: 11 }} title="France only">🇫🇷</span>
-          )}
-          {tool.plan === 'pro' && plan === 'free' && !tool.franceOnly && (
-            <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--accent)' }}>Pro</span>
-          )}
-        </div>
-      ))}
+      {TOOLS.map(tool => {
+        const { short } = getToolText(tool, lang);
+        return (
+          <div
+            key={tool.id}
+            className={`sidebar-item ${isToolActive() && location.pathname === `/tools/${tool.id}` ? 'active' : ''}`}
+            onClick={() => navigate(`/tools/${tool.id}`)}
+            title={short}
+          >
+            <Glyph name={tool.glyph} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{short}</span>
+            {tool.franceOnly && (
+              <span style={{ marginLeft: 'auto', fontSize: 11 }} title="France only">🇫🇷</span>
+            )}
+            {tool.plan === 'pro' && plan === 'free' && !tool.franceOnly && (
+              <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--accent)' }}>Pro</span>
+            )}
+          </div>
+        );
+      })}
 
       <div style={{ flex: 1 }} />
 

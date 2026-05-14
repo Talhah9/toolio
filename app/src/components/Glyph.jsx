@@ -126,6 +126,14 @@ export function Glyph({ name, size = 16 }) {
       return <svg {...props}><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>;
     case 'lightning':
       return <svg {...props}><path d="M9 1.5L3 9h4l-1 5.5 6-7.5H8z" /></svg>;
+    case 'image':
+      return (
+        <svg {...props}>
+          <rect x="2" y="3" width="12" height="10" rx="1.5" />
+          <circle cx="5.5" cy="6.5" r="1" />
+          <path d="M2 10l3-3 2.5 2.5L10 7l4 4" />
+        </svg>
+      );
     default:
       return <svg {...props}><rect x="3" y="3" width="10" height="10" rx="1" /></svg>;
   }

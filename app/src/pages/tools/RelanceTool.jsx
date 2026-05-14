@@ -45,30 +45,9 @@ Léa Marchand
 };
 
 const TONES = [
-  {
-    id: 'cordial',
-    label: 'Cordial',
-    desc: 'Friendly, assumes good faith',
-    color: '#3B82F6',
-    bg: '#EFF6FF',
-    border: '#BFDBFE',
-  },
-  {
-    id: 'firm',
-    label: 'Firm',
-    desc: 'Clear, professional, direct',
-    color: '#F59E0B',
-    bg: '#FFFBEB',
-    border: '#FDE68A',
-  },
-  {
-    id: 'urgent',
-    label: 'Urgent',
-    desc: 'Final warning, legal tone',
-    color: '#EF4444',
-    bg: '#FEF2F2',
-    border: '#FECACA',
-  },
+  { id: 'cordial', labelKey: 'tool.relance.tone.cordial.label', descKey: 'tool.relance.tone.cordial.desc', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
+  { id: 'firm',    labelKey: 'tool.relance.tone.firm.label',    descKey: 'tool.relance.tone.firm.desc',    color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A' },
+  { id: 'urgent',  labelKey: 'tool.relance.tone.urgent.label',  descKey: 'tool.relance.tone.urgent.desc',  color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
 ];
 
 export function RelanceTool({ tool }) {
@@ -81,7 +60,7 @@ export function RelanceTool({ tool }) {
   const [toast, ToastEl] = useToast();
 
   const generate = () => {
-    if (!context.trim()) { toast('Describe the situation first.'); return; }
+    if (!context.trim()) { toast(t('tool.relance.error.context')); return; }
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
@@ -105,21 +84,21 @@ export function RelanceTool({ tool }) {
       <div className="tool-page">
         {/* Form */}
         <div className="card card-pad">
-          <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>Situation</h3>
+          <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.relance.context.label')}</h3>
 
           <div className="field">
-            <label className="label">Describe what's happened <span style={{ color: 'var(--accent)' }}>*</span></label>
+            <label className="label">{t('tool.relance.context.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
             <textarea
               className="textarea"
               value={context}
               onChange={e => setContext(e.target.value)}
-              placeholder="Invoice #2026-038, €4,500, due May 1st — now 21 days overdue. Client went quiet after delivery. Second follow-up."
+              placeholder={t('tool.relance.context.placeholder')}
               rows={5}
             />
           </div>
 
           <div className="field">
-            <label className="label">Tone</label>
+            <label className="label">{t('tool.relance.tone.label')}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {TONES.map(t_item => (
                 <button
@@ -147,8 +126,8 @@ export function RelanceTool({ tool }) {
                     flexShrink: 0,
                   }} />
                   <div>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: tone === t_item.id ? t_item.color : 'var(--fg)' }}>{t_item.label}</div>
-                    <div style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 1 }}>{t_item.desc}</div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: tone === t_item.id ? t_item.color : 'var(--fg)' }}>{t(t_item.labelKey)}</div>
+                    <div style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 1 }}>{t(t_item.descKey)}</div>
                   </div>
                   {tone === t_item.id && (
                     <span style={{ marginLeft: 'auto', color: t_item.color }}>
@@ -163,7 +142,7 @@ export function RelanceTool({ tool }) {
           <div className="hr" style={{ margin: '20px 0' }} />
           <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
             <span className="muted">{t('tool.cost')}</span>
-            <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
+            <span style={{ color: '#10B981', fontWeight: 600 }}>{t('tool.free')}</span>
           </div>
           <button
             className="btn btn-lg btn-block"
@@ -175,7 +154,7 @@ export function RelanceTool({ tool }) {
               border: 'none',
             }}
           >
-            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> Write follow-up</>}
+            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.relance.btn')}</>}
           </button>
         </div>
 

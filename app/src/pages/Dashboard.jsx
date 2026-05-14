@@ -3,14 +3,14 @@ import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
 import { ToolIcon } from '../components/ToolIcon';
 import { PlanBadge } from '../components/PlanBadge';
-import { TOOLS } from '../data/catalog';
+import { TOOLS, getToolText } from '../data/catalog';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
 export function Dashboard() {
   const navigate = useNavigate();
   const { credits, plan } = useApp();
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const low = credits < 50;
 
   return (
@@ -49,6 +49,7 @@ export function Dashboard() {
         <div className="tools-grid">
           {TOOLS.map(tool => {
             const locked = tool.plan === 'pro' && plan === 'free';
+            const { name, desc } = getToolText(tool, lang);
             return (
               <div
                 key={tool.id}
@@ -60,28 +61,23 @@ export function Dashboard() {
                   <ToolIcon tool={tool} size="lg" />
                   <div className="row" style={{ gap: 6 }}>
                     {tool.franceOnly && (
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          padding: '2px 7px',
-                          borderRadius: 20,
-                          border: '1px solid #dbeafe',
-                          background: '#eff6ff',
-                          color: '#1d4ed8',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,
+                        border: '1px solid #dbeafe', background: '#eff6ff', color: '#1d4ed8', whiteSpace: 'nowrap',
+                      }}>
                         🇫🇷 France
                       </span>
                     )}
                     <PlanBadge plan={tool.plan} />
                   </div>
                 </div>
-                <h3 className="tool-card-title">{tool.name}</h3>
-                <p className="tool-card-desc">{tool.desc}</p>
+                <h3 className="tool-card-title">{name}</h3>
+                <p className="tool-card-desc">{desc}</p>
                 <div className="tool-card-foot">
-                  <span className="tabular">{tool.credits} {t('tool.credits')}{tool.unit ? ` / ${tool.unit}` : ''}</span>
+                  {tool.credits === 0
+                    ? <span style={{ color: '#10B981', fontWeight: 600, fontSize: 13 }}>{t('tool.free')}</span>
+                    : <span className="tabular">{tool.credits} {t('tool.credits')}{tool.unit ? ` / ${tool.unit}` : ''}</span>
+                  }
                   {locked
                     ? <span className="row" style={{ gap: 4, color: 'var(--fg-4)' }}><Glyph name="lock" size={12} /> Pro</span>
                     : <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>

@@ -12,7 +12,7 @@ This agreement is entered into between:
 • Service Provider: Léa Marchand, sole trader (hereinafter "Provider")
 • Client: Atelier Marquetin, registered company (hereinafter "Client")
 
-Effective date: May 13, 2026
+Effective date: May 14, 2026
 
 1. SCOPE OF WORK
 The Provider agrees to deliver the following services:
@@ -54,8 +54,9 @@ Signatures
 Provider: _____________________ Date: _______
 Client:  _____________________ Date: _______`;
 
-const PAYMENT_TERMS = ['30 days', '45 days', '60 days', 'On delivery'];
-const DURATION_UNITS = ['days', 'weeks', 'months'];
+const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
+const DURATION_UNIT_KEYS = ['days', 'weeks', 'months'];
+const PAYMENT_TERM_KEYS = ['30 days', '45 days', '60 days', 'On delivery'];
 
 export function ContratTool({ tool }) {
   const { credits, consumeCredits } = useApp();
@@ -64,7 +65,7 @@ export function ContratTool({ tool }) {
   const [clientCompany, setClientCompany] = useState('');
   const [mission, setMission] = useState('');
   const [rate, setRate] = useState('');
-  const [rateType, setRateType] = useState('project');
+  const [rateType, setRateType] = useState('total');
   const [duration, setDuration] = useState('');
   const [durationUnit, setDurationUnit] = useState('weeks');
   const [deliverables, setDeliverables] = useState('');
@@ -74,102 +75,68 @@ export function ContratTool({ tool }) {
   const [toast, ToastEl] = useToast();
 
   const generate = () => {
-    if (!client.trim() || !mission.trim()) { toast('Fill in client name and mission description.'); return; }
+    if (!client.trim() || !mission.trim()) { toast(t('tool.contract.error')); return; }
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => {
-      setOutput(SAMPLE);
-      setLoading(false);
-      consumeCredits(tool.credits);
-    }, 1400);
+    setTimeout(() => { setOutput(SAMPLE); setLoading(false); consumeCredits(tool.credits); }, 1400);
   };
 
-  const copy = () => {
-    if (!output) return;
-    navigator.clipboard?.writeText(output);
-    toast(t('tool.copied'));
-  };
+  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
-        {/* Form */}
         <div className="card card-pad">
-          <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>Contract details</h3>
+          <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.contract.section.title')}</h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div className="field" style={{ margin: 0 }}>
-              <label className="label">Client name <span style={{ color: 'var(--accent)' }}>*</span></label>
-              <input className="input" value={client} onChange={e => setClient(e.target.value)} placeholder="Sophie Lefèvre" />
+              <label className="label">{t('tool.contract.client.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
+              <input className="input" value={client} onChange={e => setClient(e.target.value)} placeholder={t('tool.contract.client.placeholder')} />
             </div>
             <div className="field" style={{ margin: 0 }}>
-              <label className="label">Client company</label>
-              <input className="input" value={clientCompany} onChange={e => setClientCompany(e.target.value)} placeholder="Atelier Marquetin" />
+              <label className="label">{t('tool.contract.company.label')}</label>
+              <input className="input" value={clientCompany} onChange={e => setClientCompany(e.target.value)} placeholder={t('tool.contract.company.placeholder')} />
             </div>
           </div>
 
           <div className="field">
-            <label className="label">Mission description <span style={{ color: 'var(--accent)' }}>*</span></label>
-            <textarea
-              className="textarea"
-              value={mission}
-              onChange={e => setMission(e.target.value)}
-              placeholder="Full redesign of the mobile application, covering UX research, wireframing, and UI design…"
-              rows={3}
-            />
+            <label className="label">{t('tool.contract.mission.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
+            <textarea className="textarea" value={mission} onChange={e => setMission(e.target.value)} placeholder={t('tool.contract.mission.placeholder')} rows={3} />
           </div>
 
           <div className="field">
-            <label className="label">Rate</label>
+            <label className="label">{t('tool.contract.rate.label')}</label>
             <div className="row" style={{ gap: 8 }}>
-              <div style={{ flex: 1 }}>
-                <input className="input" value={rate} onChange={e => setRate(e.target.value)} placeholder="9,500" type="number" />
-              </div>
+              <input className="input" value={rate} onChange={e => setRate(e.target.value)} placeholder="9,500" type="number" style={{ flex: 1 }} />
               <select className="select" value={rateType} onChange={e => setRateType(e.target.value)} style={{ width: 'auto' }}>
-                <option value="project">€ total</option>
-                <option value="daily">€ / day</option>
-                <option value="hourly">€ / hour</option>
+                {RATE_TYPE_KEYS.map(k => <option key={k} value={k}>{t(`tool.contract.rate.${k}`)}</option>)}
               </select>
             </div>
           </div>
 
           <div className="field">
-            <label className="label">Duration</label>
+            <label className="label">{t('tool.contract.duration.label')}</label>
             <div className="row" style={{ gap: 8 }}>
               <input className="input" value={duration} onChange={e => setDuration(e.target.value)} placeholder="6" type="number" style={{ flex: 1 }} />
               <select className="select" value={durationUnit} onChange={e => setDurationUnit(e.target.value)} style={{ width: 'auto' }}>
-                {DURATION_UNITS.map(u => <option key={u}>{u}</option>)}
+                {DURATION_UNIT_KEYS.map(k => <option key={k} value={k}>{t(`tool.contract.duration.${k}`)}</option>)}
               </select>
             </div>
           </div>
 
           <div className="field">
-            <label className="label">Deliverables</label>
-            <textarea
-              className="textarea"
-              value={deliverables}
-              onChange={e => setDeliverables(e.target.value)}
-              placeholder="UX research report, wireframes, high-fidelity UI, Figma handoff…"
-              rows={2}
-            />
+            <label className="label">{t('tool.contract.deliverables.label')}</label>
+            <textarea className="textarea" value={deliverables} onChange={e => setDeliverables(e.target.value)} placeholder={t('tool.contract.deliverables.placeholder')} rows={2} />
           </div>
 
           <div className="field">
-            <label className="label">Payment terms</label>
+            <label className="label">{t('tool.contract.payment.label')}</label>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {PAYMENT_TERMS.map(pt => (
-                <button
-                  key={pt}
-                  type="button"
-                  onClick={() => setPaymentTerms(pt)}
-                  className="btn btn-sm"
-                  style={{
-                    border: '1px solid ' + (paymentTerms === pt ? 'var(--fg)' : 'var(--border)'),
-                    background: paymentTerms === pt ? 'var(--fg)' : 'var(--bg)',
-                    color: paymentTerms === pt ? '#fff' : 'var(--fg-2)',
-                  }}
-                >
+              {PAYMENT_TERM_KEYS.map(pt => (
+                <button key={pt} type="button" onClick={() => setPaymentTerms(pt)} className="btn btn-sm"
+                  style={{ border: '1px solid ' + (paymentTerms === pt ? 'var(--fg)' : 'var(--border)'), background: paymentTerms === pt ? 'var(--fg)' : 'var(--bg)', color: paymentTerms === pt ? '#fff' : 'var(--fg-2)' }}>
                   {pt}
                 </button>
               ))}
@@ -179,39 +146,25 @@ export function ContratTool({ tool }) {
           <div className="hr" style={{ margin: '20px 0' }} />
           <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
             <span className="muted">{t('tool.cost')}</span>
-            <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
+            <span style={{ color: '#10B981', fontWeight: 600 }}>{t('tool.free')}</span>
           </div>
           <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> Generate contract</>}
+            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.contract.btn')}</>}
           </button>
         </div>
 
-        {/* Result */}
         <div>
           <div className="result-zone">
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}>
-                  <Glyph name="copy" size={12} /> {t('tool.copy')}
-                </button>
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}>
-                  <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
-                </button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>
             {loading ? (
-              <div className="result-empty">
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
-                  {t('tool.result.working')}
-                </span>
-              </div>
-            ) : output ? (
-              <div className="result-body">{output}</div>
-            ) : (
-              <div className="result-empty">{t('tool.result.placeholder')}</div>
-            )}
+              <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
+            ) : output ? <div className="result-body">{output}</div> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
       </div>

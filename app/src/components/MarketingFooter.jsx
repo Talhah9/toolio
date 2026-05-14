@@ -1,6 +1,9 @@
 import { Logo } from './Logo';
+import { useLang } from '../context/LanguageContext';
 
 export function MarketingFooter() {
+  const { t } = useLang();
+
   return (
     <footer className="mk-footer">
       <div className="container">
@@ -8,38 +11,38 @@ export function MarketingFooter() {
           <div>
             <Logo />
             <p className="muted" style={{ fontSize: 13, marginTop: 12, maxWidth: 280 }}>
-              La boîte à outils IA des freelances et e-commerçants français.
+              {t('footer.tagline')}
             </p>
           </div>
           <div className="mk-footer-col">
-            <h4>Produit</h4>
+            <h4>{t('footer.col.product')}</h4>
             <ul>
-              <li><a>Outils</a></li>
-              <li><a>Tarifs</a></li>
-              <li><a>Changelog</a></li>
-              <li><a>Roadmap</a></li>
+              <li><a>{t('footer.link.tools')}</a></li>
+              <li><a>{t('footer.link.pricing')}</a></li>
+              <li><a>{t('footer.link.changelog')}</a></li>
+              <li><a>{t('footer.link.roadmap')}</a></li>
             </ul>
           </div>
           <div className="mk-footer-col">
-            <h4>Ressources</h4>
+            <h4>{t('footer.col.resources')}</h4>
             <ul>
-              <li><a>Documentation</a></li>
-              <li><a>Guides</a></li>
-              <li><a>Support</a></li>
+              <li><a>{t('footer.link.docs')}</a></li>
+              <li><a>{t('footer.link.guides')}</a></li>
+              <li><a>{t('footer.link.support')}</a></li>
             </ul>
           </div>
           <div className="mk-footer-col">
-            <h4>Légal</h4>
+            <h4>{t('footer.col.legal')}</h4>
             <ul>
-              <li><a>Conditions</a></li>
-              <li><a>Confidentialité</a></li>
-              <li><a>Mentions légales</a></li>
+              <li><a>{t('footer.link.terms')}</a></li>
+              <li><a>{t('footer.link.privacy')}</a></li>
+              <li><a>{t('footer.link.legal')}</a></li>
             </ul>
           </div>
         </div>
         <div className="mk-footer-bottom">
-          <span>© 2026 Toolio — Fait à Paris</span>
-          <span>Conforme RGPD</span>
+          <span>{t('footer.copyright')}</span>
+          <span>{t('footer.gdpr')}</span>
         </div>
       </div>
     </footer>

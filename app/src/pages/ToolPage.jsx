@@ -6,6 +6,7 @@ import { ConcurrentsTool } from './tools/ConcurrentsTool';
 import { LegalTool } from './tools/LegalTool';
 import { ContratTool } from './tools/ContratTool';
 import { LinkedinTool } from './tools/LinkedinTool';
+import { ImageTool } from './tools/ImageTool';
 import { DevisTool } from './tools/DevisTool';
 import { RelanceTool } from './tools/RelanceTool';
 import { DefinirStatutTool } from './tools/DefinirStatutTool';
@@ -17,6 +18,7 @@ const TOOL_COMPONENTS = {
   legal: LegalTool,
   contract: ContratTool,
   'linkedin-content': LinkedinTool,
+  image: ImageTool,
   devis: DevisTool,
   relance: RelanceTool,
   statut: DefinirStatutTool,

@@ -7,7 +7,13 @@ import { useLang } from '../../context/LanguageContext';
 import { SAMPLE_OUTPUTS } from '../../data/catalog';
 
 const VAT_RATES = ['0%', '5%', '10%', '20%'];
-const PAYMENT_TERMS = ['On delivery', 'Net 14', 'Net 30', 'Net 45', 'Net 60'];
+const PAYMENT_TERMS = [
+  { id: 'delivery', key: 'tool.devis.payment.delivery' },
+  { id: 'net14',    key: 'tool.devis.payment.net14' },
+  { id: 'net30',    key: 'tool.devis.payment.net30' },
+  { id: 'net45',    key: 'tool.devis.payment.net45' },
+  { id: 'net60',    key: 'tool.devis.payment.net60' },
+];
 
 function newLine() {
   return { id: Date.now() + Math.random(), desc: '', qty: 1, price: '' };
@@ -21,7 +27,7 @@ export function DevisTool({ tool }) {
   const [clientCompany, setClientCompany] = useState('');
   const [lines, setLines] = useState([newLine()]);
   const [vatRate, setVatRate] = useState('0%');
-  const [paymentTerms, setPaymentTerms] = useState('Net 30');
+  const [paymentTerms, setPaymentTerms] = useState('net30');
   const [notes, setNotes] = useState('');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,7 +47,7 @@ export function DevisTool({ tool }) {
   const fmt = (n) => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
   const generate = () => {
-    if (!clientName.trim()) { toast('Enter a client name.'); return; }
+    if (!clientName.trim()) { toast(t('tool.devis.error.client')); return; }
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
@@ -65,31 +71,31 @@ export function DevisTool({ tool }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Client info */}
           <div className="card card-pad">
-            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>Client</h3>
+            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>{t('tool.devis.client.section')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">Name <span style={{ color: 'var(--accent)' }}>*</span></label>
+                <label className="label">{t('tool.devis.client.name')} <span style={{ color: 'var(--accent)' }}>*</span></label>
                 <input className="input" value={clientName} onChange={e => setClientName(e.target.value)} placeholder="Sophie Lefèvre" />
               </div>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">Company</label>
+                <label className="label">{t('tool.devis.client.company')}</label>
                 <input className="input" value={clientCompany} onChange={e => setClientCompany(e.target.value)} placeholder="Atelier Marquetin" />
               </div>
             </div>
             <div className="field" style={{ margin: '10px 0 0' }}>
-              <label className="label">Email</label>
+              <label className="label">{t('tool.devis.client.email')}</label>
               <input className="input" value={clientEmail} onChange={e => setClientEmail(e.target.value)} placeholder="sophie@atelier.com" type="email" />
             </div>
           </div>
 
           {/* Line items */}
           <div className="card card-pad">
-            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>Services</h3>
+            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>{t('tool.devis.services.section')}</h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6 }}>
-              <span className="label" style={{ margin: 0, fontSize: 11 }}>Description</span>
-              <span className="label" style={{ margin: 0, fontSize: 11 }}>Qty</span>
-              <span className="label" style={{ margin: 0, fontSize: 11 }}>Unit price</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.desc')}</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.qty')}</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.price')}</span>
               <span />
             </div>
 
@@ -136,7 +142,7 @@ export function DevisTool({ tool }) {
               onClick={() => setLines(ls => [...ls, newLine()])}
               style={{ marginTop: 4 }}
             >
-              <Glyph name="plus" size={12} /> Add line
+              <Glyph name="plus" size={12} /> {t('tool.devis.add-line')}
             </button>
 
             <div className="hr" style={{ margin: '16px 0' }} />
@@ -144,12 +150,12 @@ export function DevisTool({ tool }) {
             {/* Totals */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
               <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span className="muted">Subtotal</span>
+                <span className="muted">{t('tool.devis.subtotal')}</span>
                 <span className="tabular">€{fmt(subtotal)}</span>
               </div>
               <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="row" style={{ gap: 8 }}>
-                  <span className="muted">VAT</span>
+                  <span className="muted">{t('tool.devis.vat')}</span>
                   <select
                     className="select"
                     value={vatRate}
@@ -162,7 +168,7 @@ export function DevisTool({ tool }) {
                 <span className="tabular">€{fmt(vatAmount)}</span>
               </div>
               <div className="row" style={{ justifyContent: 'space-between', fontWeight: 700, borderTop: '1px solid var(--border)', paddingTop: 8, marginTop: 4 }}>
-                <span>Total</span>
+                <span>{t('tool.devis.total')}</span>
                 <span className="tabular">€{fmt(total)}</span>
               </div>
             </div>
@@ -170,22 +176,22 @@ export function DevisTool({ tool }) {
             <div className="hr" style={{ margin: '16px 0' }} />
 
             <div className="field" style={{ margin: 0 }}>
-              <label className="label">Payment terms</label>
+              <label className="label">{t('tool.devis.payment.label')}</label>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {PAYMENT_TERMS.map(pt => (
                   <button
-                    key={pt}
+                    key={pt.id}
                     type="button"
-                    onClick={() => setPaymentTerms(pt)}
+                    onClick={() => setPaymentTerms(pt.id)}
                     className="btn btn-sm"
                     style={{
                       fontSize: 12,
-                      border: '1px solid ' + (paymentTerms === pt ? 'var(--fg)' : 'var(--border)'),
-                      background: paymentTerms === pt ? 'var(--fg)' : 'var(--bg)',
-                      color: paymentTerms === pt ? '#fff' : 'var(--fg-2)',
+                      border: '1px solid ' + (paymentTerms === pt.id ? 'var(--fg)' : 'var(--border)'),
+                      background: paymentTerms === pt.id ? 'var(--fg)' : 'var(--bg)',
+                      color: paymentTerms === pt.id ? '#fff' : 'var(--fg-2)',
                     }}
                   >
-                    {pt}
+                    {t(pt.key)}
                   </button>
                 ))}
               </div>
@@ -194,10 +200,10 @@ export function DevisTool({ tool }) {
 
           <div className="row" style={{ justifyContent: 'space-between', fontSize: 13 }}>
             <span className="muted">{t('tool.cost')}</span>
-            <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
+            <span style={{ color: '#10B981', fontWeight: 600 }}>{t('tool.free')}</span>
           </div>
           <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> Generate quote</>}
+            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.devis.btn')}</>}
           </button>
         </div>
 
