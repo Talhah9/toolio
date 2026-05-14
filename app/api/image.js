@@ -44,7 +44,7 @@ export default async function handler(req, res) {
       prompt: fullPrompt,
       n: 1,
       size: imgSize,
-      quality: 'standard',
+      quality: 'medium',
     });
 
     console.log('[image] raw response keys:', Object.keys(response));
