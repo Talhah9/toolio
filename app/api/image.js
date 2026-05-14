@@ -2,11 +2,11 @@ import OpenAI from 'openai';
 
 export const config = { maxDuration: 60 };
 
-// DALL-E 3 only supports these three sizes
+// DALL-E 3 supports exactly these three sizes
 const SIZE_MAP = {
-  '1584x396':  '1792x1024', // banner → landscape (closest available)
-  '1080x1080': '1024x1024', // square → exact
-  '1080x1350': '1024x1792', // portrait → exact
+  '1584x396':  '1792x1024',
+  '1080x1080': '1024x1024',
+  '1080x1350': '1024x1792',
 };
 
 const STYLE_SUFFIX = {
@@ -29,13 +29,14 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing prompt or userId' });
   }
 
+  const dalleSize = SIZE_MAP[size] || '1024x1024';
+  const styleDesc = STYLE_SUFFIX[style] || '';
+  const fullPrompt = styleDesc ? `${prompt}. ${styleDesc}` : prompt;
+
+  console.log('[image] userId:', userId, '| dalleSize:', dalleSize, '| style:', style, '| promptLength:', fullPrompt.length);
+
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const dalleSize = SIZE_MAP[size] || '1024x1024';
-    const styleDesc = STYLE_SUFFIX[style] || '';
-    const fullPrompt = styleDesc ? `${prompt}. ${styleDesc}` : prompt;
-
-    console.log('[image] userId:', userId, '| size:', dalleSize, '| style:', style);
 
     const response = await openai.images.generate({
       model: 'dall-e-3',
@@ -45,13 +46,26 @@ export default async function handler(req, res) {
       quality: 'standard',
     });
 
-    const url = response.data[0]?.url;
-    if (!url) throw new Error('No image URL in DALL-E response');
+    const url = response.data?.[0]?.url;
+    if (!url) {
+      console.error('[image] No URL in response:', JSON.stringify(response));
+      throw new Error('No image URL in DALL-E response');
+    }
 
     console.log('[image] success');
     res.json({ url });
   } catch (err) {
-    console.error('[image] Error:', err.message);
-    res.status(500).json({ error: err.message || 'Image generation failed' });
+    // OpenAI SDK wraps API errors as APIError with .status and .error
+    const status  = err.status ?? 500;
+    const errBody = err.error  ?? null;
+    const errMsg  = errBody?.message ?? err.message ?? 'Image generation failed';
+
+    console.error('[image] OpenAI error | status:', status);
+    console.error('[image] error.message:', err.message);
+    console.error('[image] error.error:', JSON.stringify(errBody));
+    console.error('[image] error.type:', errBody?.type);
+    console.error('[image] error.code:', errBody?.code);
+
+    res.status(status >= 400 && status < 600 ? status : 500).json({ error: errMsg });
   }
 }
