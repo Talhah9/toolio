@@ -360,6 +360,23 @@ export const fr = {
   'landing.final.sub': '50 crédits offerts. Aucune carte demandée.',
   'landing.final.cta': 'Créer mon compte',
 
+  // ── Onboarding modal ─────────────────────────────────────────
+  'onboarding.step': 'Étape {n} sur 4',
+  'onboarding.credits': 'crédits pour commencer',
+  'onboarding.step1.title': 'Bienvenue sur Toolio',
+  'onboarding.step1.body': "Vous avez tout ce qu'il faut pour avancer plus vite en tant que freelance. Faisons un tour rapide.",
+  'onboarding.step2.title': 'Vos outils',
+  'onboarding.step2.free': 'Gratuit',
+  'onboarding.step2.pro': 'Pro',
+  'onboarding.step3.title': 'Comment fonctionnent les crédits',
+  'onboarding.step3.b1': "Chaque génération consomme un nombre fixe de crédits selon l'outil.",
+  'onboarding.step3.b2': 'Certains outils sont toujours gratuits — aucun crédit débité.',
+  'onboarding.step3.b3': 'Plus de crédits ? Rechargez à tout moment depuis la page Tarifs.',
+  'onboarding.step4.title': 'Tout est prêt !',
+  'onboarding.step4.body': 'Rendez-vous sur le tableau de bord pour utiliser vos outils.',
+  'onboarding.cta.next': 'Suivant',
+  'onboarding.cta.dashboard': 'Aller au tableau de bord',
+
   // ── Footer ───────────────────────────────────────────────────
   'footer.tagline': 'La boîte à outils IA des freelances et indépendants.',
   'footer.col.product': 'Produit',

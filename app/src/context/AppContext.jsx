@@ -18,6 +18,7 @@ export function AppProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [credits, setCredits] = useState(null);
   const [plan, setPlan] = useState('free');
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // ── Fetch profile + credits ───────────────────────────────────
   // Never throws — always resolves, using fallback values on error.
@@ -38,6 +39,15 @@ export function AppProvider({ children }) {
       console.log('[AppContext] fetchUserData: success —', data);
       setCredits(data.balance);
       setPlan(data.plan || 'free');
+
+      // Show onboarding for users who haven't seen it yet
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .single();
+        if (profile?.onboarding_completed === false) setShowOnboarding(true);
+      } catch (_) {}
     } catch (err) {
       console.error('[AppContext] fetchUserData failed, falling back to defaults:', err.message);
       setCredits(50);
@@ -166,6 +176,12 @@ export function AppProvider({ children }) {
     if (n > 0) setCredits(c => Math.max(0, (c ?? 0) - n));
   }, []);
 
+  const completeOnboarding = useCallback(async () => {
+    setShowOnboarding(false);
+    if (!session?.user?.id) return;
+    await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', session.user.id);
+  }, [session]);
+
   const upgrade   = () => setPlan('pro');
   const cancelPro = () => setPlan('free');
   const addPack   = (n) => setCredits(c => (c ?? 0) + n);
@@ -200,6 +216,8 @@ export function AppProvider({ children }) {
       cancelPro,
       addPack,
       refreshCredits: fetchUserData,
+      showOnboarding,
+      completeOnboarding,
     }}>
       {children}
     </AppContext.Provider>

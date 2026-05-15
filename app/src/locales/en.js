@@ -360,6 +360,23 @@ export const en = {
   'landing.final.sub': '50 credits included. No card required.',
   'landing.final.cta': 'Create my account',
 
+  // ── Onboarding modal ─────────────────────────────────────────
+  'onboarding.step': 'Step {n} of 4',
+  'onboarding.credits': 'credits to start',
+  'onboarding.step1.title': 'Welcome to Toolio',
+  'onboarding.step1.body': "You have everything you need to move faster as a freelancer. Let's take a quick tour.",
+  'onboarding.step2.title': 'Your tools',
+  'onboarding.step2.free': 'Free',
+  'onboarding.step2.pro': 'Pro',
+  'onboarding.step3.title': 'How credits work',
+  'onboarding.step3.b1': 'Each generation costs a set number of credits depending on the tool.',
+  'onboarding.step3.b2': 'Some tools are always free — no credits deducted.',
+  'onboarding.step3.b3': 'Run out? Top up any time from the Pricing page.',
+  'onboarding.step4.title': "You're all set!",
+  'onboarding.step4.body': 'Head to the dashboard to start using your tools.',
+  'onboarding.cta.next': 'Next',
+  'onboarding.cta.dashboard': 'Go to dashboard',
+
   // ── Footer ───────────────────────────────────────────────────
   'footer.tagline': 'The AI toolkit for freelancers and independent businesses.',
   'footer.col.product': 'Product',
