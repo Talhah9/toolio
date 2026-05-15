@@ -54,6 +54,8 @@ export const fr = {
   'tool.error.generic': 'Une erreur est survenue. Veuillez réessayer.',
   'tool.download': 'Télécharger',
   'tool.pdf': 'PDF',
+  'tool.pro.wall.body': 'Cet outil est réservé au plan Pro.',
+  'tool.pro.wall.cta': 'Passer au Pro',
   'tool.nocredits.message': 'Crédits insuffisants pour utiliser cet outil.',
   'tool.nocredits.cta': 'Recharger les crédits',
   'tool.copied': 'Copié dans le presse-papier',

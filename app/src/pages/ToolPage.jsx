@@ -1,6 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { TOOLS } from '../data/catalog';
+import { TOOLS, getToolText } from '../data/catalog';
 import { useApp } from '../context/AppContext';
+import { useLang } from '../context/LanguageContext';
+import { AppHeader } from '../components/AppHeader';
+import { Glyph } from '../components/Glyph';
 
 import { AuditTool } from './tools/AuditTool';
 import { ConcurrentsTool } from './tools/ConcurrentsTool';
@@ -30,6 +33,7 @@ export function ToolPage() {
   const { toolId } = useParams();
   const navigate = useNavigate();
   const { session, plan, loading } = useApp();
+  const { t, lang } = useLang();
 
   const tool = TOOLS.find(t => t.id === toolId);
   if (!tool) {
@@ -37,21 +41,33 @@ export function ToolPage() {
     return null;
   }
 
-  // Wait until auth has resolved — plan starts as 'free' by default and
-  // would incorrectly trigger the Pro gate before fetchUserData completes.
   if (loading) return null;
 
-  // No session: belt-and-suspenders guard (ProtectedRoute handles this
-  // globally, but a direct URL hit during a stale render could slip through).
   if (!session) {
     navigate('/auth', { replace: true });
     return null;
   }
 
-  // Pro gate: only runs once we know the user's actual plan.
+  // Pro gate: render inline wall instead of redirecting to avoid blank pages.
   if (tool.plan === 'pro' && plan !== 'pro') {
-    navigate('/pricing', { replace: true });
-    return null;
+    const { name } = getToolText(tool, lang);
+    return (
+      <>
+        <AppHeader />
+        <div className="page-pad" style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
+          <div className="card card-pad" style={{ maxWidth: 380, width: '100%', textAlign: 'center' }}>
+            <div style={{ marginBottom: 16, color: 'var(--fg-3)' }}>
+              <Glyph name="lock" size={28} />
+            </div>
+            <h2 className="h2" style={{ marginBottom: 8 }}>{name}</h2>
+            <p className="muted" style={{ fontSize: 14, marginBottom: 24 }}>{t('tool.pro.wall.body')}</p>
+            <button className="btn btn-primary btn-lg btn-block" onClick={() => navigate('/pricing')}>
+              {t('tool.pro.wall.cta')}
+            </button>
+          </div>
+        </div>
+      </>
+    );
   }
 
   const Component = TOOL_COMPONENTS[toolId];

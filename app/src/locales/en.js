@@ -54,6 +54,8 @@ export const en = {
   'tool.error.generic': 'Something went wrong. Please try again.',
   'tool.download': 'Download',
   'tool.pdf': 'PDF',
+  'tool.pro.wall.body': 'This tool requires a Pro plan.',
+  'tool.pro.wall.cta': 'Upgrade to Pro',
   'tool.nocredits.message': 'Not enough credits to run this tool.',
   'tool.nocredits.cta': 'Recharge credits',
   'tool.copied': 'Copied to clipboard',
