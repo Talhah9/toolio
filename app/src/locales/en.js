@@ -418,6 +418,60 @@ export const en = {
   'onboarding.cta.next': 'Next',
   'onboarding.cta.dashboard': 'Go to dashboard',
 
+  // ── Tool intro — shared ──────────────────────────────────────
+  'tool.intro.cta': 'Use this tool',
+  'tool.intro.cost.free': 'Always free',
+  'tool.intro.cost.credits': 'credits per use',
+
+  // ── Tool intro — per-tool bullets ─────────────────────────────
+  'tool.intro.linkedin-content.b1': 'Engaging post written in your tone',
+  'tool.intro.linkedin-content.b2': 'Multiple formats — story, list, opinion, question',
+  'tool.intro.linkedin-content.b3': 'Ready to copy-paste to LinkedIn',
+
+  'tool.intro.devis.b1': 'Professional quote in seconds',
+  'tool.intro.devis.b2': 'Line items with quantities and auto-totals',
+  'tool.intro.devis.b3': 'PDF export ready to send',
+
+  'tool.intro.relance.b1': '3 tone options — cordial, firm, urgent',
+  'tool.intro.relance.b2': 'Adapted to your exact situation',
+  'tool.intro.relance.b3': 'Copy-paste ready to send',
+
+  'tool.intro.statut.b1': 'Personalised legal status recommendation',
+  'tool.intro.statut.b2': 'Auto-entrepreneur vs EURL vs SASU compared',
+  'tool.intro.statut.b3': 'Based on your real income and goals',
+
+  'tool.intro.urssaf.b1': 'Exact amounts to pay per quarter',
+  'tool.intro.urssaf.b2': 'Payment dates and deadlines',
+  'tool.intro.urssaf.b3': 'Based on your actual revenue',
+
+  'tool.intro.audit.b1': 'Full SEO analysis with actionable fixes',
+  'tool.intro.audit.b2': 'CRO recommendations per page section',
+  'tool.intro.audit.b3': 'Ranked priority action list',
+
+  'tool.intro.compete.b1': 'Competitor positioning decoded',
+  'tool.intro.compete.b2': 'Keyword gaps and content opportunities',
+  'tool.intro.compete.b3': 'Weaknesses to exploit — your move',
+
+  'tool.intro.legal.b1': 'Terms of service & privacy policy',
+  'tool.intro.legal.b2': 'Legal notice & cookie policy',
+  'tool.intro.legal.b3': 'French law compliant, ready to publish',
+
+  'tool.intro.contract.b1': 'Complete professional service agreement',
+  'tool.intro.contract.b2': 'Custom clauses — IP, payment, revisions',
+  'tool.intro.contract.b3': 'PDF ready to sign',
+
+  'tool.intro.image.b1': 'AI-generated visuals in seconds',
+  'tool.intro.image.b2': 'LinkedIn banners & social media formats',
+  'tool.intro.image.b3': 'Multiple styles — photo, illustration, minimal',
+
+  'tool.intro.linkedin-intel.b1': 'Full profile audit with action plan',
+  'tool.intro.linkedin-intel.b2': 'Competitor analysis & positioning gaps',
+  'tool.intro.linkedin-intel.b3': '30-day content calendar + 5 ready posts',
+
+  'tool.intro.prospection.b1': '3 personalised outreach message variations',
+  'tool.intro.prospection.b2': 'Day 3 & Day 7 follow-up sequence',
+  'tool.intro.prospection.b3': 'LinkedIn DM, email, and WhatsApp ready',
+
   // ── Pro gate wall — per-tool copy ────────────────────────────
   'tool.wall.audit.tagline': "Find what's killing your conversions.",
   'tool.wall.audit.b1': 'Full SEO audit with actionable fixes',

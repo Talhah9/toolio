@@ -418,6 +418,60 @@ export const fr = {
   'onboarding.cta.next': 'Suivant',
   'onboarding.cta.dashboard': 'Aller au tableau de bord',
 
+  // ── Tool intro — shared ──────────────────────────────────────
+  'tool.intro.cta': 'Utiliser cet outil',
+  'tool.intro.cost.free': 'Toujours gratuit',
+  'tool.intro.cost.credits': 'crédits par utilisation',
+
+  // ── Tool intro — per-tool bullets ─────────────────────────────
+  'tool.intro.linkedin-content.b1': 'Post engageant rédigé dans votre ton',
+  'tool.intro.linkedin-content.b2': 'Plusieurs formats — story, liste, opinion, question',
+  'tool.intro.linkedin-content.b3': 'Prêt à copier-coller sur LinkedIn',
+
+  'tool.intro.devis.b1': 'Devis professionnel en quelques secondes',
+  'tool.intro.devis.b2': 'Lignes avec quantités et totaux automatiques',
+  'tool.intro.devis.b3': 'Export PDF prêt à envoyer',
+
+  'tool.intro.relance.b1': '3 tons disponibles — cordial, ferme, urgent',
+  'tool.intro.relance.b2': 'Adapté à votre situation exacte',
+  'tool.intro.relance.b3': 'Prêt à copier-coller et envoyer',
+
+  'tool.intro.statut.b1': 'Recommandation de statut juridique personnalisée',
+  'tool.intro.statut.b2': 'Auto-entrepreneur vs EURL vs SASU comparés',
+  'tool.intro.statut.b3': 'Basé sur vos revenus réels et vos objectifs',
+
+  'tool.intro.urssaf.b1': 'Montants exacts à payer par trimestre',
+  'tool.intro.urssaf.b2': 'Dates et échéances de paiement',
+  'tool.intro.urssaf.b3': 'Basé sur votre CA réel',
+
+  'tool.intro.audit.b1': 'Analyse SEO complète avec corrections prioritaires',
+  'tool.intro.audit.b2': 'Recommandations CRO par section de page',
+  'tool.intro.audit.b3': 'Liste de priorités classée par impact',
+
+  'tool.intro.compete.b1': 'Positionnement concurrent décortiqué',
+  'tool.intro.compete.b2': 'Lacunes en mots-clés et opportunités de contenu',
+  'tool.intro.compete.b3': 'Faiblesses à exploiter — votre prochain move',
+
+  'tool.intro.legal.b1': 'CGV et politique de confidentialité',
+  'tool.intro.legal.b2': 'Mentions légales et politique de cookies',
+  'tool.intro.legal.b3': 'Conforme au droit français, prêt à publier',
+
+  'tool.intro.contract.b1': 'Contrat de prestation complet et professionnel',
+  'tool.intro.contract.b2': 'Clauses sur mesure — IP, paiement, révisions',
+  'tool.intro.contract.b3': 'PDF prêt à signer',
+
+  'tool.intro.image.b1': 'Visuels générés par IA en quelques secondes',
+  'tool.intro.image.b2': 'Bannières LinkedIn et formats réseaux sociaux',
+  'tool.intro.image.b3': 'Plusieurs styles — photo, illustration, minimaliste',
+
+  'tool.intro.linkedin-intel.b1': 'Audit complet du profil avec plan d\'action',
+  'tool.intro.linkedin-intel.b2': 'Analyse des concurrents et écarts de positionnement',
+  'tool.intro.linkedin-intel.b3': 'Calendrier 30 jours + 5 posts prêts à publier',
+
+  'tool.intro.prospection.b1': '3 variations de messages personnalisés',
+  'tool.intro.prospection.b2': 'Séquence de relance J+3 et J+7',
+  'tool.intro.prospection.b3': 'Prêt pour LinkedIn DM, email et WhatsApp',
+
   // ── Pro gate wall — per-tool copy ────────────────────────────
   'tool.wall.audit.tagline': 'Trouvez ce qui tue vos conversions.',
   'tool.wall.audit.b1': 'Audit SEO complet avec corrections prioritaires',

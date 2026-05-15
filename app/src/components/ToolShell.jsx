@@ -12,8 +12,15 @@ export function ToolShell({ tool, children }) {
 
   return (
     <>
+      <style>{`
+        @keyframes shellIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .tool-shell-body { animation: shellIn 0.25s ease-out both; }
+      `}</style>
       <AppHeader />
-      <div className="page-pad">
+      <div className="page-pad tool-shell-body">
         <div className="breadcrumb">
           <a onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Dashboard</a>
           <Glyph name="chevron-right" size={12} />

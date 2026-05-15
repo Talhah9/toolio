@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { TOOLS, getToolText } from '../data/catalog';
 import { useApp } from '../context/AppContext';
@@ -5,6 +6,7 @@ import { useLang } from '../context/LanguageContext';
 import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
 import { ToolIcon } from '../components/ToolIcon';
+import { ToolIntro } from '../components/ToolIntro';
 
 import { AuditTool } from './tools/AuditTool';
 import { ConcurrentsTool } from './tools/ConcurrentsTool';
@@ -39,6 +41,7 @@ export function ToolPage() {
   const navigate = useNavigate();
   const { session, plan, loading } = useApp();
   const { t, lang } = useLang();
+  const [introSeen, setIntroSeen] = useState(false);
 
   const tool = TOOLS.find(t => t.id === toolId);
   if (!tool) {
@@ -122,6 +125,10 @@ export function ToolPage() {
   if (!Component) {
     navigate('/dashboard', { replace: true });
     return null;
+  }
+
+  if (!introSeen) {
+    return <ToolIntro tool={tool} onStart={() => setIntroSeen(true)} />;
   }
 
   return <Component tool={tool} />;
