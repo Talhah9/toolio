@@ -12,10 +12,10 @@ import { useLang } from '../context/LanguageContext';
 export function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { credits, refreshCredits } = useApp();
+  const { credits, plan, refreshCredits } = useApp();
   const { lang, t } = useLang();
   const [toast, ToastEl] = useToast();
-  const low = credits !== null && credits < 15;
+  const low = credits !== null && credits < 15 && plan === 'free';
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -36,6 +36,18 @@ export function Dashboard() {
           <p className="muted">{t('dashboard.subtitle')}</p>
         </div>
 
+        {plan !== 'pro' && (
+          <div className="banner" style={{ marginBottom: 16 }}>
+            <span className="row" style={{ gap: 10 }}>
+              <Glyph name="lightning" size={14} />
+              {t('dashboard.banner.pro')}
+            </span>
+            <button className="btn btn-sm" style={{ background: 'var(--accent)', color: '#fff' }} onClick={() => navigate('/pricing')}>
+              {t('dashboard.banner.pro.cta')}
+            </button>
+          </div>
+        )}
+
         {low && (
           <div className="banner">
             <span className="row" style={{ gap: 10 }}>
@@ -51,11 +63,14 @@ export function Dashboard() {
         <div className="tools-grid">
           {TOOLS.map(tool => {
             const { name, desc } = getToolText(tool, lang);
+            const locked = tool.plan === 'pro' && plan !== 'pro';
+
             return (
               <div
                 key={tool.id}
                 className="tool-card"
-                onClick={() => navigate(`/tools/${tool.id}`)}
+                style={locked ? { opacity: 0.55, cursor: 'default' } : undefined}
+                onClick={() => locked ? navigate('/pricing') : navigate(`/tools/${tool.id}`)}
               >
                 <div className="tool-card-head">
                   <ToolIcon tool={tool} size="lg" />
@@ -74,11 +89,20 @@ export function Dashboard() {
                 <h3 className="tool-card-title">{name}</h3>
                 <p className="tool-card-desc">{desc}</p>
                 <div className="tool-card-foot">
-                  {tool.credits === 0
-                    ? <span style={{ color: '#10B981', fontWeight: 600, fontSize: 13 }}>{t('tool.free')}</span>
-                    : <span className="tabular">{tool.credits} {t('tool.credits')}{tool.unit ? ` / ${tool.unit}` : ''}</span>
-                  }
-                  <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
+                  {locked ? (
+                    <span className="row" style={{ gap: 6, color: 'var(--accent)', fontWeight: 600, fontSize: 13 }}>
+                      <Glyph name="lock" size={12} />
+                      {t('dashboard.lock.cta')}
+                    </span>
+                  ) : (
+                    <>
+                      {tool.credits === 0
+                        ? <span style={{ color: '#10B981', fontWeight: 600, fontSize: 13 }}>{t('tool.free')}</span>
+                        : <span className="tabular">{tool.credits} {t('tool.credits')}{tool.unit ? ` / ${tool.unit}` : ''}</span>
+                      }
+                      <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
+                    </>
+                  )}
                 </div>
               </div>
             );

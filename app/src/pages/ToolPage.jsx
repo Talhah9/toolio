@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { TOOLS } from '../data/catalog';
+import { useApp } from '../context/AppContext';
 
 import { AuditTool } from './tools/AuditTool';
 import { ConcurrentsTool } from './tools/ConcurrentsTool';
@@ -28,10 +29,16 @@ const TOOL_COMPONENTS = {
 export function ToolPage() {
   const { toolId } = useParams();
   const navigate = useNavigate();
+  const { plan } = useApp();
 
   const tool = TOOLS.find(t => t.id === toolId);
   if (!tool) {
     navigate('/dashboard', { replace: true });
+    return null;
+  }
+
+  if (tool.plan === 'pro' && plan !== 'pro') {
+    navigate('/pricing', { replace: true });
     return null;
   }
 

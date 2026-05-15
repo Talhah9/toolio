@@ -45,7 +45,7 @@ export const TOOLS = [
     short_en: 'Image',                  short_fr: 'Image',
     desc_en: 'Generate visuals for LinkedIn posts, banners, and social media using AI.',
     desc_fr: "Créez des visuels pour LinkedIn, bannières et réseaux sociaux avec l'IA.",
-    credits: 20, plan: 'free', glyph: 'image',
+    credits: 20, plan: 'pro', glyph: 'image',
   },
   {
     id: 'devis',

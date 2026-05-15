@@ -96,15 +96,15 @@ export default async function handler(req, res) {
       }
 
       if (session.mode === 'subscription') {
-        console.log('[stripe-webhook] Upgrading user', userId, 'to pro');
+        console.log('[stripe-webhook] Upgrading user', userId, 'to pro with 500 credits');
         const { error } = await supabase
           .from('profiles')
-          .update({ plan: 'pro', updated_at: new Date().toISOString() })
+          .update({ plan: 'pro', balance: 500, updated_at: new Date().toISOString() })
           .eq('id', userId);
         if (error) {
           console.error('[stripe-webhook] profiles update error:', JSON.stringify(error));
         } else {
-          console.log('[stripe-webhook] plan updated to pro for user', userId);
+          console.log('[stripe-webhook] plan set to pro, balance set to 500 for user', userId);
         }
       }
     }
