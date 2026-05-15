@@ -229,7 +229,7 @@ export const en = {
   'pricing.free.price': '€0',
   'pricing.free.period': '/ month',
   'pricing.free.f1': '50 credits on sign-up',
-  'pricing.free.f2': '5 free tools: LinkedIn, Quote, Follow-up, Statut, URSSAF',
+  'pricing.free.f2': '5 free tools: LinkedIn Post, Quote, Follow-up, Statut 🇫🇷, URSSAF 🇫🇷',
   'pricing.free.f3': 'Top up credits any time',
   'pricing.free.current': 'Current plan',
   'pricing.free.downgrade': 'Downgrade',
@@ -238,7 +238,7 @@ export const en = {
   'pricing.pro.price': '€49',
   'pricing.pro.period': '/ month',
   'pricing.pro.f1': '500 credits / month, reset each billing cycle',
-  'pricing.pro.f2': 'All 10 tools — including Audit, Compete, Legal, Contract, Image',
+  'pricing.pro.f2': 'All 12 tools — including LinkedIn Intel, Prospection, Audit, Compete, Image',
   'pricing.pro.f3': 'Full history & PDF exports',
   'pricing.pro.f4': 'Priority support',
   'pricing.pro.recommended': 'Recommended',
@@ -335,7 +335,7 @@ export const en = {
 
   // ── Landing page ─────────────────────────────────────────────
   'landing.eyebrow.badge': 'New',
-  'landing.eyebrow.text': '10 AI tools, one subscription',
+  'landing.eyebrow.text': '12 AI tools, one subscription',
   'landing.hero.title': 'The AI toolkit for international freelancers.',
   'landing.hero.sub': 'Audits, content, contracts, quotes. Toolio replaces half a dozen subscriptions at a fair price.',
   'landing.hero.cta.primary': 'Try for free',
@@ -351,7 +351,7 @@ export const en = {
   'landing.how.step1.title': 'Create your free account',
   'landing.how.step1.desc': 'Sign up in seconds. 50 credits included. No credit card required.',
   'landing.how.step2.title': 'Choose a tool',
-  'landing.how.step2.desc': '10 AI tools built for freelancers. Start with the free ones right away.',
+  'landing.how.step2.desc': '12 AI tools built for freelancers. Start with the free ones right away.',
   'landing.how.step3.title': 'Generate and use',
   'landing.how.step3.desc': 'Professional output in seconds. Copy, export as PDF, or build on top.',
 
@@ -371,7 +371,7 @@ export const en = {
 
   'landing.tools.eyebrow': 'Tools',
   'landing.tools.title': 'Everything you need to move forward.',
-  'landing.tools.subtitle': 'Ten tools built for freelancers. Some are free, others unlocked with Pro.',
+  'landing.tools.subtitle': '12 tools built for freelancers. Some are free, others unlocked with Pro.',
   'landing.tools.credits': 'credits',
   'landing.tools.free': 'Free',
   'landing.pricing.eyebrow': 'Pricing',
@@ -385,7 +385,7 @@ export const en = {
   'landing.pricing.free.cta': 'Start for free',
   'landing.pricing.pro.tagline': 'Move fast.',
   'landing.pricing.pro.f1': '500 credits per month',
-  'landing.pricing.pro.f2': 'All 10 tools',
+  'landing.pricing.pro.f2': 'All 12 tools',
   'landing.pricing.pro.f3': 'SEO/CRO audits within credit limit',
   'landing.pricing.pro.f4': 'Full history',
   'landing.pricing.pro.f5': 'Priority support',

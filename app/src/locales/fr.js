@@ -229,7 +229,7 @@ export const fr = {
   'pricing.free.price': '0€',
   'pricing.free.period': '/ mois',
   'pricing.free.f1': "50 crédits à l'inscription",
-  'pricing.free.f2': '5 outils gratuits : LinkedIn, Devis, Relance, Statut, URSSAF',
+  'pricing.free.f2': '5 outils gratuits : LinkedIn Post, Devis, Relance, Statut 🇫🇷, URSSAF 🇫🇷',
   'pricing.free.f3': 'Recharges de crédits à tout moment',
   'pricing.free.current': 'Plan actuel',
   'pricing.free.downgrade': 'Rétrograder',
@@ -238,7 +238,7 @@ export const fr = {
   'pricing.pro.price': '49€',
   'pricing.pro.period': '/ mois',
   'pricing.pro.f1': '500 crédits / mois, renouvelés à chaque cycle',
-  'pricing.pro.f2': 'Les 10 outils — dont Audit, Concurrents, CGV, Contrat, Image',
+  'pricing.pro.f2': 'Les 12 outils — dont LinkedIn Intel, Prospection, Audit, Concurrents, Image',
   'pricing.pro.f3': 'Historique complet & exports PDF',
   'pricing.pro.f4': 'Support prioritaire',
   'pricing.pro.recommended': 'Recommandé',
@@ -335,7 +335,7 @@ export const fr = {
 
   // ── Landing page ─────────────────────────────────────────────
   'landing.eyebrow.badge': 'Nouveau',
-  'landing.eyebrow.text': '10 outils IA, un seul abonnement',
+  'landing.eyebrow.text': '12 outils IA, un seul abonnement',
   'landing.hero.title': 'La boîte à outils IA des freelances internationaux.',
   'landing.hero.sub': 'Audits, contenus, contrats, devis. Toolio remplace une demi-douzaine d\'abonnements à un prix juste.',
   'landing.hero.cta.primary': 'Essayer gratuitement',
@@ -351,7 +351,7 @@ export const fr = {
   'landing.how.step1.title': 'Créez votre compte gratuit',
   'landing.how.step1.desc': "Inscription en quelques secondes. 50 crédits inclus. Aucune carte bancaire requise.",
   'landing.how.step2.title': 'Choisissez un outil',
-  'landing.how.step2.desc': "10 outils IA pensés pour les freelances. Commencez avec les outils gratuits.",
+  'landing.how.step2.desc': "12 outils IA pensés pour les freelances. Commencez avec les outils gratuits.",
   'landing.how.step3.title': 'Générez et utilisez',
   'landing.how.step3.desc': "Un résultat professionnel en quelques secondes. Copiez, exportez en PDF ou réutilisez directement.",
 
@@ -371,7 +371,7 @@ export const fr = {
 
   'landing.tools.eyebrow': 'Les outils',
   'landing.tools.title': 'Tout ce dont vous avez besoin pour avancer.',
-  'landing.tools.subtitle': 'Dix outils pensés pour les freelances. Certains sont gratuits, d\'autres débloqués avec Pro.',
+  'landing.tools.subtitle': '12 outils pensés pour les freelances. Certains sont gratuits, d\'autres débloqués avec Pro.',
   'landing.tools.credits': 'crédits',
   'landing.tools.free': 'Gratuit',
   'landing.pricing.eyebrow': 'Tarifs',
@@ -385,7 +385,7 @@ export const fr = {
   'landing.pricing.free.cta': 'Commencer gratuitement',
   'landing.pricing.pro.tagline': 'Pour aller vite.',
   'landing.pricing.pro.f1': '500 crédits par mois',
-  'landing.pricing.pro.f2': 'Accès aux 10 outils',
+  'landing.pricing.pro.f2': 'Accès aux 12 outils',
   'landing.pricing.pro.f3': 'Audits CRO/SEO dans la limite des crédits',
   'landing.pricing.pro.f4': 'Historique complet',
   'landing.pricing.pro.f5': 'Support prioritaire',
