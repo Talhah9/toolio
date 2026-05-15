@@ -418,6 +418,45 @@ export const en = {
   'onboarding.cta.next': 'Next',
   'onboarding.cta.dashboard': 'Go to dashboard',
 
+  // ── Pro gate wall — per-tool copy ────────────────────────────
+  'tool.wall.audit.tagline': "Find what's killing your conversions.",
+  'tool.wall.audit.b1': 'Full SEO audit with actionable fixes',
+  'tool.wall.audit.b2': 'CRO recommendations per page section',
+  'tool.wall.audit.b3': 'Ranked priority fix list',
+
+  'tool.wall.compete.tagline': 'Know your competitors better than they know themselves.',
+  'tool.wall.compete.b1': 'Positioning & offer structure analysis',
+  'tool.wall.compete.b2': 'Keyword gaps and content strategy',
+  'tool.wall.compete.b3': 'Weaknesses to exploit — your move',
+
+  'tool.wall.legal.tagline': 'Generate compliant legal pages in 30 seconds.',
+  'tool.wall.legal.b1': 'Terms of service & privacy policy',
+  'tool.wall.legal.b2': 'Legal notice & cookie policy',
+  'tool.wall.legal.b3': 'French law compliant, ready to publish',
+
+  'tool.wall.contract.tagline': 'Never send a weak contract again.',
+  'tool.wall.contract.b1': 'Complete professional service agreement',
+  'tool.wall.contract.b2': 'Custom clauses: IP, payment, revisions',
+  'tool.wall.contract.b3': 'PDF ready to sign',
+
+  'tool.wall.image.tagline': 'Create stunning visuals without a designer.',
+  'tool.wall.image.b1': 'AI-generated images in seconds',
+  'tool.wall.image.b2': 'LinkedIn banners & social media formats',
+  'tool.wall.image.b3': 'Multiple styles — photo, illustration, minimal',
+
+  'tool.wall.linkedin-intel.tagline': 'Turn your LinkedIn into a client magnet.',
+  'tool.wall.linkedin-intel.b1': 'Full profile audit with improvement plan',
+  'tool.wall.linkedin-intel.b2': 'Competitor analysis & positioning gaps',
+  'tool.wall.linkedin-intel.b3': '30-day content calendar + 5 ready posts',
+
+  'tool.wall.prospection.tagline': 'Land clients with messages that actually get replies.',
+  'tool.wall.prospection.b1': '3 personalised outreach message variations',
+  'tool.wall.prospection.b2': 'Day 3 & Day 7 follow-up sequence',
+  'tool.wall.prospection.b3': 'LinkedIn DM, email, and WhatsApp ready',
+
+  'tool.wall.cta': 'Upgrade to Pro — €49/month',
+  'tool.wall.cancel': 'Cancel anytime.',
+
   // ── LinkedIn Intelligence tool ───────────────────────────────
   'tool.linkedin-intel.profile.label': 'Your LinkedIn profile URL',
   'tool.linkedin-intel.profile.placeholder': 'https://linkedin.com/in/yourname',

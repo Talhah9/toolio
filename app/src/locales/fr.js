@@ -418,6 +418,45 @@ export const fr = {
   'onboarding.cta.next': 'Suivant',
   'onboarding.cta.dashboard': 'Aller au tableau de bord',
 
+  // ── Pro gate wall — per-tool copy ────────────────────────────
+  'tool.wall.audit.tagline': 'Trouvez ce qui tue vos conversions.',
+  'tool.wall.audit.b1': 'Audit SEO complet avec corrections prioritaires',
+  'tool.wall.audit.b2': 'Recommandations CRO par section de page',
+  'tool.wall.audit.b3': 'Liste de priorités classée par impact',
+
+  'tool.wall.compete.tagline': 'Connaissez vos concurrents mieux qu\'ils ne se connaissent eux-mêmes.',
+  'tool.wall.compete.b1': 'Analyse du positionnement et de l\'offre',
+  'tool.wall.compete.b2': 'Lacunes en mots-clés et stratégie de contenu',
+  'tool.wall.compete.b3': 'Faiblesses à exploiter — votre prochain move',
+
+  'tool.wall.legal.tagline': 'Générez des pages légales conformes en 30 secondes.',
+  'tool.wall.legal.b1': 'CGV et politique de confidentialité',
+  'tool.wall.legal.b2': 'Mentions légales et politique de cookies',
+  'tool.wall.legal.b3': 'Conforme au droit français, prêt à publier',
+
+  'tool.wall.contract.tagline': 'Ne signez plus jamais un contrat bancal.',
+  'tool.wall.contract.b1': 'Contrat de prestation complet et professionnel',
+  'tool.wall.contract.b2': 'Clauses sur mesure : IP, paiement, révisions',
+  'tool.wall.contract.b3': 'PDF prêt à signer',
+
+  'tool.wall.image.tagline': 'Créez des visuels percutants sans designer.',
+  'tool.wall.image.b1': 'Images générées par IA en quelques secondes',
+  'tool.wall.image.b2': 'Bannières LinkedIn et formats réseaux sociaux',
+  'tool.wall.image.b3': 'Plusieurs styles — photo, illustration, minimaliste',
+
+  'tool.wall.linkedin-intel.tagline': 'Transformez votre LinkedIn en aimant à clients.',
+  'tool.wall.linkedin-intel.b1': 'Audit complet de votre profil avec plan d\'action',
+  'tool.wall.linkedin-intel.b2': 'Analyse des concurrents et écarts de positionnement',
+  'tool.wall.linkedin-intel.b3': 'Calendrier 30 jours + 5 posts prêts à publier',
+
+  'tool.wall.prospection.tagline': 'Décrochez des clients avec des messages qui obtiennent des réponses.',
+  'tool.wall.prospection.b1': '3 variations de messages personnalisés',
+  'tool.wall.prospection.b2': 'Séquence de relance J+3 et J+7',
+  'tool.wall.prospection.b3': 'Prêt pour LinkedIn DM, email et WhatsApp',
+
+  'tool.wall.cta': 'Passer au Pro — 49€/mois',
+  'tool.wall.cancel': 'Résiliable à tout moment.',
+
   // ── LinkedIn Intelligence tool ───────────────────────────────
   'tool.linkedin-intel.profile.label': 'URL de votre profil LinkedIn',
   'tool.linkedin-intel.profile.placeholder': 'https://linkedin.com/in/votreprofil',
