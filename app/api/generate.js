@@ -39,6 +39,47 @@ Create clean, formatted quote documents that are ready to send to clients.
 Include: quote number, date, validity period (30 days), "From" and "To" sections, a formatted table of line items (description, qty, unit price, total), subtotal, VAT calculation, total, and payment terms.
 Use the exact figures provided. Format for easy reading.
 Output only the quote document.`,
+
+  'linkedin-intel': `You are a LinkedIn growth strategist for freelancers and independent consultants.
+Analyse the provided LinkedIn profile and return a structured intelligence report using EXACTLY these section markers:
+
+[SECTION:PROFILE_AUDIT]
+Audit the profile: headline, about section, experience, featured content, skills, photo. Use ✅ / ⚠️ / ❌ for each element. Provide specific improvement recommendations for each issue.
+
+[SECTION:COMPETITOR_ANALYSIS]
+Analyse the competitor profiles provided. Compare positioning, content strategy, engagement tactics, and differentiation opportunities. If no competitors provided, suggest 3 types of profiles to monitor in this niche.
+
+[SECTION:HOT_TOPICS]
+List 8–10 high-engagement topic areas for this niche with a brief rationale for each. Include content angles that are underserved.
+
+[SECTION:CONTENT_PLAN]
+Provide a 30-day LinkedIn content calendar. Group by week (Week 1–4). For each week: 3 post ideas with format (storytelling/opinion/tips/question) and hook line. Keep it actionable.
+
+[SECTION:READY_POSTS]
+Write 3 complete, ready-to-publish LinkedIn posts for this profile. Each post should use a different format. Apply the goal and niche provided. Output only the posts separated by "---".
+
+Do not add any text before [SECTION:PROFILE_AUDIT] or after the last section.`,
+
+  prospection: `You are an expert in B2B prospecting and cold outreach for freelancers.
+Generate personalised outreach messages using EXACTLY these section markers:
+
+[SECTION:VERSION_A]
+Write a professional, warm outreach message. Focus on the prospect's potential pain point and the value you bring. Keep it under 150 words. No generic openers like "I hope this message finds you well."
+
+[SECTION:VERSION_B]
+Write a shorter, more direct version (under 80 words). Lead with the problem, not your credentials.
+
+[SECTION:VERSION_C]
+Write a curiosity-driven version that opens with a provocative question or surprising insight specific to their industry. Under 120 words.
+
+[SECTION:FOLLOWUP_D3]
+Write a Day 3 follow-up message (under 60 words). Reference the initial message briefly. Add a new piece of value or a different angle.
+
+[SECTION:FOLLOWUP_D7]
+Write a Day 7 follow-up message (under 50 words). Lighter tone. Leave the door open without pressure.
+
+Adapt tone, vocabulary, and examples to the specified channel and tone style.
+Do not add any text before [SECTION:VERSION_A] or after the last section.`,
 };
 
 const AUDIT_CHECK_LABELS = {
@@ -59,6 +100,8 @@ const MAX_TOKENS = {
   contract:           1500,
   'linkedin-content':  600,
   devis:               800,
+  'linkedin-intel':   2000,
+  prospection:        1200,
 };
 
 function buildUserMessage(toolId, input) {
@@ -134,6 +177,30 @@ ${input.notes ? `Notes: ${input.notes}` : ''}
 Generate a professional quote document.`;
     }
 
+    case 'linkedin-intel': {
+      const competitors = Array.isArray(input.competitors) && input.competitors.filter(Boolean).length > 0
+        ? `Competitor profiles to analyse:\n${input.competitors.filter(Boolean).map(c => `- ${c}`).join('\n')}`
+        : 'No competitor profiles provided.';
+      return `LinkedIn profile URL: ${input.profileUrl || 'not provided'}
+Niche / activity: ${input.niche || 'not specified'}
+Main goal on LinkedIn: ${input.goal || 'increase visibility'}
+${competitors}
+
+${input.imageBase64 ? 'A screenshot of the LinkedIn profile has been attached.' : 'No profile screenshot provided.'}
+
+Perform a complete LinkedIn intelligence analysis.`;
+    }
+
+    case 'prospection': {
+      return `Freelancer niche / service: ${input.niche}
+Ideal target client: ${input.target}
+Outreach channel: ${input.channel || 'LinkedIn DM'}
+Tone style: ${input.tone || 'Professional'}
+${input.pain ? `Main pain point to address: ${input.pain}` : ''}
+
+Generate all outreach messages and follow-ups.`;
+    }
+
     default:
       return JSON.stringify(input);
   }
@@ -170,11 +237,19 @@ export default async function handler(req, res) {
       console.log('[generate] legal userMessage:\n', userMessage);
     }
 
+    // Vision support for linkedin-intel: attach image when screenshot is provided
+    const userContent = (toolId === 'linkedin-intel' && input.imageBase64)
+      ? [
+          { type: 'image', source: { type: 'base64', media_type: input.imageMediaType || 'image/jpeg', data: input.imageBase64 } },
+          { type: 'text', text: userMessage },
+        ]
+      : userMessage;
+
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: MAX_TOKENS[toolId] ?? 2048,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
+      messages: [{ role: 'user', content: userContent }],
     });
 
     const output = message.content[0]?.text ?? '';

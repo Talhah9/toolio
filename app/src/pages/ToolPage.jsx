@@ -15,6 +15,8 @@ import { DevisTool } from './tools/DevisTool';
 import { RelanceTool } from './tools/RelanceTool';
 import { DefinirStatutTool } from './tools/DefinirStatutTool';
 import { URSSAFTool } from './tools/URSSAFTool';
+import { LinkedinIntelTool } from './tools/LinkedinIntelTool';
+import { ProspectionTool } from './tools/ProspectionTool';
 
 const TOOL_COMPONENTS = {
   audit: AuditTool,
@@ -27,6 +29,8 @@ const TOOL_COMPONENTS = {
   relance: RelanceTool,
   statut: DefinirStatutTool,
   urssaf: URSSAFTool,
+  'linkedin-intel': LinkedinIntelTool,
+  prospection: ProspectionTool,
 };
 
 export function ToolPage() {

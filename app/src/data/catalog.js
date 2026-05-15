@@ -79,6 +79,22 @@ export const TOOLS = [
     desc_fr: "Saisis ton CA et ton régime pour savoir exactement ce que tu dois payer, quand et combien.",
     credits: 0, plan: 'free', glyph: 'billing', franceOnly: true,
   },
+  {
+    id: 'linkedin-intel',
+    name_en: 'LinkedIn Intelligence',   name_fr: 'Intelligence LinkedIn',
+    short_en: 'LinkedIn Intel',         short_fr: 'LinkedIn Intel',
+    desc_en: 'Audit your LinkedIn profile, analyse competitors, and get a 30-day content plan with ready-to-post content.',
+    desc_fr: 'Auditez votre profil LinkedIn, analysez vos concurrents et obtenez un plan de contenu 30 jours avec des posts prêts à publier.',
+    credits: 35, plan: 'pro', glyph: 'linkedin-content',
+  },
+  {
+    id: 'prospection',
+    name_en: 'Prospection & Outreach',  name_fr: 'Prospection & Outreach',
+    short_en: 'Prospection',            short_fr: 'Prospection',
+    desc_en: 'Generate personalised outreach messages (3 versions + follow-ups) tailored to your niche and target client.',
+    desc_fr: 'Générez des messages de prospection personnalisés (3 versions + relances) adaptés à votre niche et votre client cible.',
+    credits: 10, plan: 'pro', glyph: 'compete',
+  },
 ];
 
 // Returns the localised display fields for a tool.
