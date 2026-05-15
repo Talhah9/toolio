@@ -285,6 +285,16 @@ export const fr = {
   'account.modal.cancel': 'Annuler',
   'account.modal.confirm': 'Confirmer',
   'account.toast.cancelled': 'Abonnement résilié',
+  'account.delete.title': 'Supprimer le compte',
+  'account.delete.desc': 'Supprime définitivement votre compte et toutes vos données.',
+  'account.delete.btn': 'Supprimer mon compte',
+  'account.delete.modal.title': 'Supprimer votre compte',
+  'account.delete.modal.irreversible': 'Cette action est irréversible.',
+  'account.delete.modal.body': 'Cette action est irréversible. Toutes vos données, crédits et historique seront définitivement supprimés. Tout abonnement actif sera résilié immédiatement.',
+  'account.delete.modal.confirm-label': 'Tapez DELETE pour confirmer',
+  'account.delete.modal.confirm-placeholder': 'DELETE',
+  'account.delete.modal.btn': 'Supprimer mon compte',
+  'account.delete.modal.processing': 'Suppression…',
 
   // ── Auth ─────────────────────────────────────────────────────
   'auth.email': 'Email',

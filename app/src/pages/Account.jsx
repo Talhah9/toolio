@@ -13,6 +13,9 @@ export function Account() {
   const [confirm, setConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelAt, setCancelAt] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteInput, setDeleteInput] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const [toast, ToastEl] = useToast();
   const [payments, setPayments] = useState(null); // null = loading
 
@@ -123,6 +126,17 @@ export function Account() {
                 </div>
                 <button className="btn btn-secondary" onClick={async () => { await signOut(); navigate('/'); }}>{t('account.logout.btn')}</button>
               </div>
+              <div className="hr" style={{ margin: '20px 0' }} />
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontWeight: 500, color: 'var(--warn-fg)' }}>{t('account.delete.title')}</div>
+                  <div className="muted" style={{ fontSize: 13 }}>{t('account.delete.desc')}</div>
+                </div>
+                <button className="btn btn-secondary" style={{ borderColor: 'var(--warn-fg)', color: 'var(--warn-fg)' }}
+                  onClick={() => { setConfirmDelete(true); setDeleteInput(''); }}>
+                  {t('account.delete.btn')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -165,6 +179,62 @@ export function Account() {
                   }
                 }}>
                   {cancelling ? t('account.cancel.processing') : t('account.modal.confirm')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {confirmDelete && (
+          <div className="modal-overlay" onClick={() => !deleting && setConfirmDelete(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <div className="modal-head">
+                <div>
+                  <h3 className="h3" style={{ fontSize: 16, color: 'var(--warn-fg)' }}>{t('account.delete.modal.title')}</h3>
+                  <p className="muted" style={{ fontSize: 13, margin: '4px 0 0' }}>{t('account.delete.modal.irreversible')}</p>
+                </div>
+              </div>
+              <div className="modal-body">
+                <p className="muted" style={{ fontSize: 14, marginBottom: 16 }}>{t('account.delete.modal.body')}</p>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">{t('account.delete.modal.confirm-label')}</label>
+                  <input
+                    className="input"
+                    placeholder={t('account.delete.modal.confirm-placeholder')}
+                    value={deleteInput}
+                    onChange={e => setDeleteInput(e.target.value)}
+                    disabled={deleting}
+                  />
+                </div>
+              </div>
+              <div className="modal-foot">
+                <button className="btn btn-secondary" onClick={() => setConfirmDelete(false)} disabled={deleting}>
+                  {t('account.modal.cancel')}
+                </button>
+                <button
+                  className="btn btn-primary"
+                  style={{ background: 'var(--warn-fg)', borderColor: 'var(--warn-fg)' }}
+                  disabled={deleteInput !== 'DELETE' || deleting}
+                  onClick={async () => {
+                    setDeleting(true);
+                    try {
+                      const res = await fetch('/api/delete-account', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
+                      });
+                      const json = await res.json();
+                      if (!json.success) throw new Error(json.error || 'Deletion failed');
+                      await signOut();
+                      navigate('/');
+                    } catch (err) {
+                      toast(err.message);
+                      setConfirmDelete(false);
+                    } finally {
+                      setDeleting(false);
+                    }
+                  }}
+                >
+                  {deleting ? t('account.delete.modal.processing') : t('account.delete.modal.btn')}
                 </button>
               </div>
             </div>

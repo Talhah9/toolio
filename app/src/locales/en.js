@@ -285,6 +285,16 @@ export const en = {
   'account.modal.cancel': 'Cancel',
   'account.modal.confirm': 'Confirm',
   'account.toast.cancelled': 'Subscription cancelled',
+  'account.delete.title': 'Delete account',
+  'account.delete.desc': 'Permanently delete your account and all associated data.',
+  'account.delete.btn': 'Delete my account',
+  'account.delete.modal.title': 'Delete your account',
+  'account.delete.modal.irreversible': 'This action cannot be undone.',
+  'account.delete.modal.body': 'This action is irreversible. All your data, credits, and history will be permanently deleted. Any active subscription will be cancelled immediately.',
+  'account.delete.modal.confirm-label': 'Type DELETE to confirm',
+  'account.delete.modal.confirm-placeholder': 'DELETE',
+  'account.delete.modal.btn': 'Delete my account',
+  'account.delete.modal.processing': 'Deleting…',
 
   // ── Auth ─────────────────────────────────────────────────────
   'auth.email': 'Email',
