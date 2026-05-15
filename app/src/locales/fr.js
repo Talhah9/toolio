@@ -341,6 +341,34 @@ export const fr = {
   'landing.hero.cta.primary': 'Essayer gratuitement',
   'landing.hero.cta.secondary': 'Voir les outils',
   'landing.hero.note': '50 crédits offerts. Sans carte bancaire.',
+
+  // ── Social proof ─────────────────────────────────────────────
+  'landing.social.text': 'Utilisé par plus de 1 000 freelances dans le monde',
+
+  // ── How it works ─────────────────────────────────────────────
+  'landing.how.eyebrow': 'Comment ça marche',
+  'landing.how.title': 'Prêt en 2 minutes.',
+  'landing.how.step1.title': 'Créez votre compte gratuit',
+  'landing.how.step1.desc': "Inscription en quelques secondes. 50 crédits inclus. Aucune carte bancaire requise.",
+  'landing.how.step2.title': 'Choisissez un outil',
+  'landing.how.step2.desc': "10 outils IA pensés pour les freelances. Commencez avec les outils gratuits.",
+  'landing.how.step3.title': 'Générez et utilisez',
+  'landing.how.step3.desc': "Un résultat professionnel en quelques secondes. Copiez, exportez en PDF ou réutilisez directement.",
+
+  // ── FAQ ──────────────────────────────────────────────────────
+  'landing.faq.eyebrow': 'FAQ',
+  'landing.faq.title': 'Questions fréquentes.',
+  'landing.faq.q1': 'Qu\'est-ce que les crédits et comment fonctionnent-ils ?',
+  'landing.faq.a1': "Les crédits sont consommés à chaque génération. Chaque outil a un coût fixe — un post LinkedIn coûte 10 crédits, un devis 5. Certains outils sont toujours gratuits (0 crédit). Votre solde est affiché dans l'en-tête.",
+  'landing.faq.q2': 'Les crédits expirent-ils ?',
+  'landing.faq.a2': "Les crédits achetés en pack n'expirent jamais. Les crédits Pro (500/mois) sont réinitialisés à chaque cycle de facturation.",
+  'landing.faq.q3': 'Puis-je essayer les outils Pro avant de passer à la version payante ?',
+  'landing.faq.a3': "Les outils Pro nécessitent un abonnement actif. Les utilisateurs Free ont accès à 5 outils gratuits immédiatement avec 50 crédits inclus — sans carte bancaire.",
+  'landing.faq.q4': 'Quels moyens de paiement sont acceptés ?',
+  'landing.faq.a4': "Nous acceptons toutes les principales cartes bancaires via Stripe. Les paiements sont sécurisés et conformes PCI. Aucune carte requise pour le plan gratuit.",
+  'landing.faq.q5': 'Puis-je annuler mon abonnement à tout moment ?',
+  'landing.faq.a5': "Oui — annulez à tout moment depuis votre page de compte. Vous gardez l'accès Pro jusqu'à la fin de la période de facturation en cours. Sans questions.",
+
   'landing.tools.eyebrow': 'Les outils',
   'landing.tools.title': 'Tout ce dont vous avez besoin pour avancer.',
   'landing.tools.subtitle': 'Dix outils pensés pour les freelances. Certains sont gratuits, d\'autres débloqués avec Pro.',

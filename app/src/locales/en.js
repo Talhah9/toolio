@@ -341,6 +341,34 @@ export const en = {
   'landing.hero.cta.primary': 'Try for free',
   'landing.hero.cta.secondary': 'See the tools',
   'landing.hero.note': '50 credits included. No credit card required.',
+
+  // ── Social proof ─────────────────────────────────────────────
+  'landing.social.text': 'Trusted by 1,000+ freelancers worldwide',
+
+  // ── How it works ─────────────────────────────────────────────
+  'landing.how.eyebrow': 'How it works',
+  'landing.how.title': 'Up and running in 2 minutes.',
+  'landing.how.step1.title': 'Create your free account',
+  'landing.how.step1.desc': 'Sign up in seconds. 50 credits included. No credit card required.',
+  'landing.how.step2.title': 'Choose a tool',
+  'landing.how.step2.desc': '10 AI tools built for freelancers. Start with the free ones right away.',
+  'landing.how.step3.title': 'Generate and use',
+  'landing.how.step3.desc': 'Professional output in seconds. Copy, export as PDF, or build on top.',
+
+  // ── FAQ ──────────────────────────────────────────────────────
+  'landing.faq.eyebrow': 'FAQ',
+  'landing.faq.title': 'Common questions.',
+  'landing.faq.q1': 'What are credits and how do they work?',
+  'landing.faq.a1': 'Credits are consumed each time you run a generation. Each tool has a fixed cost — a LinkedIn post costs 10 credits, a quote costs 5. Some tools are always free (0 credits). Your balance is shown in the header.',
+  'landing.faq.q2': 'Do credits expire?',
+  'landing.faq.a2': 'Credits purchased via top-up packs never expire. Pro plan credits (500/month) reset at each billing cycle.',
+  'landing.faq.q3': 'Can I try Pro tools before upgrading?',
+  'landing.faq.a3': 'Pro tools require an active Pro subscription. Free plan users get immediate access to 5 free tools with 50 included credits — no card needed.',
+  'landing.faq.q4': 'What payment methods are accepted?',
+  'landing.faq.a4': 'We accept all major credit cards via Stripe. Payments are secure and PCI-compliant. No card is required to start with the free plan.',
+  'landing.faq.q5': 'Can I cancel my subscription anytime?',
+  'landing.faq.a5': 'Yes — cancel any time from your account page. You keep Pro access until the end of the current billing period. No questions asked.',
+
   'landing.tools.eyebrow': 'Tools',
   'landing.tools.title': 'Everything you need to move forward.',
   'landing.tools.subtitle': 'Ten tools built for freelancers. Some are free, others unlocked with Pro.',
