@@ -124,6 +124,12 @@ export function Glyph({ name, size = 16 }) {
       return <svg {...props}><path d="M13 8H3M7 4L3 8l4 4" /></svg>;
     case 'star':
       return <svg {...props}><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>;
+    case 'star-fill':
+      return <svg {...props} fill="currentColor" stroke="none"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>;
+    case 'clock':
+      return <svg {...props}><circle cx="8" cy="8" r="6" /><path d="M8 5v3.2l2.2 2.2" /></svg>;
+    case 'arrow-down':
+      return <svg {...props}><path d="M8 3v10M4 9l4 4 4-4" /></svg>;
     case 'lightning':
       return <svg {...props}><path d="M9 1.5L3 9h4l-1 5.5 6-7.5H8z" /></svg>;
     case 'image':

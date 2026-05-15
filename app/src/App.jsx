@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard';
 import { ToolPage } from './pages/ToolPage';
 import { Pricing } from './pages/Pricing';
 import { Account } from './pages/Account';
+import { History } from './pages/History';
 
 export function App() {
   return (
@@ -24,6 +25,7 @@ export function App() {
               <Route path="/tools/:toolId" element={<ToolPage />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/history" element={<History />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

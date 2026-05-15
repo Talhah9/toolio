@@ -4,6 +4,7 @@ import { Glyph } from './Glyph';
 import { PlanBadge } from './PlanBadge';
 import { getToolText } from '../data/catalog';
 import { useLang } from '../context/LanguageContext';
+import { TEMPLATES } from '../data/templates';
 
 export function ToolIntro({ tool, onStart }) {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export function ToolIntro({ tool, onStart }) {
     : `${tool.credits} ${t('tool.intro.cost.credits')}`;
 
   const isFree = tool.credits === 0;
+  const templates = TEMPLATES[tool.id] || null;
 
   return (
     <>
@@ -114,11 +116,40 @@ export function ToolIntro({ tool, onStart }) {
           {/* CTA */}
           <button
             className="btn btn-accent btn-lg btn-block"
-            onClick={onStart}
+            onClick={() => onStart(null)}
             style={{ cursor: 'pointer' }}
           >
             {t('tool.intro.cta')} →
           </button>
+
+          {/* Templates */}
+          {templates && (
+            <div style={{ marginTop: 24 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--fg-4)', marginBottom: 10 }}>
+                {t('tool.intro.templates')}
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {templates.map(tpl => (
+                  <button
+                    key={tpl.id}
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => onStart(tpl.data)}
+                    style={{
+                      justifyContent: 'flex-start', gap: 10,
+                      border: '1px solid var(--border)',
+                      borderRadius: 10, padding: '10px 14px',
+                      fontSize: 13, fontWeight: 500,
+                      color: 'var(--fg-2)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Glyph name="arrow-right" size={13} />
+                    {lang === 'fr' ? tpl.label_fr : tpl.label_en}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

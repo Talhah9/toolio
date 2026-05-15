@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
+import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -49,6 +50,7 @@ export function LinkedinIntelTool({ tool }) {
   const [sections, setSections] = useState({});
   const [activeTab, setActiveTab] = useState('PROFILE_AUDIT');
   const [loading, setLoading] = useState(false);
+  const [genId, setGenId] = useState(null);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -109,7 +111,8 @@ export function LinkedinIntelTool({ tool }) {
       const parsed = parseSections(json.output, TABS.map(t => t.id));
       setSections(parsed);
       setActiveTab('PROFILE_AUDIT');
-      await logGeneration(tool.id, { profileUrl, niche, goal }, json.output, tool.credits);
+      const id = await logGeneration(tool.id, { profileUrl, niche, goal }, json.output, tool.credits);
+      setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -247,9 +250,12 @@ export function LinkedinIntelTool({ tool }) {
           <div className="result-zone">
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
-              <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
-                <Glyph name="copy" size={12} /> {t('tool.copy')}
-              </button>
+              <div className="row" style={{ gap: 6 }}>
+                <SaveButton generationId={genId} />
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
+                  <Glyph name="copy" size={12} /> {t('tool.copy')}
+                </button>
+              </div>
             </div>
 
             {hasOutput && (

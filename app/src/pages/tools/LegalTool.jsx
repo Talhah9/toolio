@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
+import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -13,17 +14,18 @@ const DOC_KEYS = [
   { id: 'cookies', key: 'tool.legal.doc.cookies' },
 ];
 
-export function LegalTool({ tool }) {
+export function LegalTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
   const [company, setCompany] = useState('');
-  const [type, setType] = useState('sole');
+  const [type, setType] = useState(initialData?.type ?? 'sole');
   const [country, setCountry] = useState('');
   const [address, setAddress] = useState('');
-  const [activity, setActivity] = useState('');
-  const [docs, setDocs] = useState(['tos', 'privacy']);
+  const [activity, setActivity] = useState(initialData?.activity ?? '');
+  const [docs, setDocs] = useState(initialData?.docs ?? ['tos', 'privacy']);
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [genId, setGenId] = useState(null);
   const [toast, ToastEl] = useToast();
 
   const toggleDoc = (id) => setDocs(d => d.includes(id) ? d.filter(x => x !== id) : [...d, id]);
@@ -44,7 +46,8 @@ export function LegalTool({ tool }) {
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       setOutput(json.output);
-      await logGeneration(tool.id, input, json.output, tool.credits);
+      const id = await logGeneration(tool.id, input, json.output, tool.credits);
+      setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -123,6 +126,7 @@ export function LegalTool({ tool }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
+                <SaveButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>

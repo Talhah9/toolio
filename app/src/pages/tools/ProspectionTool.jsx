@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
+import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -40,18 +41,19 @@ function parseSections(output, keys) {
   return sections;
 }
 
-export function ProspectionTool({ tool }) {
+export function ProspectionTool({ tool, initialData }) {
   const { credits, logGeneration, session } = useApp();
   const { t } = useLang();
 
-  const [niche, setNiche] = useState('');
-  const [target, setTarget] = useState('');
-  const [channel, setChannel] = useState('LinkedIn DM');
-  const [tone, setTone] = useState('Professional');
-  const [pain, setPain] = useState('');
+  const [niche, setNiche] = useState(initialData?.niche ?? '');
+  const [target, setTarget] = useState(initialData?.target ?? '');
+  const [channel, setChannel] = useState(initialData?.channel ?? 'LinkedIn DM');
+  const [tone, setTone] = useState(initialData?.tone ?? 'Professional');
+  const [pain, setPain] = useState(initialData?.pain ?? '');
   const [sections, setSections] = useState({});
   const [activeTab, setActiveTab] = useState('VERSION_A');
   const [loading, setLoading] = useState(false);
+  const [genId, setGenId] = useState(null);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -78,7 +80,8 @@ export function ProspectionTool({ tool }) {
       const parsed = parseSections(json.output, SECTION_KEYS);
       setSections(parsed);
       setActiveTab('VERSION_A');
-      await logGeneration(tool.id, { niche, target, channel, tone }, json.output, tool.credits);
+      const id = await logGeneration(tool.id, { niche, target, channel, tone }, json.output, tool.credits);
+      setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -208,6 +211,7 @@ export function ProspectionTool({ tool }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
+                <SaveButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
                   <Glyph name="copy" size={12} /> {t('tool.copy')}
                 </button>

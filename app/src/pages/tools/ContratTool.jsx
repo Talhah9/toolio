@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
+import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -10,20 +11,21 @@ const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
 const DURATION_UNIT_KEYS = ['days', 'weeks', 'months'];
 const PAYMENT_TERM_KEYS = ['30 days', '45 days', '60 days', 'On delivery'];
 
-export function ContratTool({ tool }) {
+export function ContratTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
   const [client, setClient] = useState('');
   const [clientCompany, setClientCompany] = useState('');
-  const [mission, setMission] = useState('');
+  const [mission, setMission] = useState(initialData?.mission ?? '');
   const [rate, setRate] = useState('');
-  const [rateType, setRateType] = useState('total');
+  const [rateType, setRateType] = useState(initialData?.rateType ?? 'total');
   const [duration, setDuration] = useState('');
-  const [durationUnit, setDurationUnit] = useState('weeks');
-  const [deliverables, setDeliverables] = useState('');
+  const [durationUnit, setDurationUnit] = useState(initialData?.durationUnit ?? 'weeks');
+  const [deliverables, setDeliverables] = useState(initialData?.deliverables ?? '');
   const [paymentTerms, setPaymentTerms] = useState('30 days');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [genId, setGenId] = useState(null);
   const [toast, ToastEl] = useToast();
 
   const generate = async () => {
@@ -42,7 +44,8 @@ export function ContratTool({ tool }) {
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       setOutput(json.output);
-      await logGeneration(tool.id, input, json.output, tool.credits);
+      const id = await logGeneration(tool.id, input, json.output, tool.credits);
+      setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -133,6 +136,7 @@ export function ContratTool({ tool }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
+                <SaveButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>

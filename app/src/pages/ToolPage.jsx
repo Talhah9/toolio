@@ -42,6 +42,7 @@ export function ToolPage() {
   const { session, plan, loading } = useApp();
   const { t, lang } = useLang();
   const [introSeen, setIntroSeen] = useState(false);
+  const [initialData, setInitialData] = useState(null);
 
   const tool = TOOLS.find(t => t.id === toolId);
   if (!tool) {
@@ -128,8 +129,13 @@ export function ToolPage() {
   }
 
   if (!introSeen) {
-    return <ToolIntro tool={tool} onStart={() => setIntroSeen(true)} />;
+    return (
+      <ToolIntro
+        tool={tool}
+        onStart={(data = null) => { setInitialData(data); setIntroSeen(true); }}
+      />
+    );
   }
 
-  return <Component tool={tool} />;
+  return <Component tool={tool} initialData={initialData} />;
 }

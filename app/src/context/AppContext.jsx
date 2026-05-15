@@ -146,8 +146,9 @@ export function AppProvider({ children }) {
   };
 
   // ── Credit + generation logging ───────────────────────────────
+  // Returns the generation row ID so callers can attach a save button.
   const logGeneration = useCallback(async (toolId, input, output, creditsUsed) => {
-    if (!session) return;
+    if (!session) return null;
 
     console.log('[AppContext] logGeneration:', toolId, creditsUsed, 'credits');
     const { data, error } = await supabase.rpc('log_generation', {
@@ -160,11 +161,23 @@ export function AppProvider({ children }) {
     if (error) {
       console.error('[AppContext] log_generation error:', error.message);
       if (creditsUsed > 0) setCredits(c => Math.max(0, (c ?? 0) - creditsUsed));
-      return;
+      return null;
     }
 
     console.log('[AppContext] logGeneration: new balance =', data.balance);
     setCredits(data.balance);
+
+    // Fetch the ID of the generation we just inserted.
+    const { data: gen } = await supabase
+      .from('generations')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('tool_id', toolId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    return gen?.id ?? null;
   }, [session]);
 
   // Kept for 0-credit free tools

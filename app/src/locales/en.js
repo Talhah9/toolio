@@ -418,6 +418,22 @@ export const en = {
   'onboarding.cta.next': 'Next',
   'onboarding.cta.dashboard': 'Go to dashboard',
 
+  // ── History page ─────────────────────────────────────────────
+  'nav.history': 'History',
+  'history.title': 'Generation History',
+  'history.subtitle': 'All your past generations. Expand any row to see the full output.',
+  'history.filter.all': 'All',
+  'history.filter.saved': 'Saved',
+  'history.filter.tool': 'All tools',
+  'history.empty': 'No generations yet. Use a tool to get started.',
+  'history.empty.saved': 'No saved generations yet. Star one to save it.',
+  'history.credits': 'cr',
+  'history.expand.copy': 'Copy',
+  'history.expand.pdf': 'PDF',
+
+  // ── Tool intro — templates ────────────────────────────────────
+  'tool.intro.templates': 'Quick start with a template',
+
   // ── Tool intro — shared ──────────────────────────────────────
   'tool.intro.cta': 'Use this tool',
   'tool.intro.cost.free': 'Always free',

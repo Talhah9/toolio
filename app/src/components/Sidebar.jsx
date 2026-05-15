@@ -55,6 +55,13 @@ export function Sidebar() {
 
       <div className="sidebar-section">{t('nav.section.account')}</div>
       <div
+        className={`sidebar-item ${isActive('/history') ? 'active' : ''}`}
+        onClick={() => navigate('/history')}
+      >
+        <Glyph name="clock" />
+        <span>{t('nav.history')}</span>
+      </div>
+      <div
         className={`sidebar-item ${isActive('/pricing') ? 'active' : ''}`}
         onClick={() => navigate('/pricing')}
       >

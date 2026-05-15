@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
+import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -25,6 +26,7 @@ export function AuditTool({ tool }) {
   const [checks, setChecks] = useState(CHECK_KEYS.map(() => true));
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [genId, setGenId] = useState(null);
   const [toast, ToastEl] = useToast();
 
   const generate = async () => {
@@ -46,7 +48,8 @@ export function AuditTool({ tool }) {
       const json = await res.json();
       if (json.error) throw new Error(json.error);
       setOutput(json.output);
-      await logGeneration(tool.id, { url }, json.output, tool.credits);
+      const id = await logGeneration(tool.id, { url }, json.output, tool.credits);
+      setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -116,6 +119,7 @@ export function AuditTool({ tool }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
+                <SaveButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
