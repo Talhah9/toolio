@@ -40,19 +40,10 @@ export function AppProvider({ children }) {
       setCredits(data.balance);
       setPlan(data.plan || 'free');
 
-      // Show onboarding for users who haven't seen it yet.
-      // NULL covers existing rows created before the column was added (DEFAULT FALSE
-      // only applies to new inserts, not pre-existing rows).
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('onboarding_completed')
-          .single();
-        console.log('[onboarding] value:', profile?.onboarding_completed);
-        if (profile?.onboarding_completed === false || profile?.onboarding_completed === null) {
-          setShowOnboarding(true);
-        }
-      } catch (_) {}
+      console.log('[onboarding] value:', data.onboarding_completed);
+      if (data.onboarding_completed === false || data.onboarding_completed === null) {
+        setShowOnboarding(true);
+      }
     } catch (err) {
       console.error('[AppContext] fetchUserData failed, falling back to defaults:', err.message);
       setCredits(50);
