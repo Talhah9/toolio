@@ -26,6 +26,7 @@ export function Auth() {
   const [name, setName] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState('');
   const [confirmSent, setConfirmSent] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
@@ -54,7 +55,8 @@ export function Auth() {
     try {
       if (mode === 'login') {
         await signIn(email, password);
-        navigate('/dashboard');
+        setSigningIn(true);
+        setTimeout(() => navigate('/dashboard'), 1200);
       } else if (mode === 'register') {
         const needsConfirmation = await signUp(email, password, name);
         if (needsConfirmation) {
@@ -104,6 +106,25 @@ export function Auth() {
       {msg}
     </div>
   ) : null;
+
+  // ── Post-login transition ────────────────────────────────────
+  if (signingIn) {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, background: '#fff', zIndex: 9999,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 28,
+      }}>
+        <style>{`@keyframes tlspin{to{transform:rotate(360deg)}}`}</style>
+        <Logo size={24} />
+        <div style={{
+          width: 22, height: 22, borderRadius: '50%',
+          border: '2.5px solid var(--border)',
+          borderTopColor: 'var(--accent)',
+          animation: 'tlspin 0.7s linear infinite',
+        }} />
+      </div>
+    );
+  }
 
   // ── Email confirmation sent ──────────────────────────────────
   if (confirmSent) {
