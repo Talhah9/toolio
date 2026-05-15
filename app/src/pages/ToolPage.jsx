@@ -29,7 +29,7 @@ const TOOL_COMPONENTS = {
 export function ToolPage() {
   const { toolId } = useParams();
   const navigate = useNavigate();
-  const { plan } = useApp();
+  const { session, plan, loading } = useApp();
 
   const tool = TOOLS.find(t => t.id === toolId);
   if (!tool) {
@@ -37,6 +37,18 @@ export function ToolPage() {
     return null;
   }
 
+  // Wait until auth has resolved — plan starts as 'free' by default and
+  // would incorrectly trigger the Pro gate before fetchUserData completes.
+  if (loading) return null;
+
+  // No session: belt-and-suspenders guard (ProtectedRoute handles this
+  // globally, but a direct URL hit during a stale render could slip through).
+  if (!session) {
+    navigate('/auth', { replace: true });
+    return null;
+  }
+
+  // Pro gate: only runs once we know the user's actual plan.
   if (tool.plan === 'pro' && plan !== 'pro') {
     navigate('/pricing', { replace: true });
     return null;
