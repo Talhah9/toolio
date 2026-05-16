@@ -20,6 +20,7 @@ import { DefinirStatutTool } from './tools/DefinirStatutTool';
 import { URSSAFTool } from './tools/URSSAFTool';
 import { LinkedinIntelTool } from './tools/LinkedinIntelTool';
 import { ProspectionTool } from './tools/ProspectionTool';
+import { MissionFinderTool } from './tools/MissionFinderTool';
 
 const TOOL_COMPONENTS = {
   audit: AuditTool,
@@ -34,6 +35,7 @@ const TOOL_COMPONENTS = {
   urssaf: URSSAFTool,
   'linkedin-intel': LinkedinIntelTool,
   prospection: ProspectionTool,
+  'mission-finder': MissionFinderTool,
 };
 
 export function ToolPage() {

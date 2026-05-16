@@ -80,6 +80,28 @@ Write a Day 7 follow-up message (under 50 words). Lighter tone. Leave the door o
 
 Adapt tone, vocabulary, and examples to the specified channel and tone style.
 Do not add any text before [SECTION:VERSION_A] or after the last section.`,
+
+  'mission-finder': `You are a freelance career strategist with deep knowledge of the French and international freelance market.
+Generate actionable, specific recommendations (not generic advice).
+Include real platform names, real search operators, real company types.
+Structure output with EXACTLY these section markers:
+
+[SECTION:PLATFORMS]
+List 6–8 platforms ranked by fit for this profile. For each: platform name, why it fits, conversion tip, and typical mission budget range. Include both French platforms (Malt, Comet, Freelance.com, Crème de la Crème, Kicklox, Talent.io) and international ones (Toptal, Upwork, LinkedIn, etc.) as relevant.
+
+[SECTION:BOOLEAN_SEARCH]
+Provide 4–6 ready-to-use LinkedIn boolean search strings tailored to this profile. Format each as a copyable string. Add a tip on how to use LinkedIn's filters (location, company size, date posted) to narrow results. Also include 2–3 Google X-ray search strings for finding decision-makers.
+
+[SECTION:PROFILE_TIPS]
+Provide a 10-point profile optimisation checklist covering: LinkedIn headline formula, About section structure, experience bullet points, featured section, skills & endorsements, keywords to use, portfolio/projects, recommendations, profile URL, and activity signal. Use ✅ / ⚠️ / ❌ for priority.
+
+[SECTION:TARGET_COMPANIES]
+Define 4–5 company archetypes to target (e.g. "Series A SaaS startup 10–50 people"). For each: why they hire freelancers, how to find them (LinkedIn filters, Crunchbase, Welcome to the Jungle, etc.), who to contact (title/role), and best outreach timing.
+
+[SECTION:MESSAGES]
+Write 3 ready-to-send outreach templates: one for LinkedIn DM (under 120 words), one for email (subject line + body), one for Malt platform messaging. Each should be personalised to the profile's niche and TJM level. Add a note on when to follow up.
+
+Do not add any text before [SECTION:PLATFORMS] or after the last section.`,
 };
 
 const AUDIT_CHECK_LABELS = {
@@ -102,6 +124,7 @@ const MAX_TOKENS = {
   devis:               800,
   'linkedin-intel':   2000,
   prospection:        1200,
+  'mission-finder':   2000,
 };
 
 function buildUserMessage(toolId, input) {
@@ -199,6 +222,18 @@ Tone style: ${input.tone || 'Professional'}
 ${input.pain ? `Main pain point to address: ${input.pain}` : ''}
 
 Generate all outreach messages and follow-ups.`;
+    }
+
+    case 'mission-finder': {
+      return `Expertise / stack: ${input.expertise}
+Target daily rate (TJM): ${input.tjm ? `€${input.tjm}/day` : 'not specified'}
+Experience level: ${input.experience || 'Confirmed'}
+Work preference: ${input.workPreference || 'Remote'}
+Location: ${input.location || 'not specified'}
+${input.sector ? `Sector preference: ${input.sector}` : ''}
+Goal: ${input.goal || 'Both'}
+
+Generate a complete mission-finding strategy.`;
     }
 
     default:

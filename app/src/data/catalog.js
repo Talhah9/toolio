@@ -95,6 +95,14 @@ export const TOOLS = [
     desc_fr: 'Générez des messages de prospection personnalisés (3 versions + relances) adaptés à votre niche et votre client cible.',
     credits: 10, plan: 'pro', glyph: 'compete',
   },
+  {
+    id: 'mission-finder',
+    name_en: 'Mission Finder',          name_fr: 'Mission Finder',
+    short_en: 'Missions',               short_fr: 'Missions',
+    desc_en: 'Get a personalized strategy to find freelance missions on the right platforms.',
+    desc_fr: 'Obtenez une stratégie personnalisée pour trouver des missions freelance sur les bonnes plateformes.',
+    credits: 30, plan: 'pro', glyph: 'compete',
+  },
 ];
 
 // Returns the localised display fields for a tool.
