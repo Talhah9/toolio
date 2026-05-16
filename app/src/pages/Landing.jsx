@@ -370,6 +370,7 @@ export function Landing() {
               initial={reduce ? false : { opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.35, ease }}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             >
               <div className="hero-output-card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
