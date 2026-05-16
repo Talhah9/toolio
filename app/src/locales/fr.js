@@ -336,7 +336,7 @@ export const fr = {
   // ── Landing page ─────────────────────────────────────────────
   'landing.eyebrow.badge': '⚡ Accès anticipé · Tarif préférentiel',
   'landing.eyebrow.text': '13 outils IA, un seul abonnement',
-  'landing.hero.title': "Tous les outils\ndont un freelance\na besoin.\nPropulsé par l'IA.",
+  'landing.hero.title': "Tous les outils\ndu freelance moderne.\nPropulsé par l'IA.",
   'landing.hero.sub': 'Contrats, devis, posts LinkedIn, documents légaux — générés en secondes pour que vous vous concentriez sur ce qui paie vraiment.',
   'landing.hero.cta.primary': 'Commencer gratuitement — sans carte',
   'landing.hero.cta.secondary': 'Voir les 13 outils ↓',
