@@ -286,8 +286,15 @@ export function Landing() {
       <MarketingNav />
 
       {/* ── 1. HERO ───────────────────────────────────────────── */}
-      <section className="hero" style={{ paddingBottom: 80 }}>
-        <div className="container">
+      <section className="hero" style={{ paddingBottom: 80, position: 'relative' }}>
+        {/* Background blobs + dot grid */}
+        <div className="hero-bg" aria-hidden="true">
+          <div className="hero-blob hero-blob-purple" />
+          <div className="hero-blob hero-blob-warm" />
+          <div className="hero-dot-grid" />
+        </div>
+
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="hero-two-col">
             {/* Left col */}
             <div>
@@ -360,8 +367,8 @@ export function Landing() {
 
             {/* Right col — output card (desktop only) */}
             <motion.div
-              initial={reduce ? false : { opacity: 0, x: 24, rotate: -3 }}
-              animate={{ opacity: 1, x: 0, rotate: -1.5 }}
+              initial={reduce ? false : { opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.35, ease }}
             >
               <div className="hero-output-card">
