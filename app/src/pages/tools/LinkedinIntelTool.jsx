@@ -25,14 +25,20 @@ const TABS = [
 ];
 
 function parseSections(output, keys) {
+  // Normalize: collapse \r\n, trim surrounding whitespace
+  const normalized = output.replace(/\r\n/g, '\n').trim();
   const sections = {};
   for (let i = 0; i < keys.length; i++) {
     const marker = `[SECTION:${keys[i]}]`;
-    const start = output.indexOf(marker);
+    // Case-insensitive search
+    const upperNorm = normalized.toUpperCase();
+    const upperMarker = marker.toUpperCase();
+    const start = upperNorm.indexOf(upperMarker);
     if (start === -1) continue;
     const contentStart = start + marker.length;
-    const nextMarker = i < keys.length - 1 ? output.indexOf(`[SECTION:${keys[i + 1]}]`) : -1;
-    sections[keys[i]] = output.slice(contentStart, nextMarker !== -1 ? nextMarker : output.length).trim();
+    const nextKey = i < keys.length - 1 ? `[SECTION:${keys[i + 1]}]`.toUpperCase() : null;
+    const nextMarkerPos = nextKey ? upperNorm.indexOf(nextKey, contentStart) : -1;
+    sections[keys[i]] = normalized.slice(contentStart, nextMarkerPos !== -1 ? nextMarkerPos : normalized.length).trim();
   }
   return sections;
 }
@@ -111,7 +117,9 @@ export function LinkedinIntelTool({ tool }) {
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
+      console.log('[linkedin-intel] raw output:', json.output);
       const parsed = parseSections(json.output, TABS.map(t => t.id));
+      console.log('[linkedin-intel] parsed sections:', Object.keys(parsed));
       setSections(parsed);
       setActiveTab('PROFILE_AUDIT');
       const id = await logGeneration(tool.id, { profileUrl, niche, goal }, json.output, tool.credits);

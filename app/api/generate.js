@@ -122,7 +122,7 @@ const MAX_TOKENS = {
   contract:           1500,
   'linkedin-content':  600,
   devis:               800,
-  'linkedin-intel':   2000,
+  'linkedin-intel':   4096,
   prospection:        1200,
   'mission-finder':   2000,
 };
@@ -272,6 +272,9 @@ export default async function handler(req, res) {
     if (toolId === 'legal') {
       console.log('[generate] legal raw input:', JSON.stringify(input));
       console.log('[generate] legal userMessage:\n', userMessage);
+    }
+    if (toolId === 'linkedin-intel') {
+      console.log('[generate] linkedin-intel max_tokens:', MAX_TOKENS[toolId]);
     }
 
     // Vision support for linkedin-intel: attach image when screenshot is provided
