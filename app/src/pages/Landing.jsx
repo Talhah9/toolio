@@ -163,97 +163,42 @@ function FAQItem({ q, a }) {
 
 // ── Animated Demo tabs ────────────────────────────────────────
 
-const DEMO_TABS = [
-  {
-    id: 'linkedin',
-    labelKey: 'landing.demo.tab.linkedin',
-    formFields: [
-      { label: 'Topic', value: 'I just shipped a feature in 2 days without a team' },
-      { label: 'Tone', value: 'Authentic, slightly vulnerable' },
-      { label: 'CTA', value: 'Start conversation' },
-    ],
-    output: `Just shipped something I'm genuinely proud of.
+function getDemoTabs(t) {
+  return [
+    {
+      id: 'linkedin',
+      label: t('landing.demo.tab.linkedin'),
+      formFields: [
+        { label: t('landing.demo.linkedin.f1.label'), value: t('landing.demo.linkedin.f1.value') },
+        { label: t('landing.demo.linkedin.f2.label'), value: t('landing.demo.linkedin.f2.value') },
+        { label: t('landing.demo.linkedin.f3.label'), value: t('landing.demo.linkedin.f3.value') },
+      ],
+      output: t('landing.demo.linkedin.output'),
+    },
+    {
+      id: 'contract',
+      label: t('landing.demo.tab.contract'),
+      formFields: [
+        { label: t('landing.demo.contract.f1.label'), value: t('landing.demo.contract.f1.value') },
+        { label: t('landing.demo.contract.f2.label'), value: t('landing.demo.contract.f2.value') },
+        { label: t('landing.demo.contract.f3.label'), value: t('landing.demo.contract.f3.value') },
+      ],
+      output: t('landing.demo.contract.output'),
+    },
+    {
+      id: 'quote',
+      label: t('landing.demo.tab.quote'),
+      formFields: [
+        { label: t('landing.demo.quote.f1.label'), value: t('landing.demo.quote.f1.value') },
+        { label: t('landing.demo.quote.f2.label'), value: t('landing.demo.quote.f2.value') },
+        { label: t('landing.demo.quote.f3.label'), value: t('landing.demo.quote.f3.value') },
+      ],
+      output: t('landing.demo.quote.output'),
+    },
+  ];
+}
 
-No team. No budget. Just me, a clear brief, and 48 hours.
-
-Here's what I learned building solo at full speed:
-
-→ Constraints are a feature, not a bug
-→ Shipping > Perfection on day one
-→ The best feedback comes from real users, not planning sessions
-
-I used to think I needed a team to build something meaningful.
-
-Turns out I needed better tools and fewer meetings.
-
-What's something you shipped faster than expected?
-
-#freelance #buildinpublic #solofounder`,
-  },
-  {
-    id: 'contract',
-    labelKey: 'landing.demo.tab.contract',
-    formFields: [
-      { label: 'Client', value: 'Acme Corp' },
-      { label: 'Service', value: 'Brand identity redesign' },
-      { label: 'Duration', value: '6 weeks' },
-    ],
-    output: `FREELANCE SERVICE AGREEMENT
-
-Between: Marie Laurent (Freelance Designer)
-And: Acme Corp
-
-1. SCOPE OF WORK
-Brand identity redesign including: logo, color system, typography, brand guidelines document (25+ pages).
-
-2. TIMELINE
-Start: June 1, 2026 — Delivery: July 15, 2026
-Milestones: Concepts (Week 2), Refinement (Week 4), Final (Week 6)
-
-3. FEES
-Total: €4,800 excl. VAT
-50% deposit on signature — 50% on final delivery
-
-4. REVISIONS
-Two rounds of revisions included per deliverable.
-Additional rounds billed at €120/hour.
-
-5. INTELLECTUAL PROPERTY
-All rights transfer to client upon full payment.`,
-  },
-  {
-    id: 'quote',
-    labelKey: 'landing.demo.tab.quote',
-    formFields: [
-      { label: 'Client', value: 'StartupXYZ' },
-      { label: 'Project', value: 'Landing page redesign' },
-      { label: 'Budget range', value: '€1,500–€2,500' },
-    ],
-    output: `DEVIS N° 2026-047
-
-Pour : StartupXYZ
-Date : 16/05/2026  Valable 30 jours
-
-──────────────────────────────────────
-PRESTATIONS
-──────────────────────────────────────
-Audit UX page existante       300 €
-Maquettes (3 variantes)       600 €
-Intégration HTML/CSS          800 €
-Tests + livraison finale      300 €
-──────────────────────────────────────
-TOTAL HT                    2 000 €
-TVA non applicable (art 293B CGI)
-──────────────────────────────────────
-
-Délai : 3 semaines après validation.
-Acompte 40% à la commande.
-
-Signature client : ___________`,
-  },
-];
-
-function ToolDemoTabs({ t }) {
+function ToolDemoTabs({ t, lang }) {
   const [activeTab, setActiveTab] = useState(0);
   const [animKey, setAnimKey] = useState(0);
 
@@ -262,12 +207,13 @@ function ToolDemoTabs({ t }) {
     setAnimKey(k => k + 1);
   };
 
-  const tab = DEMO_TABS[activeTab];
+  const tabs = getDemoTabs(t);
+  const tab  = tabs[activeTab];
 
   return (
     <div>
       <div className="lp-demo-tabs" role="tablist">
-        {DEMO_TABS.map((demo, i) => (
+        {tabs.map((demo, i) => (
           <button
             key={demo.id}
             role="tab"
@@ -275,7 +221,7 @@ function ToolDemoTabs({ t }) {
             className={`lp-demo-tab${activeTab === i ? ' active' : ''}`}
             onClick={() => handleTab(i)}
           >
-            {t(demo.labelKey)}
+            {demo.label}
           </button>
         ))}
       </div>
@@ -294,12 +240,12 @@ function ToolDemoTabs({ t }) {
           <div style={{ marginTop: 'auto' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--accent)', color: '#fff', borderRadius: 6, padding: '8px 14px', fontSize: 12, fontWeight: 600 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a5f3fc', animation: 'blink 1s step-end infinite' }} />
-              Generating…
+              {t('landing.demo.generating')}
             </div>
           </div>
         </div>
         <div className="lp-demo-output">
-          <TypewriterText key={animKey} text={tab.output} active speed={14} />
+          <TypewriterText key={`${animKey}-${lang}`} text={tab.output} active speed={14} />
         </div>
       </div>
     </div>
@@ -340,7 +286,7 @@ export function Landing() {
       <MarketingNav />
 
       {/* ── 1. HERO ───────────────────────────────────────────── */}
-      <section className="hero" style={{ paddingBottom: 0 }}>
+      <section className="hero" style={{ paddingBottom: 80 }}>
         <div className="container">
           <div className="hero-two-col">
             {/* Left col */}
@@ -422,11 +368,11 @@ export function Landing() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981' }} />
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    LinkedIn Post · Generated
+                    {t('landing.hero.output.badge')}
                   </span>
                 </div>
                 <TypewriterText
-                  text={`Just shipped something I'm proud of.\n\nNo team. 48 hours. One clear brief.\n\nConstraints are a feature, not a bug.\n\nWhat did you ship last week?\n\n#freelance #buildinpublic`}
+                  text={t('landing.hero.output.text')}
                   active
                   speed={22}
                 />
@@ -491,7 +437,7 @@ export function Landing() {
           </FadeUp>
           <FadeUp delay={0.1}>
             <div style={{ maxWidth: 860, margin: '0 auto' }}>
-              <ToolDemoTabs t={t} />
+              <ToolDemoTabs t={t} lang={lang} />
             </div>
           </FadeUp>
         </div>
