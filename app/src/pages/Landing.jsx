@@ -252,6 +252,64 @@ function ToolDemoTabs({ t, lang }) {
   );
 }
 
+// ── Hero rotating output card ─────────────────────────────────
+
+function HeroOutputCard({ t, lang }) {
+  const [idx, setIdx] = useState(0);
+  const reduce = useReducedMotion();
+
+  // Reset to first card on language switch
+  useEffect(() => { setIdx(0); }, [lang]);
+
+  // Advance after typing finishes + 2.5s reading pause
+  useEffect(() => {
+    if (reduce) return;
+    const text = [
+      t('landing.hero.card.text1'),
+      t('landing.hero.card.text2'),
+      t('landing.hero.card.text3'),
+    ][idx];
+    const timer = setTimeout(() => setIdx(i => (i + 1) % 3), text.length * 20 + 2500);
+    return () => clearTimeout(timer);
+  }, [idx, lang, reduce, t]);
+
+  const badges = [
+    t('landing.hero.card.badge1'),
+    t('landing.hero.card.badge2'),
+    t('landing.hero.card.badge3'),
+  ];
+  const texts = [
+    t('landing.hero.card.text1'),
+    t('landing.hero.card.text2'),
+    t('landing.hero.card.text3'),
+  ];
+
+  return (
+    <div className="hero-output-card">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${idx}-${lang}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35, ease: 'easeInOut' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981' }} />
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              {badges[idx]}
+            </span>
+          </div>
+          {reduce
+            ? <span>{texts[idx]}</span>
+            : <TypewriterText text={texts[idx]} active speed={20} />
+          }
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
 // ── Landing page ──────────────────────────────────────────────
 
 export function Landing() {
@@ -372,19 +430,7 @@ export function Landing() {
               transition={{ duration: 0.7, delay: 0.35, ease }}
               style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             >
-              <div className="hero-output-card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981' }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    {t('landing.hero.output.badge')}
-                  </span>
-                </div>
-                <TypewriterText
-                  text={t('landing.hero.output.text')}
-                  active
-                  speed={22}
-                />
-              </div>
+              <HeroOutputCard t={t} lang={lang} />
             </motion.div>
           </div>
         </div>
