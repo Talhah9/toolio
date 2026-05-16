@@ -420,6 +420,9 @@ export const fr = {
 
   // ── History page ─────────────────────────────────────────────
   'nav.history': 'Historique',
+  'save.modal.title': 'Nommer cette sauvegarde',
+  'save.modal.confirm': 'Enregistrer',
+  'save.modal.cancel': 'Annuler',
   'history.title': 'Historique des générations',
   'history.subtitle': 'Toutes vos générations passées. Cliquez sur une ligne pour voir le résultat complet.',
   'history.filter.all': 'Toutes',

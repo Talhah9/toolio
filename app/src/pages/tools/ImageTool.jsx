@@ -29,7 +29,7 @@ const LOADING_COLORS = {
 
 export function ImageTool({ tool }) {
   const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState('photorealistic');
   const [size, setSize] = useState('1080x1080');
@@ -142,7 +142,7 @@ export function ImageTool({ tool }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               {output && (
                 <div className="row" style={{ gap: 6 }}>
-                  <SaveButton generationId={genId} />
+                  <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                   <button className="btn btn-ghost btn-sm" onClick={download}>
                     <Glyph name="arrow-down" size={12} /> {t('tool.download')}
                   </button>

@@ -249,15 +249,17 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'AI service not configured' });
   }
 
-  const { toolId, input, userId } = req.body ?? {};
+  const { toolId, input, userId, lang } = req.body ?? {};
   if (!toolId || !input || !userId) {
     return res.status(400).json({ error: 'Missing toolId, input, or userId' });
   }
 
-  const systemPrompt = SYSTEM_PROMPTS[toolId];
-  if (!systemPrompt) {
+  const basePrompt = SYSTEM_PROMPTS[toolId];
+  if (!basePrompt) {
     return res.status(400).json({ error: `Unknown tool: ${toolId}` });
   }
+  const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
+  const systemPrompt = basePrompt + langInstruction;
 
   let userMessage;
   try {

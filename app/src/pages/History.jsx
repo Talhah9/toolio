@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ToolShell } from '../components/ToolShell';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Glyph } from '../components/Glyph';
 import { SaveButton } from '../components/SaveButton';
 import { useApp } from '../context/AppContext';
@@ -13,7 +14,7 @@ export function History() {
   const { t, lang } = useLang();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // 'all' | 'saved' | toolId
+  const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export function History() {
     setLoading(true);
     supabase
       .from('generations')
-      .select('id, tool_id, input, output, credits_used, saved, created_at')
+      .select('id, tool_id, input, output, credits_used, saved, name, created_at')
       .eq('user_id', session.user.id)
       .order('created_at', { ascending: false })
       .limit(100)
@@ -49,6 +50,12 @@ export function History() {
     return lang === 'fr' ? tool.short_fr : tool.short_en;
   };
 
+  const getToolFullName = (toolId) => {
+    const tool = TOOLS.find(t => t.id === toolId);
+    if (!tool) return toolId;
+    return lang === 'fr' ? tool.name_fr : tool.name_en;
+  };
+
   const fmtDate = (iso) => {
     const d = new Date(iso);
     return d.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB', {
@@ -63,7 +70,7 @@ export function History() {
     });
   };
 
-  const copy = (text) => { navigator.clipboard?.writeText(text); };
+  const copyOutput = (text) => { navigator.clipboard?.writeText(text); };
 
   const downloadPdf = (row) => {
     const tool = TOOLS.find(t => t.id === row.tool_id);
@@ -132,12 +139,10 @@ export function History() {
             {filtered.map(row => {
               const isExp = expanded === row.id;
               const canExpand = isExpandable(row);
+              const displayName = row.name || getToolName(row.tool_id);
+
               return (
-                <div
-                  key={row.id}
-                  className="card"
-                  style={{ overflow: 'hidden', transition: 'box-shadow 0.15s' }}
-                >
+                <div key={row.id} className="card" style={{ overflow: 'hidden' }}>
                   {/* Row header */}
                   <div
                     style={{
@@ -155,7 +160,12 @@ export function History() {
                       {getToolName(row.tool_id)}
                     </span>
 
-                    {/* Date */}
+                    {/* Display name / date */}
+                    <span style={{ fontSize: 13, color: 'var(--fg)', fontWeight: row.name ? 500 : 400, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {displayName}
+                    </span>
+
+                    {/* Date + time */}
                     <span className="muted" style={{ fontSize: 12, flexShrink: 0 }}>
                       {fmtDate(row.created_at)} · {fmtTime(row.created_at)}
                     </span>
@@ -167,13 +177,12 @@ export function History() {
                       </span>
                     )}
 
-                    <div style={{ flex: 1 }} />
-
-                    {/* Save button (optimistic wrapper) */}
+                    {/* Save button */}
                     <div onClick={e => e.stopPropagation()}>
-                      <SaveButtonHistory
-                        row={row}
-                        session={session}
+                      <SaveButton
+                        generationId={row.id}
+                        initialSaved={row.saved ?? false}
+                        toolName={row.name || getToolFullName(row.tool_id)}
                         onToggle={(newVal) => toggleSaveOptimistic(row.id, newVal)}
                       />
                     </div>
@@ -183,7 +192,7 @@ export function History() {
                       <span style={{
                         color: 'var(--fg-4)', transition: 'transform 0.2s',
                         transform: isExp ? 'rotate(180deg)' : 'none',
-                        display: 'flex',
+                        display: 'flex', flexShrink: 0,
                       }}>
                         <Glyph name="chevron-down" size={14} />
                       </span>
@@ -195,28 +204,16 @@ export function History() {
                     <div style={{ borderTop: '1px solid var(--border)' }}>
                       {/* Action bar */}
                       <div style={{ display: 'flex', gap: 8, padding: '10px 18px', borderBottom: '1px solid var(--border)' }}>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => copy(row.output)}
-                        >
+                        <button className="btn btn-ghost btn-sm" onClick={() => copyOutput(row.output)}>
                           <Glyph name="copy" size={12} /> {t('history.expand.copy')}
                         </button>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => downloadPdf(row)}
-                        >
+                        <button className="btn btn-ghost btn-sm" onClick={() => downloadPdf(row)}>
                           <Glyph name="arrow-down" size={12} /> {t('history.expand.pdf')}
                         </button>
                       </div>
-                      {/* Output text */}
-                      <div style={{
-                        padding: '16px 18px',
-                        fontSize: 13, lineHeight: 1.7,
-                        color: 'var(--fg-2)',
-                        whiteSpace: 'pre-wrap',
-                        maxHeight: 400, overflowY: 'auto',
-                      }}>
-                        {row.output}
+                      {/* Output */}
+                      <div className="result-body" style={{ maxHeight: 480, overflowY: 'auto' }}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{row.output}</ReactMarkdown>
                       </div>
                     </div>
                   )}
@@ -227,45 +224,5 @@ export function History() {
         )}
       </div>
     </div>
-  );
-}
-
-// Local save button that updates `rows` state optimistically
-function SaveButtonHistory({ row, session, onToggle }) {
-  const [saved, setSaved] = useState(row.saved ?? false);
-  const [busy, setBusy] = useState(false);
-
-  const toggle = async () => {
-    if (busy || !session?.user?.id) return;
-    setBusy(true);
-    const next = !saved;
-    setSaved(next);
-    onToggle(next);
-    try {
-      const res = await fetch('/api/toggle-save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ generationId: row.id, userId: session.user.id }),
-      });
-      const json = await res.json();
-      if (!res.ok) { setSaved(!next); onToggle(!next); }
-      else { setSaved(json.saved); onToggle(json.saved); }
-    } catch {
-      setSaved(!next);
-      onToggle(!next);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <button
-      className="btn btn-ghost btn-sm"
-      onClick={toggle}
-      disabled={busy}
-      style={{ color: saved ? '#F59E0B' : 'var(--fg-3)', cursor: 'pointer' }}
-    >
-      <Glyph name={saved ? 'star-fill' : 'star'} size={14} />
-    </button>
   );
 }

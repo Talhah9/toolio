@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -25,7 +27,7 @@ const LI_LIMIT = 3000;
 
 export function LinkedinTool({ tool, initialData }) {
   const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [topic, setTopic] = useState(initialData?.topic ?? '');
   const [tone, setTone] = useState(initialData?.tone ?? 'direct');
   const [format, setFormat] = useState(initialData?.format ?? 'storytelling');
@@ -51,6 +53,7 @@ export function LinkedinTool({ tool, initialData }) {
           toolId: tool.id,
           input: { topic, tone, format },
           userId: session?.user?.id,
+          lang,
         }),
       });
       const json = await res.json();
@@ -123,7 +126,7 @@ export function LinkedinTool({ tool, initialData }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <SaveButton generationId={genId} />
+                <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
@@ -132,7 +135,7 @@ export function LinkedinTool({ tool, initialData }) {
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : output ? (
               <>
-                <div className="result-body">{output}</div>
+                <div className="result-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown></div>
                 <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', fontSize: 12, color: overLimit ? '#EF4444' : 'var(--fg-4)', display: 'flex', justifyContent: 'flex-end' }}>
                   {charCount} / {LI_LIMIT} {overLimit && t('tool.linkedin.overlimit')}
                 </div>

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { SaveButton } from '../../components/SaveButton';
@@ -41,7 +43,7 @@ export function LegalTool({ tool, initialData }) {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id }),
+        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id, lang }),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
@@ -126,7 +128,7 @@ export function LegalTool({ tool, initialData }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <SaveButton generationId={genId} />
+                <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
@@ -134,7 +136,7 @@ export function LegalTool({ tool, initialData }) {
             </div>
             {loading ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
-            ) : output ? <div className="result-body">{output}</div> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            ) : output ? <div className="result-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown></div> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
       </div>

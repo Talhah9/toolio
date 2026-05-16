@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -51,7 +53,7 @@ function parseSections(output, keys) {
 
 export function MissionFinderTool({ tool, initialData }) {
   const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const [expertise, setExpertise] = useState(initialData?.expertise ?? '');
   const [tjm, setTjm] = useState(initialData?.tjm ?? '');
@@ -79,7 +81,7 @@ export function MissionFinderTool({ tool, initialData }) {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id }),
+        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id, lang }),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
@@ -238,7 +240,7 @@ export function MissionFinderTool({ tool, initialData }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <SaveButton generationId={genId} />
+                <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
                   <Glyph name="copy" size={12} /> {t('tool.copy')}
                 </button>
@@ -282,8 +284,8 @@ export function MissionFinderTool({ tool, initialData }) {
                 </span>
               </div>
             ) : hasOutput ? (
-              <div className="result-body" style={{ whiteSpace: 'pre-wrap' }}>
-                {sections[activeTab] || ''}
+              <div className="result-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab] || ''}</ReactMarkdown>
               </div>
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>

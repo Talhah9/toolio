@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -43,7 +45,7 @@ function parseSections(output, keys) {
 
 export function ProspectionTool({ tool, initialData }) {
   const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const [niche, setNiche] = useState(initialData?.niche ?? '');
   const [target, setTarget] = useState(initialData?.target ?? '');
@@ -73,6 +75,7 @@ export function ProspectionTool({ tool, initialData }) {
           toolId: tool.id,
           input: { niche, target, channel, tone, pain: pain || undefined },
           userId: session?.user?.id,
+          lang,
         }),
       });
       const json = await res.json();
@@ -211,7 +214,7 @@ export function ProspectionTool({ tool, initialData }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <SaveButton generationId={genId} />
+                <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
                   <Glyph name="copy" size={12} /> {t('tool.copy')}
                 </button>
@@ -255,8 +258,8 @@ export function ProspectionTool({ tool, initialData }) {
                 </span>
               </div>
             ) : hasOutput ? (
-              <div className="result-body" style={{ whiteSpace: 'pre-wrap' }}>
-                {getTabContent(activeTab)}
+              <div className="result-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{getTabContent(activeTab)}</ReactMarkdown>
               </div>
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>

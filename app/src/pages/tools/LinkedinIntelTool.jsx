@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -37,7 +39,7 @@ function parseSections(output, keys) {
 
 export function LinkedinIntelTool({ tool }) {
   const { credits, logGeneration, session } = useApp();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const fileRef = useRef(null);
 
   const [profileUrl, setProfileUrl] = useState('');
@@ -104,6 +106,7 @@ export function LinkedinIntelTool({ tool }) {
             imageMediaType: imageBase64 ? imageMediaType : undefined,
           },
           userId: session?.user?.id,
+          lang,
         }),
       });
       const json = await res.json();
@@ -251,7 +254,7 @@ export function LinkedinIntelTool({ tool }) {
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
-                <SaveButton generationId={genId} />
+                <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
                   <Glyph name="copy" size={12} /> {t('tool.copy')}
                 </button>
@@ -293,8 +296,8 @@ export function LinkedinIntelTool({ tool }) {
                 </span>
               </div>
             ) : hasOutput ? (
-              <div className="result-body" style={{ whiteSpace: 'pre-wrap' }}>
-                {sections[activeTab] || ''}
+              <div className="result-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab] || ''}</ReactMarkdown>
               </div>
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
