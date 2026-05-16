@@ -10,6 +10,7 @@ import { ToolPage } from './pages/ToolPage';
 import { Pricing } from './pages/Pricing';
 import { Account } from './pages/Account';
 import { History } from './pages/History';
+import { Legal } from './pages/Legal';
 
 export function App() {
   return (
@@ -19,6 +20,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/legal" element={<Legal />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<AppShell />}>
               <Route path="/dashboard" element={<Dashboard />} />

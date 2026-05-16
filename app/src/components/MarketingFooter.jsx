@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Logo } from './Logo';
 import { useLang } from '../context/LanguageContext';
 
@@ -34,9 +35,9 @@ export function MarketingFooter() {
           <div className="mk-footer-col">
             <h4>{t('footer.col.legal')}</h4>
             <ul>
-              <li><a>{t('footer.link.terms')}</a></li>
-              <li><a>{t('footer.link.privacy')}</a></li>
-              <li><a>{t('footer.link.legal')}</a></li>
+              <li><Link to="/legal?tab=cgv">{t('footer.link.terms')}</Link></li>
+              <li><Link to="/legal?tab=privacy">{t('footer.link.privacy')}</Link></li>
+              <li><Link to="/legal?tab=cgv">{t('footer.link.legal')}</Link></li>
             </ul>
           </div>
         </div>

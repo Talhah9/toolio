@@ -12,12 +12,13 @@ export function AppHeader() {
 
   return (
     <div className="app-header">
-      <div className="row" style={{ gap: 8 }}>
+      <div className="row app-header-greeting" style={{ gap: 8 }}>
         <span className="muted" style={{ fontSize: 13 }}>{t('header.hello')} {user.firstName || user.email}</span>
       </div>
-      <div className="row" style={{ gap: 12 }}>
+      <div className="row" style={{ gap: 8 }}>
         <button
           onClick={toggleLang}
+          className="app-header-greeting"
           style={{
             fontSize: 12,
             fontWeight: 600,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
 import { useToast } from '../components/Toast';
@@ -139,6 +139,18 @@ export function Account() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div style={{ marginTop: 8, paddingTop: 4 }}>
+          <p className="muted" style={{ fontSize: 12, textAlign: 'center' }}>
+            <Link to="/legal?tab=cgv" style={{ color: 'var(--fg-4)', textDecoration: 'underline' }}>
+              Conditions Générales de Vente
+            </Link>
+            {' · '}
+            <Link to="/legal?tab=privacy" style={{ color: 'var(--fg-4)', textDecoration: 'underline' }}>
+              Politique de Confidentialité
+            </Link>
+          </p>
         </div>
 
         {confirm && (
