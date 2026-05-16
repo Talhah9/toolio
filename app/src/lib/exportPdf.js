@@ -1,13 +1,31 @@
 import jsPDF from 'jspdf';
 
+// Strip characters and patterns jsPDF can't handle
+function sanitize(str) {
+  return str
+    // Emojis — broad range covering common blocks
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2700}-\u{27BF}\u{2600}-\u{26FF}\u{FE00}-\u{FE0F}]/gu, '')
+    // Bold and italic markers
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    // Inline code
+    .replace(/`([^`]*)`/g, '$1')
+    .trim();
+}
+
 export function exportPdf({ toolName, userEmail, output, filename }) {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const doc    = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW  = 210;
+  const pageH  = 297;
   const margin = 20;
   const maxW   = pageW - margin * 2;
+  const lineH  = 7;
   const date   = new Date().toLocaleDateString('en-GB');
 
   let y = margin;
+
+  const addPage = () => { doc.addPage(); y = margin; };
+  const checkY  = (needed) => { if (y + needed > pageH - margin) addPage(); };
 
   // ── Header ──────────────────────────────────────────────────
   doc.setFontSize(14);
@@ -24,7 +42,7 @@ export function exportPdf({ toolName, userEmail, output, filename }) {
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 30, 30);
-  doc.text(toolName, margin, y);
+  doc.text(sanitize(toolName), margin, y);
 
   if (userEmail) {
     y += 5;
@@ -43,36 +61,68 @@ export function exportPdf({ toolName, userEmail, output, filename }) {
   // ── Body ─────────────────────────────────────────────────────
   doc.setTextColor(30, 30, 30);
 
-  const addPage = () => { doc.addPage(); y = margin; };
-  const checkY  = (needed = 6) => { if (y + needed > 277) addPage(); };
-
   for (const rawLine of output.split('\n')) {
+    const trimmed = rawLine.trim();
+
+    // Horizontal rules: ---, ===, ***
+    if (/^[-=*]{3,}$/.test(trimmed)) {
+      checkY(8);
+      y += 2;
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin, y, pageW - margin, y);
+      y += 6;
+      continue;
+    }
+
+    // Table separator rows  | --- | :---: |
+    if (/^\|[\s\-:|]+\|/.test(trimmed)) continue;
+
+    // Headings
     const isH1 = rawLine.startsWith('# ');
     const isH2 = rawLine.startsWith('## ');
     const isH3 = rawLine.startsWith('### ');
 
     if (isH1 || isH2 || isH3) {
-      const text     = rawLine.replace(/^#{1,3}\s+/, '');
+      const text     = sanitize(rawLine.replace(/^#{1,3}\s+/, ''));
       const fontSize = isH1 ? 13 : isH2 ? 11 : 10;
-      if (isH1) { checkY(10); y += 3; }
-      else { checkY(8); y += 2; }
+      checkY(lineH + (isH1 ? 4 : 2));
+      y += isH1 ? 4 : 2;
       doc.setFontSize(fontSize);
       doc.setFont('helvetica', 'bold');
       doc.text(text, margin, y);
-      y += fontSize === 13 ? 7 : 6;
+      y += lineH;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-    } else if (rawLine.trim() === '') {
-      y += 2.5;
-    } else {
+      continue;
+    }
+
+    // Table rows  | col | col |
+    if (trimmed.startsWith('|')) {
+      const cells = trimmed.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+      const text  = sanitize(cells.join('   '));
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      const wrapped = doc.splitTextToSize(rawLine, maxW);
-      for (const wl of wrapped) {
-        checkY(5);
+      for (const wl of doc.splitTextToSize(text, maxW)) {
+        checkY(lineH);
         doc.text(wl, margin, y);
-        y += 5;
+        y += lineH;
       }
+      continue;
+    }
+
+    // Empty line
+    if (trimmed === '') {
+      y += 3;
+      continue;
+    }
+
+    // Regular text
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    for (const wl of doc.splitTextToSize(sanitize(rawLine), maxW)) {
+      checkY(lineH);
+      doc.text(wl, margin, y);
+      y += lineH;
     }
   }
 
