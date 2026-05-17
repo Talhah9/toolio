@@ -21,22 +21,50 @@ const CHECK_KEYS = [
   'tool.audit.check.schema',
 ];
 
+const TABS = [
+  { id: 'TECHNICAL',   key: 'tool.audit.tab.technical' },
+  { id: 'CONTENT',     key: 'tool.audit.tab.content' },
+  { id: 'PERFORMANCE', key: 'tool.audit.tab.performance' },
+  { id: 'CONVERSION',  key: 'tool.audit.tab.conversion' },
+  { id: 'ACTIONS',     key: 'tool.audit.tab.actions' },
+];
+
+function parseSections(output, keys) {
+  const normalized = output.replace(/\r\n/g, '\n').trim();
+  const sections = {};
+  for (let i = 0; i < keys.length; i++) {
+    const marker = `[SECTION:${keys[i]}]`;
+    const upperNorm = normalized.toUpperCase();
+    const upperMarker = marker.toUpperCase();
+    const start = upperNorm.indexOf(upperMarker);
+    if (start === -1) continue;
+    const contentStart = start + marker.length;
+    const nextKey = i < keys.length - 1 ? `[SECTION:${keys[i + 1]}]`.toUpperCase() : null;
+    const nextMarkerPos = nextKey ? upperNorm.indexOf(nextKey, contentStart) : -1;
+    sections[keys[i]] = normalized.slice(contentStart, nextMarkerPos !== -1 ? nextMarkerPos : normalized.length).trim();
+  }
+  return sections;
+}
+
 export function AuditTool({ tool }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
   const [url, setUrl] = useState('');
   const [checks, setChecks] = useState(CHECK_KEYS.map(() => true));
-  const [output, setOutput] = useState('');
+  const [sections, setSections] = useState({});
+  const [activeTab, setActiveTab] = useState('TECHNICAL');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [toast, ToastEl] = useToast();
+
+  const hasOutput = Object.keys(sections).length > 0;
 
   const generate = async () => {
     if (!url.trim()) { toast(t('tool.audit.error.url')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
-    setOutput('');
+    setSections({});
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
@@ -50,7 +78,9 @@ export function AuditTool({ tool }) {
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
-      setOutput(json.output);
+      const parsed = parseSections(json.output, TABS.map(t => t.id));
+      setSections(parsed);
+      setActiveTab('TECHNICAL');
       const id = await logGeneration(tool.id, { url }, json.output, tool.credits);
       setGenId(id);
     } catch (err) {
@@ -60,14 +90,25 @@ export function AuditTool({ tool }) {
     }
   };
 
-  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
+  const copy = () => {
+    const text = sections[activeTab];
+    if (!text) return;
+    navigator.clipboard?.writeText(text);
+    toast(t('tool.copied'));
+  };
 
-  const downloadPdf = () => exportPdf({
-    toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
-    userEmail: user?.email,
-    output,
-    filename: `toolio-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
-  });
+  const downloadPdf = () => {
+    const allSections = TABS
+      .map(tab => sections[tab.id] ? `## ${t(tab.key)}\n\n${sections[tab.id]}` : '')
+      .filter(Boolean)
+      .join('\n\n---\n\n');
+    exportPdf({
+      toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
+      userEmail: user?.email,
+      output: allSections,
+      filename: `toolio-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+    });
+  };
 
   return (
     <ToolShell tool={tool}>
@@ -123,15 +164,45 @@ export function AuditTool({ tool }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
-                {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                {hasOutput && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!hasOutput || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>
+
+            {hasOutput && (
+              <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', gap: 0, overflowX: 'auto' }}>
+                {TABS.map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    style={{
+                      padding: '10px 14px',
+                      fontSize: 12,
+                      fontWeight: activeTab === tab.id ? 600 : 400,
+                      color: activeTab === tab.id ? 'var(--accent)' : 'var(--fg-3)',
+                      borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                      background: 'none',
+                      border: 'none',
+                      borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'color 0.15s',
+                    }}
+                  >
+                    {t(tab.key)}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {loading ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
-            ) : output ? (
-              <div className="result-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown></div>
+            ) : hasOutput ? (
+              <div className="result-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab] || ''}</ReactMarkdown>
+              </div>
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}

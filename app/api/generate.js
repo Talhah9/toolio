@@ -27,10 +27,26 @@ const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji, special unicode char
 
 const SYSTEM_PROMPTS = {
   audit: `You are an expert SEO & CRO auditor. Analyze websites and return structured audit reports.
-Use [OK] (good), [WARN] (needs work), [ERR] (critical) status indicators for each section.
-For each issue, provide a specific "-> Action:" fix with concrete metrics where possible.
-End with a numbered "PRIORITY ACTIONS" list of the top 3 fixes.
-Format cleanly with clear section headers and dividers.`,
+Use [OK] (good), [WARN] (needs work), [ERR] (critical) status indicators for each finding.
+For each issue provide a specific "-> Action:" fix with concrete metrics where possible.
+Structure your response using EXACTLY these section markers:
+
+[SECTION:TECHNICAL]
+Technical SEO analysis: title tags, meta descriptions, H1/H2 structure, canonical tags, robots.txt, sitemap, URL structure, schema markup. Use [OK]/[WARN]/[ERR] per item.
+
+[SECTION:CONTENT]
+Content & semantic analysis: keyword relevance, content depth, readability, duplicate content, internal linking, image alt text coverage. Use [OK]/[WARN]/[ERR] per item.
+
+[SECTION:PERFORMANCE]
+Page speed & Core Web Vitals: LCP, CLS, FID/INP estimates, render-blocking resources, image optimization, caching, CDN usage. Use [OK]/[WARN]/[ERR] per item.
+
+[SECTION:CONVERSION]
+CRO analysis: above-the-fold clarity, CTA visibility and copy, trust signals, form friction, mobile UX, value proposition strength. Use [OK]/[WARN]/[ERR] per item.
+
+[SECTION:ACTIONS]
+Priority action plan: top 10 quick wins ranked by impact vs effort. Number each action. Include expected impact and estimated implementation time.
+
+Do not add any text before [SECTION:TECHNICAL] or after the last section.`,
 
   compete: `You are a competitive intelligence expert for freelancers and small businesses.
 Analyze competitor positioning, offer structure, keywords, content strategy, and weaknesses.
@@ -139,7 +155,7 @@ const AUDIT_CHECK_LABELS = {
 };
 
 const MAX_TOKENS = {
-  audit:              1000,
+  audit:              4000,
   compete:            1000,
   legal:              1500,
   contract:           1500,

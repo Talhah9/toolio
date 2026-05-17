@@ -80,6 +80,11 @@ export const en = {
   'tool.audit.check.alt': 'Image alt text coverage',
   'tool.audit.check.schema': 'Structured data / schema markup',
   'tool.audit.error.url': 'Enter a URL to analyse.',
+  'tool.audit.tab.technical':   'Technical',
+  'tool.audit.tab.content':     'Content',
+  'tool.audit.tab.performance': 'Performance',
+  'tool.audit.tab.conversion':  'Conversion',
+  'tool.audit.tab.actions':     'Actions',
 
   // ── Concurrents tool ─────────────────────────────────────────
   'tool.compete.competitor.label': 'Competitor URL',
