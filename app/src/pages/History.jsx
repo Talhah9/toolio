@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownResult } from '../components/MarkdownResult';
 import { Glyph } from '../components/Glyph';
 import { SaveButton } from '../components/SaveButton';
 import { useApp } from '../context/AppContext';
@@ -212,9 +211,7 @@ export function History() {
                         </button>
                       </div>
                       {/* Output */}
-                      <div className="result-body" style={{ maxHeight: 480, overflowY: 'auto' }}>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{row.output}</ReactMarkdown>
-                      </div>
+                      <MarkdownResult style={{ maxHeight: 480, overflowY: 'auto' }}>{row.output}</MarkdownResult>
                     </div>
                   )}
                 </div>

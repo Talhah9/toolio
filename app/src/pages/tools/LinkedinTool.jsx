@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownResult } from '../../components/MarkdownResult';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -135,7 +134,7 @@ export function LinkedinTool({ tool, initialData }) {
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : output ? (
               <>
-                <div className="result-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown></div>
+                <MarkdownResult>{output}</MarkdownResult>
                 <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', fontSize: 12, color: overLimit ? '#EF4444' : 'var(--fg-4)', display: 'flex', justifyContent: 'flex-end' }}>
                   {charCount} / {LI_LIMIT} {overLimit && t('tool.linkedin.overlimit')}
                 </div>

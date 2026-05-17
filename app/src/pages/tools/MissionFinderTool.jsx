@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownResult } from '../../components/MarkdownResult';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -284,9 +283,7 @@ export function MissionFinderTool({ tool, initialData }) {
                 </span>
               </div>
             ) : hasOutput ? (
-              <div className="result-body">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab] || ''}</ReactMarkdown>
-              </div>
+              <MarkdownResult>{sections[activeTab] || ''}</MarkdownResult>
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}

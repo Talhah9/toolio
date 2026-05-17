@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownResult } from '../../components/MarkdownResult';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -201,9 +200,7 @@ export function AuditTool({ tool }) {
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : hasOutput ? (
               sections[activeTab] ? (
-                <div className="result-body">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab]}</ReactMarkdown>
-                </div>
+                <MarkdownResult>{sections[activeTab]}</MarkdownResult>
               ) : (
                 <div className="result-empty" style={{ flexDirection: 'column', gap: 8 }}>
                   <span>{t('tool.audit.section.empty') || 'This section was not generated.'}</span>

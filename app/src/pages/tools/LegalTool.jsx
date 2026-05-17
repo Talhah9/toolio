@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownResult } from '../../components/MarkdownResult';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { SaveButton } from '../../components/SaveButton';
@@ -136,7 +135,7 @@ export function LegalTool({ tool, initialData }) {
             </div>
             {loading ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
-            ) : output ? <div className="result-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown></div> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            ) : output ? <MarkdownResult>{output}</MarkdownResult> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
       </div>

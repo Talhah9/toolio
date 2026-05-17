@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownResult } from '../../components/MarkdownResult';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { useToast } from '../../components/Toast';
@@ -183,7 +182,7 @@ export function RelanceTool({ tool }) {
                 </span>
               </div>
             ) : output ? (
-              <div className="result-body"><ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown></div>
+              <MarkdownResult>{output}</MarkdownResult>
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}
