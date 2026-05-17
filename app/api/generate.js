@@ -155,7 +155,7 @@ const AUDIT_CHECK_LABELS = {
 };
 
 const MAX_TOKENS = {
-  audit:              2500,
+  audit:              1500,
   compete:            1000,
   legal:              1500,
   contract:           1500,
