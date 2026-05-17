@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
