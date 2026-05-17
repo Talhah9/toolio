@@ -85,6 +85,7 @@ export const fr = {
   'tool.audit.tab.performance': 'Performance',
   'tool.audit.tab.conversion':  'Conversion',
   'tool.audit.tab.actions':     'Actions',
+  'tool.audit.section.empty':  "Cette section n'a pas été générée — cliquez sur Régénérer pour réessayer.",
 
   // ── Concurrents tool ─────────────────────────────────────────
   'tool.compete.competitor.label': 'URL du concurrent',

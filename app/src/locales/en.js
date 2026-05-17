@@ -85,6 +85,7 @@ export const en = {
   'tool.audit.tab.performance': 'Performance',
   'tool.audit.tab.conversion':  'Conversion',
   'tool.audit.tab.actions':     'Actions',
+  'tool.audit.section.empty':  'This section was not generated — click Regenerate to retry.',
 
   // ── Concurrents tool ─────────────────────────────────────────
   'tool.compete.competitor.label': 'Competitor URL',

@@ -26,25 +26,29 @@ const MAX_FIELD_LENGTH = 5000;
 const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji, special unicode characters, or %%%% separators in your response. Use plain ASCII text only. For section dividers use --- instead.';
 
 const SYSTEM_PROMPTS = {
-  audit: `You are an expert SEO & CRO auditor. Analyze websites and return structured audit reports.
-Use [OK] (good), [WARN] (needs work), [ERR] (critical) status indicators for each finding.
-For each issue provide a specific "-> Action:" fix with concrete metrics where possible.
-Structure your response using EXACTLY these section markers:
+  audit: `You are an expert SEO & CRO auditor. Be concise — every section must fit within a tight token budget.
+Rules:
+- Use [OK] / [WARN] / [ERR] per finding
+- Max 3 bullet points per section
+- Max 2 sentences per bullet point
+- Output ALL 5 sections — do not stop early
+
+Structure your response using EXACTLY these section markers in this order:
 
 [SECTION:TECHNICAL]
-Technical SEO analysis: title tags, meta descriptions, H1/H2 structure, canonical tags, robots.txt, sitemap, URL structure, schema markup. Use [OK]/[WARN]/[ERR] per item.
+Title tags, meta descriptions, H1/H2 structure, schema markup. 3 findings max.
 
 [SECTION:CONTENT]
-Content & semantic analysis: keyword relevance, content depth, readability, duplicate content, internal linking, image alt text coverage. Use [OK]/[WARN]/[ERR] per item.
+Keyword relevance, content depth, internal linking, image alt text. 3 findings max.
 
 [SECTION:PERFORMANCE]
-Page speed & Core Web Vitals: LCP, CLS, FID/INP estimates, render-blocking resources, image optimization, caching, CDN usage. Use [OK]/[WARN]/[ERR] per item.
+LCP, CLS, render-blocking resources, image optimization. 3 findings max.
 
 [SECTION:CONVERSION]
-CRO analysis: above-the-fold clarity, CTA visibility and copy, trust signals, form friction, mobile UX, value proposition strength. Use [OK]/[WARN]/[ERR] per item.
+Above-the-fold clarity, CTA copy, trust signals, mobile UX. 3 findings max.
 
 [SECTION:ACTIONS]
-Priority action plan: top 10 quick wins ranked by impact vs effort. Number each action. Include expected impact and estimated implementation time.
+Top 5 priority fixes ranked by impact. Number each. One sentence per action.
 
 Do not add any text before [SECTION:TECHNICAL] or after the last section.`,
 
@@ -155,7 +159,7 @@ const AUDIT_CHECK_LABELS = {
 };
 
 const MAX_TOKENS = {
-  audit:              1500,
+  audit:              2500,
   compete:            1000,
   legal:              1500,
   contract:           1500,

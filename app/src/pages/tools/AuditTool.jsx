@@ -200,9 +200,18 @@ export function AuditTool({ tool }) {
             {loading ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : hasOutput ? (
-              <div className="result-body">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab] || ''}</ReactMarkdown>
-              </div>
+              sections[activeTab] ? (
+                <div className="result-body">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[activeTab]}</ReactMarkdown>
+                </div>
+              ) : (
+                <div className="result-empty" style={{ flexDirection: 'column', gap: 8 }}>
+                  <span>{t('tool.audit.section.empty') || 'This section was not generated.'}</span>
+                  <button className="btn btn-ghost btn-sm" onClick={generate}>
+                    <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
+                  </button>
+                </div>
+              )
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}
