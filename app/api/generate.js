@@ -1,6 +1,26 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { applySecurityHeaders, verifyAuth, checkCredits, rateLimit } from './_security.js';
 
 export const config = { maxDuration: 60 };
+
+// Authoritative credit costs — single source of truth server-side.
+const TOOL_CREDITS = {
+  audit:             15,
+  compete:           15,
+  legal:              0,
+  contract:           0,
+  'linkedin-content': 10,
+  devis:              5,
+  relance:            0,
+  statut:             0,
+  urssaf:             0,
+  'linkedin-intel':  35,
+  prospection:       10,
+  'mission-finder':  30,
+};
+
+const KNOWN_TOOLS = new Set(Object.keys(TOOL_CREDITS));
+const MAX_FIELD_LENGTH = 5000;
 
 const SYSTEM_PROMPTS = {
   audit: `You are an expert SEO & CRO auditor. Analyze websites and return structured audit reports.
@@ -242,6 +262,8 @@ Generate a complete mission-finding strategy.`;
 }
 
 export default async function handler(req, res) {
+  applySecurityHeaders(res);
+
   if (req.method !== 'POST') return res.status(405).end();
 
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -250,14 +272,42 @@ export default async function handler(req, res) {
   }
 
   const { toolId, input, userId, lang } = req.body ?? {};
+
+  // ── 1. Input presence ─────────────────────────────────────────
   if (!toolId || !input || !userId) {
     return res.status(400).json({ error: 'Missing toolId, input, or userId' });
   }
 
-  const basePrompt = SYSTEM_PROMPTS[toolId];
-  if (!basePrompt) {
+  // ── 2. toolId whitelist ───────────────────────────────────────
+  if (!KNOWN_TOOLS.has(toolId)) {
     return res.status(400).json({ error: `Unknown tool: ${toolId}` });
   }
+
+  // ── 3. Input field validation ─────────────────────────────────
+  for (const [key, val] of Object.entries(input)) {
+    if (val === null || val === undefined) continue;
+    if (Array.isArray(val)) continue; // arrays (checks, docs, lines, competitors) — not validated as strings
+    if (typeof val !== 'string' && typeof val !== 'number' && typeof val !== 'boolean') {
+      return res.status(400).json({ error: `Invalid field: ${key}` });
+    }
+    if (typeof val === 'string' && val.length > MAX_FIELD_LENGTH) {
+      return res.status(400).json({ error: `Field "${key}" exceeds maximum length` });
+    }
+  }
+
+  // ── 4. Authentication ─────────────────────────────────────────
+  const verifiedId = await verifyAuth(req, res, userId);
+  if (!verifiedId) return; // verifyAuth already sent the response
+
+  // ── 5. Rate limiting ──────────────────────────────────────────
+  if (!rateLimit(res, verifiedId)) return;
+
+  // ── 6. Server-side credit check ───────────────────────────────
+  const cost = TOOL_CREDITS[toolId];
+  if (!(await checkCredits(res, verifiedId, cost))) return;
+
+  const basePrompt = SYSTEM_PROMPTS[toolId];
+
   const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
   const systemPrompt = basePrompt + langInstruction;
 

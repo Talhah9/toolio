@@ -1,6 +1,10 @@
 import OpenAI from 'openai';
+import { applySecurityHeaders, verifyAuth, checkCredits, rateLimit } from './_security.js';
 
 export const config = { maxDuration: 60 };
+
+const IMAGE_CREDITS = 20;
+const MAX_PROMPT_LENGTH = 5000;
 
 // gpt-image-1 supported sizes
 const SIZE_MAP = {
@@ -17,6 +21,8 @@ const STYLE_SUFFIX = {
 };
 
 export default async function handler(req, res) {
+  applySecurityHeaders(res);
+
   if (req.method !== 'POST') return res.status(405).end();
 
   if (!process.env.OPENAI_API_KEY) {
@@ -25,9 +31,24 @@ export default async function handler(req, res) {
   }
 
   const { prompt, style, size, userId } = req.body ?? {};
+
+  // ── 1. Input presence + validation ────────────────────────────
   if (!prompt || !userId) {
     return res.status(400).json({ error: 'Missing prompt or userId' });
   }
+  if (typeof prompt !== 'string' || prompt.length > MAX_PROMPT_LENGTH) {
+    return res.status(400).json({ error: 'Invalid prompt' });
+  }
+
+  // ── 2. Authentication ─────────────────────────────────────────
+  const verifiedId = await verifyAuth(req, res, userId);
+  if (!verifiedId) return;
+
+  // ── 3. Rate limiting ──────────────────────────────────────────
+  if (!rateLimit(res, verifiedId)) return;
+
+  // ── 4. Server-side credit check ───────────────────────────────
+  if (!(await checkCredits(res, verifiedId, IMAGE_CREDITS))) return;
 
   const keyPrefix = process.env.OPENAI_API_KEY.slice(0, 8);
   const imgSize   = SIZE_MAP[size] || '1024x1024';

@@ -49,7 +49,7 @@ export function ImageTool({ tool }) {
     try {
       const res = await fetch('/api/image', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
         body: JSON.stringify({ prompt, style, size, userId: session?.user?.id }),
       });
       const json = await res.json();
