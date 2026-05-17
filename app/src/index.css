@@ -240,17 +240,16 @@ a {
 
 .hero-ai-badge {
   position: absolute;
-  top: 40px;
-  right: 60px;
-  z-index: 2;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
   background: #4F46E5;
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   border-radius: 20px;
-  padding: 6px 14px;
+  padding: 4px 12px;
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  transform: rotate(2deg);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -1553,7 +1552,6 @@ a {
 }
 @media (max-width: 767px) {
   .h-display { font-size: clamp(32px, 8vw, 48px); }
-  .hero-ai-badge { display: none; }
   .stat-bar { gap: 24px; }
   .pain-grid { grid-template-columns: 1fr; }
   .testimonials-grid { grid-template-columns: 1fr; }

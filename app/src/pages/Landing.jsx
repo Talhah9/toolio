@@ -352,17 +352,6 @@ export function Landing() {
           <div className="hero-dot-grid" />
         </div>
 
-        {/* Floating AI badge */}
-        <motion.div
-          className="hero-ai-badge"
-          initial={reduce ? false : { opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.6, ease }}
-          aria-hidden="true"
-        >
-          {t('landing.hero.ai.badge')}
-        </motion.div>
-
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="hero-two-col">
             {/* Left col */}
@@ -383,7 +372,11 @@ export function Landing() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1, ease }}
               >
-                {t('landing.hero.title')}
+                {lang === 'fr' ? (
+                  <>Tous les <span style={{ position: 'relative', display: 'inline-block' }}>outils<span className="hero-ai-badge" aria-hidden="true">Propulsé par l'IA</span></span> dont un freelance a besoin.</>
+                ) : (
+                  <>Every tool <span style={{ position: 'relative', display: 'inline-block' }}>a<span className="hero-ai-badge" aria-hidden="true">Powered by AI</span></span> freelance needs.</>
+                )}
               </motion.h1>
 
               <motion.p
