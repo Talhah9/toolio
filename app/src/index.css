@@ -1337,7 +1337,14 @@ a {
    ============================================================ */
 
 /* Dark sections */
-.lp-dark { background: #0A0A0A; color: #fff; }
+.lp-dark {
+  background: #0A0A0A;
+  color: #fff;
+  clip-path: polygon(0 40px, 100% 0, 100% calc(100% - 40px), 0 100%);
+  margin-top: -40px;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
 .lp-dark .eyebrow { color: rgba(255,255,255,0.45); }
 .lp-dark .h1 { color: #fff; }
 
