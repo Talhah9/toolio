@@ -1395,11 +1395,11 @@ a {
 .tc-card {
   position: absolute;
   width: 320px;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-xl);
   padding: 28px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   clip-path: polygon(0 0, 100% 0, 100% 91%, 94% 100%, 0 100%);
   display: flex;
   flex-direction: column;
@@ -1407,20 +1407,24 @@ a {
   will-change: transform, opacity;
 }
 .tc-card--active {
-  box-shadow: 0 8px 32px rgba(79, 70, 229, 0.12), var(--shadow-lg);
-  border-color: rgba(79, 70, 229, 0.25);
+  background: #fff;
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
 }
 .tc-stars { color: var(--gold); font-size: 14px; letter-spacing: 2px; }
 .tc-quote {
   font-size: 14px;
   line-height: 1.75;
-  color: var(--fg-2);
+  color: rgba(255,255,255,0.65);
   font-style: italic;
   margin: 0;
   flex: 1;
 }
-.tc-name { font-weight: 600; font-size: 14px; color: var(--fg); }
-.tc-role { font-size: 12px; color: var(--fg-3); margin-top: 2px; }
+.tc-card--active .tc-quote { color: var(--fg-2); }
+.tc-name { font-weight: 600; font-size: 14px; color: #fff; }
+.tc-card--active .tc-name { color: var(--fg); }
+.tc-role { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.tc-card--active .tc-role { color: var(--fg-3); }
 .tc-nav {
   display: flex;
   align-items: center;
@@ -1431,20 +1435,20 @@ a {
 .tc-btn {
   width: 40px; height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.07);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  color: var(--fg-2);
+  color: rgba(255,255,255,0.7);
   transition: all 180ms ease;
   flex-shrink: 0;
 }
-.tc-btn:hover { background: var(--bg-hover); border-color: var(--border-strong); color: var(--fg); }
+.tc-btn:hover { background: rgba(255,255,255,0.14); color: #fff; border-color: rgba(255,255,255,0.25); }
 .tc-dots { display: flex; gap: 6px; align-items: center; }
 .tc-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--border-strong);
+  background: rgba(255,255,255,0.2);
   border: none;
   cursor: pointer;
   transition: all 200ms ease;
@@ -1452,7 +1456,7 @@ a {
   flex-shrink: 0;
 }
 .tc-dot--active {
-  background: var(--accent);
+  background: #fff;
   width: 20px;
   border-radius: 3px;
 }

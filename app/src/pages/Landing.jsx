@@ -590,7 +590,7 @@ export function Landing() {
       </section>
 
       {/* ── 4. SOCIAL PROOF — STATS + TESTIMONIALS ────────────── */}
-      <section className="section">
+      <section className="section lp-dark">
         <div className="container">
           <FadeUp>
             <div className="stat-bar">
@@ -601,8 +601,8 @@ export function Landing() {
                 { value: t('landing.stats.hosting'), label: t('landing.stats.hosting.label') },
               ].map((item, i) => (
                 <div key={i} className="stat-item">
-                  <div className="stat-value">{item.value}</div>
-                  <div className="stat-label">{item.label}</div>
+                  <div className="stat-value" style={{ color: '#fff' }}>{item.value}</div>
+                  <div className="stat-label" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.label}</div>
                 </div>
               ))}
             </div>
