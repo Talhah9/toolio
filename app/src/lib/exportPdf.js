@@ -5,12 +5,22 @@ function sanitize(str) {
   return str
     // Remove ALL emoji and special unicode (comprehensive range)
     .replace(/[\u{1F000}-\u{1FFFF}|\u{2600}-\u{27BF}|\u{FE00}-\u{FE0F}|\u{1F900}-\u{1F9FF}|\u{2300}-\u{23FF}|\u{2B00}-\u{2BFF}|\u{1FA00}-\u{1FA9F}]/gu, '')
+    // Lines that are only % characters (Claude separator artifacts)
+    .replace(/^%+$/gm, '')
+    // Arrow and special punctuation → ASCII equivalents
+    .replace(/→/g, '->')
+    .replace(/←/g, '<-')
+    .replace(/['']/g, "'")
+    .replace(/[""]/g, '"')
+    .replace(/[–—]/g, '-')
     // Remove markdown bold/italic
     .replace(/\*\*(.*?)\*\*/g, '$1')
     .replace(/\*(.*?)\*/g, '$1')
     .replace(/`(.*?)`/g, '$1')
     // Clean up multiple spaces
     .replace(/  +/g, ' ')
+    // Strip any remaining non-ASCII as last resort
+    .replace(/[^\x00-\x7F]/g, '')
     .trim();
 }
 

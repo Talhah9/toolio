@@ -22,17 +22,20 @@ const TOOL_CREDITS = {
 const KNOWN_TOOLS = new Set(Object.keys(TOOL_CREDITS));
 const MAX_FIELD_LENGTH = 5000;
 
+// Appended to every system prompt — keeps PDF export clean.
+const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji, special unicode characters, or %%%% separators in your response. Use plain ASCII text only. For section dividers use --- instead.';
+
 const SYSTEM_PROMPTS = {
   audit: `You are an expert SEO & CRO auditor. Analyze websites and return structured audit reports.
-Use ✅ (good), ⚠️ (needs work), ❌ (critical) status indicators for each section.
-For each issue, provide a specific "→ Action:" fix with concrete metrics where possible.
+Use [OK] (good), [WARN] (needs work), [ERR] (critical) status indicators for each section.
+For each issue, provide a specific "-> Action:" fix with concrete metrics where possible.
 End with a numbered "PRIORITY ACTIONS" list of the top 3 fixes.
 Format cleanly with clear section headers and dividers.`,
 
   compete: `You are a competitive intelligence expert for freelancers and small businesses.
 Analyze competitor positioning, offer structure, keywords, content strategy, and weaknesses.
-Provide specific, actionable intelligence — not generic advice.
-End with a "YOUR MOVE" section with 2–3 concrete tactics to differentiate.
+Provide specific, actionable intelligence - not generic advice.
+End with a "YOUR MOVE" section with 2-3 concrete tactics to differentiate.
 Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.`,
 
   legal: `You are a legal expert specialising in French and international business law for freelancers and small businesses.
@@ -64,7 +67,7 @@ Output only the quote document.`,
 Analyse the provided LinkedIn profile and return a structured intelligence report using EXACTLY these section markers:
 
 [SECTION:PROFILE_AUDIT]
-Audit the profile: headline, about section, experience, featured content, skills, photo. Use ✅ / ⚠️ / ❌ for each element. Provide specific improvement recommendations for each issue.
+Audit the profile: headline, about section, experience, featured content, skills, photo. Use [OK] / [WARN] / [ERR] for each element. Provide specific improvement recommendations for each issue.
 
 [SECTION:COMPETITOR_ANALYSIS]
 Analyse the competitor profiles provided. Compare positioning, content strategy, engagement tactics, and differentiation opportunities. If no competitors provided, suggest 3 types of profiles to monitor in this niche.
@@ -113,7 +116,7 @@ List 6–8 platforms ranked by fit for this profile. For each: platform name, wh
 Provide 4–6 ready-to-use LinkedIn boolean search strings tailored to this profile. Format each as a copyable string. Add a tip on how to use LinkedIn's filters (location, company size, date posted) to narrow results. Also include 2–3 Google X-ray search strings for finding decision-makers.
 
 [SECTION:PROFILE_TIPS]
-Provide a 10-point profile optimisation checklist covering: LinkedIn headline formula, About section structure, experience bullet points, featured section, skills & endorsements, keywords to use, portfolio/projects, recommendations, profile URL, and activity signal. Use ✅ / ⚠️ / ❌ for priority.
+Provide a 10-point profile optimisation checklist covering: LinkedIn headline formula, About section structure, experience bullet points, featured section, skills & endorsements, keywords to use, portfolio/projects, recommendations, profile URL, and activity signal. Use [OK] / [WARN] / [ERR] for priority.
 
 [SECTION:TARGET_COMPANIES]
 Define 4–5 company archetypes to target (e.g. "Series A SaaS startup 10–50 people"). For each: why they hire freelancers, how to find them (LinkedIn filters, Crunchbase, Welcome to the Jungle, etc.), who to contact (title/role), and best outreach timing.
@@ -309,7 +312,7 @@ export default async function handler(req, res) {
   const basePrompt = SYSTEM_PROMPTS[toolId];
 
   const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
-  const systemPrompt = basePrompt + langInstruction;
+  const systemPrompt = basePrompt + ASCII_INSTRUCTION + langInstruction;
 
   let userMessage;
   try {
