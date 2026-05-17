@@ -352,6 +352,17 @@ export function Landing() {
           <div className="hero-dot-grid" />
         </div>
 
+        {/* Floating AI badge */}
+        <motion.div
+          className="hero-ai-badge"
+          initial={reduce ? false : { opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.6, ease }}
+          aria-hidden="true"
+        >
+          {t('landing.hero.ai.badge')}
+        </motion.div>
+
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="hero-two-col">
             {/* Left col */}
@@ -367,7 +378,7 @@ export function Landing() {
 
               <motion.h1
                 className="h-display"
-                style={{ whiteSpace: 'pre-line' }}
+                style={{ maxWidth: 580 }}
                 initial={reduce ? false : { opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1, ease }}

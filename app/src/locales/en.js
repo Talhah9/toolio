@@ -336,7 +336,8 @@ export const en = {
   // ── Landing page ─────────────────────────────────────────────
   'landing.eyebrow.badge': '⚡ Early Access · Preferred pricing',
   'landing.eyebrow.text': '13 AI tools, one subscription',
-  'landing.hero.title': 'Every tool a freelance needs. Powered by AI.',
+  'landing.hero.title': 'Every tool a freelance needs.',
+  'landing.hero.ai.badge': 'Powered by AI',
   'landing.hero.sub': 'Contracts, quotes, LinkedIn posts, legal docs — generated in seconds so you can focus on the work that actually pays.',
   'landing.hero.cta.primary': 'Start for free — no card',
   'landing.hero.cta.secondary': 'See all 13 tools ↓',

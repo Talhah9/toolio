@@ -227,15 +227,32 @@ a {
 
 /* === Type === */
 .h-display {
-  font-size: clamp(52px, 6vw, 80px);
-  line-height: 1.02;
+  font-size: clamp(56px, 5.5vw, 88px);
+  line-height: 1.05;
   letter-spacing: -0.04em;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--fg);
   margin: 0;
 }
 @media (max-width: 1024px) {
   .h-display { font-size: clamp(40px, 5vw, 60px); }
+}
+
+.hero-ai-badge {
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  z-index: 2;
+  background: #4F46E5;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 6px 14px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  transform: rotate(2deg);
+  pointer-events: none;
+  white-space: nowrap;
 }
 .h1 {
   font-size: var(--t-3xl);
@@ -1536,6 +1553,7 @@ a {
 }
 @media (max-width: 767px) {
   .h-display { font-size: clamp(32px, 8vw, 48px); }
+  .hero-ai-badge { display: none; }
   .stat-bar { gap: 24px; }
   .pain-grid { grid-template-columns: 1fr; }
   .testimonials-grid { grid-template-columns: 1fr; }
