@@ -1514,6 +1514,21 @@ a {
   animation: hero-float 4s ease-in-out infinite;
 }
 
+.hero-side-card {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.hero-side-card-left  { left: 2%; }
+.hero-side-card-right { right: 2%; }
+
+.hero-side-card .hero-output-card {
+  max-width: 220px;
+  min-height: auto;
+  font-size: 12px;
+}
+
 /* Final CTA dark section */
 .lp-final-dark {
   background: #0A0A0A; color: #fff;
@@ -1541,6 +1556,7 @@ a {
 .lp-social-avatars .lp-avatar:first-child { margin-left: 0; }
 
 @media (max-width: 900px) {
+  .hero-side-card { display: none; }
   .hero-two-col { grid-template-columns: 1fr; }
   .hero-output-card { display: none; }
   .lp-demo-panel { grid-template-columns: 1fr; }

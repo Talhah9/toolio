@@ -254,12 +254,12 @@ function ToolDemoTabs({ t, lang }) {
 
 // ── Hero rotating output card ─────────────────────────────────
 
-function HeroOutputCard({ t, lang }) {
-  const [idx, setIdx] = useState(0);
+function HeroOutputCard({ t, lang, startIdx = 0 }) {
+  const [idx, setIdx] = useState(startIdx);
   const reduce = useReducedMotion();
 
-  // Reset to first card on language switch
-  useEffect(() => { setIdx(0); }, [lang]);
+  // Reset to startIdx on language switch
+  useEffect(() => { setIdx(startIdx); }, [lang, startIdx]);
 
   // Advance after typing finishes + 2.5s reading pause
   useEffect(() => {
@@ -352,107 +352,114 @@ export function Landing() {
           <div className="hero-dot-grid" />
         </div>
 
+        {/* Side cards — desktop only, absolute positioned */}
+        <motion.div
+          className="hero-side-card hero-side-card-left"
+          initial={reduce ? false : { opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.5, ease }}
+          aria-hidden="true"
+        >
+          <HeroOutputCard t={t} lang={lang} startIdx={1} />
+        </motion.div>
+
+        <motion.div
+          className="hero-side-card hero-side-card-right"
+          initial={reduce ? false : { opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.5, ease }}
+          aria-hidden="true"
+        >
+          <HeroOutputCard t={t} lang={lang} startIdx={0} />
+        </motion.div>
+
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="hero-two-col">
-            {/* Left col */}
-            <div>
-              <motion.span
-                className="hero-eyebrow"
-                initial={reduce ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease }}
-              >
-                <span className="pill">{t('landing.eyebrow.badge')}</span>
-              </motion.span>
-
-              <motion.h1
-                className="h-display"
-                style={{ maxWidth: 580 }}
-                initial={reduce ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.1, ease }}
-              >
-                {lang === 'fr' ? (
-                  <>
-                    <span style={{ display: 'block' }}>Tous les outils</span>
-                    <span style={{ display: 'block' }}>dont un freelance</span>
-                    <span style={{ display: 'block' }}>a besoin.</span>
-                  </>
-                ) : (
-                  <>
-                    <span style={{ display: 'block' }}>Every tool a</span>
-                    <span style={{ display: 'block' }}>freelance needs.</span>
-                  </>
-                )}
-              </motion.h1>
-
-              <motion.div
-                initial={reduce ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.18, ease }}
-              >
-                <span className="hero-ai-badge" aria-label={t('landing.hero.ai.badge')}>
-                  {t('landing.hero.ai.badge')}
-                </span>
-              </motion.div>
-
-              <motion.p
-                className="hero-sub"
-                initial={reduce ? false : { opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.2, ease }}
-              >
-                {t('landing.hero.sub')}
-              </motion.p>
-
-              <motion.div
-                className="hero-cta"
-                initial={reduce ? false : { opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3, ease }}
-              >
-                <motion.button
-                  className="btn btn-accent btn-lg"
-                  onClick={() => navigate('/auth?mode=register')}
-                  whileHover={reduce ? {} : { scale: 1.025 }}
-                  whileTap={reduce ? {} : { scale: 0.975 }}
-                  transition={{ duration: 0.15 }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {t('landing.hero.cta.primary')}
-                </motion.button>
-                <motion.button
-                  className="btn btn-secondary btn-lg"
-                  onClick={() => { const el = document.getElementById('tools'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
-                  whileHover={reduce ? {} : { scale: 1.015 }}
-                  whileTap={reduce ? {} : { scale: 0.985 }}
-                  transition={{ duration: 0.15 }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {t('landing.hero.cta.secondary')}
-                </motion.button>
-              </motion.div>
-
-              <motion.p
-                className="muted"
-                style={{ fontSize: 13, marginTop: 16 }}
-                initial={reduce ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.45 }}
-              >
-                {t('landing.hero.note')}
-              </motion.p>
-            </div>
-
-            {/* Right col — output card (desktop only) */}
-            <motion.div
-              initial={reduce ? false : { opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.35, ease }}
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: -40 }}
+          <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+            <motion.span
+              className="hero-eyebrow"
+              initial={reduce ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease }}
             >
-              <HeroOutputCard t={t} lang={lang} />
+              <span className="pill">{t('landing.eyebrow.badge')}</span>
+            </motion.span>
+
+            <motion.h1
+              className="h-display"
+              initial={reduce ? false : { opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.1, ease }}
+            >
+              {lang === 'fr' ? (
+                <>
+                  <span style={{ display: 'block' }}>Tous les outils</span>
+                  <span style={{ display: 'block' }}>dont un freelance</span>
+                  <span style={{ display: 'block' }}>a besoin.</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ display: 'block' }}>Every tool a</span>
+                  <span style={{ display: 'block' }}>freelance needs.</span>
+                </>
+              )}
+            </motion.h1>
+
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.18, ease }}
+            >
+              <span className="hero-ai-badge" aria-label={t('landing.hero.ai.badge')}>
+                {t('landing.hero.ai.badge')}
+              </span>
             </motion.div>
+
+            <motion.p
+              className="hero-sub"
+              initial={reduce ? false : { opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.2, ease }}
+            >
+              {t('landing.hero.sub')}
+            </motion.p>
+
+            <motion.div
+              className="hero-cta"
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3, ease }}
+            >
+              <motion.button
+                className="btn btn-accent btn-lg"
+                onClick={() => navigate('/auth?mode=register')}
+                whileHover={reduce ? {} : { scale: 1.025 }}
+                whileTap={reduce ? {} : { scale: 0.975 }}
+                transition={{ duration: 0.15 }}
+                style={{ cursor: 'pointer' }}
+              >
+                {t('landing.hero.cta.primary')}
+              </motion.button>
+              <motion.button
+                className="btn btn-secondary btn-lg"
+                onClick={() => { const el = document.getElementById('tools'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }}
+                whileHover={reduce ? {} : { scale: 1.015 }}
+                whileTap={reduce ? {} : { scale: 0.985 }}
+                transition={{ duration: 0.15 }}
+                style={{ cursor: 'pointer' }}
+              >
+                {t('landing.hero.cta.secondary')}
+              </motion.button>
+            </motion.div>
+
+            <motion.p
+              className="muted"
+              style={{ fontSize: 13, marginTop: 16 }}
+              initial={reduce ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.45 }}
+            >
+              {t('landing.hero.note')}
+            </motion.p>
           </div>
         </div>
       </section>
