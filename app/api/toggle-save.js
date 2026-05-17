@@ -15,6 +15,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing generationId or userId' });
   }
 
+  console.log('[toggle-save] generationId:', generationId, '| userId:', userId, '| name:', name);
+
   const { data: current, error: fetchErr } = await supabase
     .from('generations')
     .select('saved')
@@ -22,11 +24,18 @@ export default async function handler(req, res) {
     .eq('user_id', userId)
     .single();
 
-  if (fetchErr) return res.status(404).json({ error: 'Generation not found' });
+  if (fetchErr) {
+    console.error('[toggle-save] fetch error:', fetchErr.message, fetchErr.code);
+    return res.status(404).json({ error: 'Generation not found', detail: fetchErr.message });
+  }
+
+  console.log('[toggle-save] current saved:', current.saved);
 
   const newSaved = !current.saved;
   const updateData = { saved: newSaved };
   if (newSaved && name) updateData.name = name;
+
+  console.log('[toggle-save] updating to:', updateData);
 
   const { data, error } = await supabase
     .from('generations')
@@ -36,6 +45,11 @@ export default async function handler(req, res) {
     .select('saved, name')
     .single();
 
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    console.error('[toggle-save] update error:', error.message, error.code);
+    return res.status(500).json({ error: error.message });
+  }
+
+  console.log('[toggle-save] success | saved:', data.saved, '| name:', data.name);
   res.json({ saved: data.saved, name: data.name ?? null });
 }

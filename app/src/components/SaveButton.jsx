@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Glyph } from './Glyph';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
@@ -59,6 +59,10 @@ export function SaveButton({ generationId, initialSaved = false, toolName = '', 
   const [saved, setSaved] = useState(initialSaved);
   const [busy, setBusy] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  // Sync internal state when initialSaved prop changes (e.g. History optimistic update)
+  useEffect(() => { setSaved(initialSaved); }, [initialSaved]);
 
   if (!generationId) return null;
 
@@ -80,10 +84,14 @@ export function SaveButton({ generationId, initialSaved = false, toolName = '', 
   const doToggle = async (name) => {
     if (busy || !session?.user?.id) return;
     setBusy(true);
+    setErrored(false);
     try {
       const res = await fetch('/api/toggle-save', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token ?? ''}`,
+        },
         body: JSON.stringify({
           generationId,
           userId: session.user.id,
@@ -91,11 +99,14 @@ export function SaveButton({ generationId, initialSaved = false, toolName = '', 
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
+      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      console.log('[SaveButton] toggle-save ok | saved:', json.saved, '| name:', json.name);
       setSaved(json.saved);
       if (onToggle) onToggle(json.saved);
-    } catch {
-      // silent fail
+    } catch (err) {
+      console.error('[SaveButton] toggle-save failed:', err.message);
+      setErrored(true);
+      setTimeout(() => setErrored(false), 2000);
     } finally {
       setBusy(false);
       setShowModal(false);
@@ -109,7 +120,7 @@ export function SaveButton({ generationId, initialSaved = false, toolName = '', 
         onClick={handleClick}
         disabled={busy}
         title={saved ? 'Unsave' : 'Save'}
-        style={{ color: saved ? '#F59E0B' : 'var(--fg-3)', cursor: 'pointer' }}
+        style={{ color: errored ? '#DC2626' : saved ? '#F59E0B' : 'var(--fg-3)', cursor: 'pointer' }}
       >
         <Glyph name={saved ? 'star-fill' : 'star'} size={14} />
       </button>
