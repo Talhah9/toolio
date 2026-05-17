@@ -526,7 +526,7 @@ export function Landing() {
 
       {/* ── 2. PAIN POINTS ────────────────────────────────────── */}
       <FadeUp>
-        <section className="lp-dark section">
+        <section className="lp-dark section lp-pain-section">
           <div className="container">
             <div className="section-hd" style={{ marginBottom: 40 }}>
               <span className="eyebrow">{t('landing.pain.eyebrow')}</span>
