@@ -3,13 +3,14 @@ import jsPDF from 'jspdf';
 // Strip characters and patterns jsPDF can't handle
 function sanitize(str) {
   return str
-    // Emojis — broad range covering common blocks
-    .replace(/[\u{1F000}-\u{1FFFF}\u{2700}-\u{27BF}\u{2600}-\u{26FF}\u{FE00}-\u{FE0F}]/gu, '')
-    // Bold and italic markers
+    // Remove ALL emoji and special unicode (comprehensive range)
+    .replace(/[\u{1F000}-\u{1FFFF}|\u{2600}-\u{27BF}|\u{FE00}-\u{FE0F}|\u{1F900}-\u{1F9FF}|\u{2300}-\u{23FF}|\u{2B00}-\u{2BFF}|\u{1FA00}-\u{1FA9F}]/gu, '')
+    // Remove markdown bold/italic
     .replace(/\*\*(.*?)\*\*/g, '$1')
     .replace(/\*(.*?)\*/g, '$1')
-    // Inline code
-    .replace(/`([^`]*)`/g, '$1')
+    .replace(/`(.*?)`/g, '$1')
+    // Clean up multiple spaces
+    .replace(/  +/g, ' ')
     .trim();
 }
 
