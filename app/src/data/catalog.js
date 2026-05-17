@@ -117,9 +117,9 @@ export function getToolText(tool, lang) {
 }
 
 export const PACKS = [
-  { id: 'small',  credits: 100, price: 9,  label: 'Small' },
-  { id: 'medium', credits: 250, price: 19, label: 'Medium', featured: true },
-  { id: 'large',  credits: 600, price: 39, label: 'Large' },
+  { id: 'small',  credits: 100, price: 9,  price_usd: 10, label: 'Small' },
+  { id: 'medium', credits: 250, price: 19, price_usd: 21, label: 'Medium', featured: true },
+  { id: 'large',  credits: 600, price: 39, price_usd: 42, label: 'Large' },
 ];
 
 export const SAMPLE_OUTPUTS = {

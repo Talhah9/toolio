@@ -6,10 +6,12 @@ import { PlanBadge } from '../components/PlanBadge';
 import { PACKS } from '../data/catalog';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
+import { useCurrency } from '../hooks/useCurrency';
 
 export function Pricing() {
   const { credits, plan } = useApp();
   const { t } = useLang();
+  const { format, convert } = useCurrency();
   const [showCheckout, setShowCheckout] = useState(null);
 
   return (
@@ -98,8 +100,8 @@ export function Pricing() {
                 {p.featured && <span className="badge badge-outline">{t('pricing.packs.popular')}</span>}
               </div>
               <p className="pack-credits tabular">{p.credits}<span className="muted" style={{ fontSize: 14, fontWeight: 400, marginLeft: 6 }}>{t('header.credits')}</span></p>
-              <p className="pack-price">{p.price}€</p>
-              <p className="pack-meta">{t('pricing.packs.no-expiry')} · {(p.price / p.credits).toFixed(2)}{t('pricing.packs.per-credit')}</p>
+              <p className="pack-price">{format(p.price)}</p>
+              <p className="pack-meta">{t('pricing.packs.no-expiry')} · {(convert(p.price) / p.credits).toFixed(2)}{t('pricing.packs.per-credit')}</p>
               <button className="btn btn-secondary btn-block" style={{ marginTop: 8 }} onClick={() => setShowCheckout({ type: 'pack', pack: p })}>
                 {t('pricing.packs.buy')}
               </button>

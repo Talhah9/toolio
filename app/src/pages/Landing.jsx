@@ -8,6 +8,7 @@ import { ToolIcon } from '../components/ToolIcon';
 import { PlanBadge } from '../components/PlanBadge';
 import { TOOLS, getToolText } from '../data/catalog';
 import { useLang } from '../context/LanguageContext';
+import { useCurrency } from '../hooks/useCurrency';
 
 const ease = [0.25, 0.46, 0.45, 0.94];
 
@@ -386,6 +387,7 @@ export function Landing() {
   const navigate = useNavigate();
   const location = useLocation();
   const { lang, t } = useLang();
+  const { format } = useCurrency();
   const reduce = useReducedMotion();
 
   useEffect(() => {
@@ -747,7 +749,7 @@ export function Landing() {
               <div>
                 <h3 className="plan-name">Free</h3>
                 <p className="muted" style={{ fontSize: 13, margin: '0 0 24px' }}>{t('landing.pricing.free.tagline')}</p>
-                <p className="plan-price">€0<small>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
+                <p className="plan-price">{format(0)}<small>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
               </div>
               <ul className="plan-features">
                 <li><Glyph name="check" size={14} /><span>{t('landing.pricing.free.f1')}</span></li>
@@ -779,7 +781,7 @@ export function Landing() {
                   </div>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: '0 0 24px' }}>{t('landing.pricing.pro.tagline')}</p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                    <p className="plan-price" style={{ margin: 0 }}>€49<small style={{ color: 'rgba(255,255,255,0.6)' }}>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
+                    <p className="plan-price" style={{ margin: 0 }}>{format(49)}<small style={{ color: 'rgba(255,255,255,0.6)' }}>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
                     <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', textDecoration: 'line-through' }}>{t('landing.pricing.pro.original')}</span>
                   </div>
                   <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>{t('landing.pricing.pro.note')}</p>
