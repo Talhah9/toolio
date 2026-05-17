@@ -1093,7 +1093,7 @@ a {
 /* Hero */
 .hero {
   padding: 96px 0 64px;
-  text-align: left;
+  text-align: center;
 }
 .hero-eyebrow {
   display: inline-flex;

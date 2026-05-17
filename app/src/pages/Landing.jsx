@@ -372,7 +372,18 @@ export function Landing() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1, ease }}
               >
-                {t('landing.hero.title')}
+                {lang === 'fr' ? (
+                  <>
+                    <span style={{ display: 'block' }}>Tous les outils</span>
+                    <span style={{ display: 'block' }}>dont un freelance</span>
+                    <span style={{ display: 'block' }}>a besoin.</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ display: 'block' }}>Every tool a</span>
+                    <span style={{ display: 'block' }}>freelance needs.</span>
+                  </>
+                )}
               </motion.h1>
 
               <motion.div
