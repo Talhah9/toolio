@@ -19,6 +19,7 @@ export function AppProvider({ children }) {
   const [credits, setCredits] = useState(null);
   const [plan, setPlan] = useState('free');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   // ── Fetch profile + credits ───────────────────────────────────
   // Never throws — always resolves, using fallback values on error.
@@ -51,6 +52,26 @@ export function AppProvider({ children }) {
     }
   }, []);
 
+  // ── Notifications ─────────────────────────────────────────────
+  const fetchNotifications = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (!error && data) setNotifications(data);
+  }, []);
+
+  const markAsRead = useCallback(async (id) => {
+    setNotifications(ns => ns.map(n => n.id === id ? { ...n, read: true } : n));
+    await supabase.from('notifications').update({ read: true }).eq('id', id);
+  }, []);
+
+  const markAllRead = useCallback(async () => {
+    setNotifications(ns => ns.map(n => ({ ...n, read: true })));
+    await supabase.from('notifications').update({ read: true }).eq('read', false);
+  }, []);
+
   // ── Auth bootstrap ────────────────────────────────────────────
   useEffect(() => {
     // Restore session on mount, then fetch user data.
@@ -63,6 +84,7 @@ export function AppProvider({ children }) {
       if (session) {
         try {
           await fetchUserData();
+          fetchNotifications(); // fire-and-forget
         } finally {
           // fetchUserData never throws, but belt-and-suspenders:
           // loading must be cleared no matter what.
@@ -81,12 +103,14 @@ export function AppProvider({ children }) {
         setSession(session);
 
         if (event === 'SIGNED_IN') {
-          fetchUserData(); // intentionally not awaited
+          fetchUserData();        // intentionally not awaited
+          fetchNotifications();   // intentionally not awaited
         }
 
         if (event === 'SIGNED_OUT') {
           setCredits(null);
           setPlan('free');
+          setNotifications([]);
         }
       }
     );
@@ -206,6 +230,8 @@ export function AppProvider({ children }) {
       }
     : null;
 
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   return (
     <AppContext.Provider value={{
       user,
@@ -227,6 +253,11 @@ export function AppProvider({ children }) {
       refreshCredits: fetchUserData,
       showOnboarding,
       completeOnboarding,
+      notifications,
+      unreadCount,
+      markAsRead,
+      markAllRead,
+      fetchNotifications,
     }}>
       {children}
     </AppContext.Provider>

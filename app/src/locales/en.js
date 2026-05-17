@@ -23,6 +23,10 @@ export const en = {
   'header.hello': 'Hello,',
   'header.credits': 'credits',
   'header.upgrade': 'Go Pro',
+  'notif.label': 'Notifications',
+  'notif.title': 'Notifications',
+  'notif.markAll': 'Mark all read',
+  'notif.empty': 'No notifications yet',
 
   // ── Dashboard ────────────────────────────────────────────────
   'dashboard.title': 'Your tools',

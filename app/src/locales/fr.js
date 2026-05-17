@@ -23,6 +23,10 @@ export const fr = {
   'header.hello': 'Bonjour,',
   'header.credits': 'crédits',
   'header.upgrade': 'Passer au Pro',
+  'notif.label': 'Notifications',
+  'notif.title': 'Notifications',
+  'notif.markAll': 'Tout marquer comme lu',
+  'notif.empty': 'Aucune notification',
 
   // ── Dashboard ────────────────────────────────────────────────
   'dashboard.title': 'Vos outils',

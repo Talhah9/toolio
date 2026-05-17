@@ -140,6 +140,37 @@ export function Glyph({ name, size = 16 }) {
           <path d="M2 10l3-3 2.5 2.5L10 7l4 4" />
         </svg>
       );
+    case 'bell':
+      return (
+        <svg {...props}>
+          <path d="M8 2a4 4 0 0 1 4 4v3l1.5 2.5h-11L4 9V6a4 4 0 0 1 4-4z" />
+          <path d="M6.5 12.5a1.5 1.5 0 0 0 3 0" />
+        </svg>
+      );
+    case 'info':
+      return (
+        <svg {...props}>
+          <circle cx="8" cy="8" r="6" />
+          <path d="M8 7v4" />
+          <circle cx="8" cy="5.5" r="0.5" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case 'warning':
+      return (
+        <svg {...props}>
+          <path d="M8 2.5L14 13.5H2L8 2.5z" />
+          <path d="M8 7v3" />
+          <circle cx="8" cy="11.5" r="0.5" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case 'coin':
+      return (
+        <svg {...props}>
+          <circle cx="8" cy="8" r="6" />
+          <path d="M8 5v6" />
+          <path d="M6 7h3a1 1 0 0 1 0 2H6" />
+        </svg>
+      );
     default:
       return <svg {...props}><rect x="3" y="3" width="10" height="10" rx="1" /></svg>;
   }

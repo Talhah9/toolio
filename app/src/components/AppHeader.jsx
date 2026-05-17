@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
+import { NotificationBell } from './NotificationBell';
 
 export function AppHeader() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export function AppHeader() {
         ) : (
           <span className="badge badge-pro" style={{ height: 24, padding: '0 10px' }}>Pro</span>
         )}
+        <NotificationBell />
         <div className="user-chip" onClick={() => navigate('/account')}>
           <span className="avatar">{(user.firstName || user.email)[0].toUpperCase()}{user.lastName?.[0]?.toUpperCase() ?? ''}</span>
         </div>
