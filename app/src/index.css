@@ -1516,17 +1516,16 @@ a {
 
 .hero-side-card {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 60px;
+  right: 60px;
   z-index: 2;
 }
-.hero-side-card-left  { left: 2%; }
-.hero-side-card-right { right: 2%; }
 
 .hero-side-card .hero-output-card {
-  max-width: 220px;
+  max-width: 260px;
   min-height: auto;
   font-size: 12px;
+  transform: rotate(2deg);
 }
 
 /* Final CTA dark section */

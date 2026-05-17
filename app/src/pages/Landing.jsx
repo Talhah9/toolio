@@ -352,21 +352,11 @@ export function Landing() {
           <div className="hero-dot-grid" />
         </div>
 
-        {/* Side cards — desktop only, absolute positioned */}
+        {/* Floating card — desktop only */}
         <motion.div
-          className="hero-side-card hero-side-card-left"
-          initial={reduce ? false : { opacity: 0, x: -24 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, delay: 0.5, ease }}
-          aria-hidden="true"
-        >
-          <HeroOutputCard t={t} lang={lang} startIdx={1} />
-        </motion.div>
-
-        <motion.div
-          className="hero-side-card hero-side-card-right"
-          initial={reduce ? false : { opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
+          className="hero-side-card"
+          initial={reduce ? false : { opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5, ease }}
           aria-hidden="true"
         >
