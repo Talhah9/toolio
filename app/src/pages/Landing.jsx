@@ -367,15 +367,15 @@ export function Landing() {
 
               <motion.h1
                 className="h-display"
-                style={{ maxWidth: 580 }}
+                style={{ maxWidth: 580, paddingTop: 44, overflow: 'visible' }}
                 initial={reduce ? false : { opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1, ease }}
               >
                 {lang === 'fr' ? (
-                  <>Tous les <span style={{ position: 'relative', display: 'inline-block' }}>outils<span className="hero-ai-badge" aria-hidden="true">Propulsé par l'IA</span></span> dont un freelance a besoin.</>
+                  <>Tous les <span style={{ position: 'relative', display: 'inline-block', overflow: 'visible' }}>outils<span className="hero-ai-badge" aria-hidden="true">Propulsé par l'IA</span></span> dont un freelance a besoin.</>
                 ) : (
-                  <>Every tool <span style={{ position: 'relative', display: 'inline-block' }}>a<span className="hero-ai-badge" aria-hidden="true">Powered by AI</span></span> freelance needs.</>
+                  <>Every tool <span style={{ position: 'relative', display: 'inline-block', overflow: 'visible' }}>a<span className="hero-ai-badge" aria-hidden="true">Powered by AI</span></span> freelance needs.</>
                 )}
               </motion.h1>
 

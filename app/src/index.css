@@ -233,6 +233,7 @@ a {
   font-weight: 800;
   color: var(--fg);
   margin: 0;
+  overflow: visible;
 }
 @media (max-width: 1024px) {
   .h-display { font-size: clamp(40px, 5vw, 60px); }
@@ -1096,6 +1097,7 @@ a {
 .hero {
   padding: 96px 0 64px;
   text-align: center;
+  overflow: visible;
 }
 .hero-eyebrow {
   display: inline-flex;
