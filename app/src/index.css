@@ -238,6 +238,22 @@ a {
   .h-display { font-size: clamp(40px, 5vw, 60px); }
 }
 
+.hero-mini-card {
+  position: absolute;
+  max-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(79, 70, 229, 0.04);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  animation: hero-float 4s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
 .hero-ai-badge {
   display: inline-block;
   background: #4F46E5;
@@ -1540,6 +1556,7 @@ a {
 .lp-social-avatars .lp-avatar:first-child { margin-left: 0; }
 
 @media (max-width: 900px) {
+  .hero-mini-card { display: none; }
   .hero-two-col { grid-template-columns: 1fr; }
   .hero-output-card { display: none; }
   .lp-demo-panel { grid-template-columns: 1fr; }

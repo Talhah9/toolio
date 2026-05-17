@@ -310,6 +310,35 @@ function HeroOutputCard({ t, lang }) {
   );
 }
 
+// ── Mini floating card ────────────────────────────────────────
+
+function MiniFloatCard({ label, text, style, delay = 0, floatDuration = '4s' }) {
+  const reduce = useReducedMotion();
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setActive(true), delay * 1000 + 500);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  return (
+    <motion.div
+      className="hero-mini-card"
+      style={{ ...style, animationDuration: floatDuration }}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay, ease }}
+      aria-hidden="true"
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
+        <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</span>
+      </div>
+      {reduce ? <span>{text}</span> : <TypewriterText text={text} active={active} speed={28} />}
+    </motion.div>
+  );
+}
+
 // ── Landing page ──────────────────────────────────────────────
 
 export function Landing() {
@@ -351,6 +380,29 @@ export function Landing() {
           <div className="hero-blob hero-blob-warm" />
           <div className="hero-dot-grid" />
         </div>
+
+        {/* Floating mini cards */}
+        <MiniFloatCard
+          label={t('landing.hero.mini1.label')}
+          text={t('landing.hero.mini1.text')}
+          style={{ top: '10%', right: '5%', transform: 'rotate(3deg)' }}
+          delay={0}
+          floatDuration="3.5s"
+        />
+        <MiniFloatCard
+          label={t('landing.hero.mini2.label')}
+          text={t('landing.hero.mini2.text')}
+          style={{ bottom: '15%', left: '2%', transform: 'rotate(-4deg)' }}
+          delay={2}
+          floatDuration="4.5s"
+        />
+        <MiniFloatCard
+          label={t('landing.hero.mini3.label')}
+          text={t('landing.hero.mini3.text')}
+          style={{ top: '5%', left: '3%', transform: 'rotate(-2deg)' }}
+          delay={4}
+          floatDuration="5s"
+        />
 
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="hero-two-col">
