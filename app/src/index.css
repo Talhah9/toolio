@@ -233,26 +233,23 @@ a {
   font-weight: 800;
   color: var(--fg);
   margin: 0;
-  overflow: visible;
 }
 @media (max-width: 1024px) {
   .h-display { font-size: clamp(40px, 5vw, 60px); }
 }
 
 .hero-ai-badge {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-8deg);
+  display: inline-block;
   background: #4F46E5;
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
+  padding: 5px 14px;
   border-radius: 20px;
-  padding: 4px 12px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  pointer-events: none;
   white-space: nowrap;
+  transform: rotate(-4deg);
+  margin: 12px 0 20px -4px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 .h1 {
   font-size: var(--t-3xl);
@@ -1097,7 +1094,6 @@ a {
 .hero {
   padding: 96px 0 64px;
   text-align: center;
-  overflow: visible;
 }
 .hero-eyebrow {
   display: inline-flex;

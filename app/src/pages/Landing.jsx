@@ -367,17 +367,23 @@ export function Landing() {
 
               <motion.h1
                 className="h-display"
-                style={{ maxWidth: 580, paddingTop: 44, overflow: 'visible' }}
+                style={{ maxWidth: 580 }}
                 initial={reduce ? false : { opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1, ease }}
               >
-                {lang === 'fr' ? (
-                  <>Tous les <span style={{ position: 'relative', display: 'inline-block', overflow: 'visible' }}>outils<span className="hero-ai-badge" aria-hidden="true">Propulsé par l'IA</span></span> dont un freelance a besoin.</>
-                ) : (
-                  <>Every tool <span style={{ position: 'relative', display: 'inline-block', overflow: 'visible' }}>a<span className="hero-ai-badge" aria-hidden="true">Powered by AI</span></span> freelance needs.</>
-                )}
+                {t('landing.hero.title')}
               </motion.h1>
+
+              <motion.div
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.18, ease }}
+              >
+                <span className="hero-ai-badge" aria-label={t('landing.hero.ai.badge')}>
+                  {t('landing.hero.ai.badge')}
+                </span>
+              </motion.div>
 
               <motion.p
                 className="hero-sub"
