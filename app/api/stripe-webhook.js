@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   };
   console.log('[stripe-webhook] env vars present:', JSON.stringify(envPresent));
 
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   // Fail fast with a clear message if any env var is missing
   const missing = Object.entries(envPresent).filter(([, v]) => !v).map(([k]) => k);

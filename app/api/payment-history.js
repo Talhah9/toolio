@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 export const config = { maxDuration: 60 };
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { userId, userEmail } = req.body ?? {};
   if (!userId || !userEmail) {

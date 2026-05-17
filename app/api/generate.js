@@ -283,7 +283,7 @@ Generate a complete mission-finding strategy.`;
 export default async function handler(req, res) {
   applySecurityHeaders(res);
 
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error('[generate] ANTHROPIC_API_KEY not set');
