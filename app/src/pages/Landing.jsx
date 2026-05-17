@@ -449,7 +449,7 @@ export function Landing() {
               initial={reduce ? false : { opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.35, ease }}
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: -40 }}
             >
               <HeroOutputCard t={t} lang={lang} />
             </motion.div>

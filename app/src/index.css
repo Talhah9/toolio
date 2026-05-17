@@ -1510,6 +1510,7 @@ a {
   transform: rotate(-1.5deg);
   font-size: 13px; line-height: 1.75; color: var(--fg-2);
   max-width: 420px;
+  min-height: 190px;
   animation: hero-float 4s ease-in-out infinite;
 }
 
