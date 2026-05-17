@@ -416,6 +416,15 @@ export const fr = {
   'landing.testimonial.3.quote': 'Enfin un outil qui comprend le droit freelance français. Le générateur de CGV est vraiment bien fait.',
   'landing.testimonial.3.name': 'Sophie R.',
   'landing.testimonial.3.title': 'Consultante brand · Lyon',
+  'landing.testimonial.4.quote': "Toolio génère mes contrats en quelques secondes. J'appréhendais l'administratif — maintenant j'envoie le contrat le jour même où le client valide.",
+  'landing.testimonial.4.name': 'Lucas D.',
+  'landing.testimonial.4.title': 'Web Designer Freelance',
+  'landing.testimonial.5.quote': "Je ne suis pas rédactrice. Mais avec le générateur de posts LinkedIn, je publie 3 fois par semaine et mon réseau a grandi de 400 personnes.",
+  'landing.testimonial.5.name': 'Camille B.',
+  'landing.testimonial.5.title': 'Consultante Produit',
+  'landing.testimonial.6.quote': "Je passais mes dimanches soirs sur la facturation et l'admin. Toolio m'a rendu mes week-ends.",
+  'landing.testimonial.6.name': 'Pierre M.',
+  'landing.testimonial.6.title': 'Développeur Freelance · Bordeaux',
 
   // ── How it works ─────────────────────────────────────────────
   'landing.how.eyebrow': 'Comment ça marche',

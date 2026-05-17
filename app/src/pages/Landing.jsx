@@ -102,16 +102,86 @@ function PainCard({ icon, title, body }) {
   );
 }
 
-// ── Testimonial card ──────────────────────────────────────────
+// ── Testimonial carousel ──────────────────────────────────────
 
-function TestimonialCard({ quote, name, title }) {
+function TestimonialCarousel({ t }) {
+  const [active, setActive] = useState(0);
+  const reduce = useReducedMotion();
+
+  const items = [1, 2, 3, 4, 5, 6].map(i => ({
+    quote: t(`landing.testimonial.${i}.quote`),
+    name:  t(`landing.testimonial.${i}.name`),
+    role:  t(`landing.testimonial.${i}.title`),
+  }));
+
+  const n = items.length;
+  const prev = () => setActive(i => (i - 1 + n) % n);
+  const next = () => setActive(i => (i + 1) % n);
+
+  const getOffset = (i) => {
+    let off = i - active;
+    if (off >  n / 2) off -= n;
+    if (off < -n / 2) off += n;
+    return off;
+  };
+
+  const xMap    = { '-2': -310, '-1': -175, 0: 0, 1: 175, 2: 310 };
+  const scaleMap = { '-2': 0.72, '-1': 0.85, 0: 1, 1: 0.85, 2: 0.72 };
+  const rotMap  = { '-2': -6,   '-1': -3,   0: 0, 1: 3,    2: 6   };
+  const zMap    = { '-2': 0,    '-1': 1,    0: 3, 1: 1,    2: 0   };
+  const opMap   = { '-2': 0.35, '-1': 0.7,  0: 1, 1: 0.7,  2: 0.35 };
+
   return (
-    <div className="testimonial-card">
-      <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-      <p style={{ fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.75, margin: 0, fontStyle: 'italic' }}>"{quote}"</p>
-      <div>
-        <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--fg)' }}>{name}</div>
-        <div style={{ fontSize: 13, color: 'var(--fg-3)' }}>{title}</div>
+    <div className="tc-wrap">
+      <div className="tc-track" aria-live="polite">
+        {items.map((item, i) => {
+          const off = getOffset(i);
+          if (Math.abs(off) > 2) return null;
+          const key  = String(off);
+          const isActive = off === 0;
+          return (
+            <motion.div
+              key={i}
+              className={`tc-card${isActive ? ' tc-card--active' : ''}`}
+              animate={reduce ? {} : {
+                x: xMap[key], scale: scaleMap[key], rotate: rotMap[key],
+                opacity: opMap[key], zIndex: zMap[key],
+              }}
+              initial={false}
+              transition={{ duration: 0.45, ease }}
+              onClick={() => !isActive && setActive(i)}
+              style={{ cursor: isActive ? 'default' : 'pointer' }}
+            >
+              <div className="tc-stars" aria-label="5 stars">★★★★★</div>
+              <p className="tc-quote">"{item.quote}"</p>
+              <div className="tc-author">
+                <div className="tc-name">{item.name}</div>
+                <div className="tc-role">{item.role}</div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div className="tc-nav">
+        <button className="tc-btn" onClick={prev} aria-label="Previous testimonial">
+          <Glyph name="arrow-left" size={16} />
+        </button>
+        <div className="tc-dots" role="tablist">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              role="tab"
+              aria-selected={i === active}
+              aria-label={`Testimonial ${i + 1}`}
+              className={`tc-dot${i === active ? ' tc-dot--active' : ''}`}
+              onClick={() => setActive(i)}
+            />
+          ))}
+        </div>
+        <button className="tc-btn" onClick={next} aria-label="Next testimonial">
+          <Glyph name="arrow-right" size={16} />
+        </button>
       </div>
     </div>
   );
@@ -460,8 +530,12 @@ export function Landing() {
           <div className="container">
             <div className="section-hd" style={{ marginBottom: 40 }}>
               <span className="eyebrow">{t('landing.pain.eyebrow')}</span>
-              <h2 className="h1" style={{ whiteSpace: 'pre-line', color: '#fff', maxWidth: 680 }}>
-                {t('landing.pain.title')}
+              <h2 className="h1" style={{ color: '#fff', maxWidth: 680 }}>
+                {lang === 'fr' ? (
+                  <>Vous êtes devenu freelance pour faire du bon travail.<br />Pas pour passer 3 heures sur un devis.</>
+                ) : (
+                  <>You became a freelancer to do great work.<br />Not to spend 3 hours on a quote.</>
+                )}
               </h2>
             </div>
             <div className="pain-grid">
@@ -534,17 +608,9 @@ export function Landing() {
             </div>
           </FadeUp>
 
-          <StaggerGrid className="testimonials-grid">
-            {[
-              { q: t('landing.testimonial.1.quote'), n: t('landing.testimonial.1.name'), ti: t('landing.testimonial.1.title') },
-              { q: t('landing.testimonial.2.quote'), n: t('landing.testimonial.2.name'), ti: t('landing.testimonial.2.title') },
-              { q: t('landing.testimonial.3.quote'), n: t('landing.testimonial.3.name'), ti: t('landing.testimonial.3.title') },
-            ].map((item, i) => (
-              <motion.div key={i} variants={cardVariants}>
-                <TestimonialCard quote={item.q} name={item.n} title={item.ti} />
-              </motion.div>
-            ))}
-          </StaggerGrid>
+          <FadeUp delay={0.1}>
+            <TestimonialCarousel t={t} />
+          </FadeUp>
         </div>
       </section>
 
