@@ -117,9 +117,9 @@ export function getToolText(tool, lang) {
 }
 
 export const PACKS = [
-  { id: 'small',  credits: 100, price: 9,  price_usd: 10, label: 'Small' },
-  { id: 'medium', credits: 250, price: 19, price_usd: 21, label: 'Medium', featured: true },
-  { id: 'large',  credits: 600, price: 39, price_usd: 42, label: 'Large' },
+  { id: 'small',  credits: 100, price: 9,  price_usd: 10, label: 'Small',  priceId_eur: 'price_1TWwWxAFTm9a9DATtpAaaemv', priceId_usd: 'price_1TYNysAFTm9a9DATBZcZOazQ' },
+  { id: 'medium', credits: 250, price: 19, price_usd: 21, label: 'Medium', featured: true, priceId_eur: 'price_1TWwZRAFTm9a9DATOmAb6KjN', priceId_usd: 'price_1TYNzlAFTm9a9DATXgRbnCBd' },
+  { id: 'large',  credits: 600, price: 39, price_usd: 42, label: 'Large',  priceId_eur: 'price_1TWwa2AFTm9a9DATrycG9Lqj', priceId_usd: 'price_1TYO08AFTm9a9DATfAi1nkTO' },
 ];
 
 export const SAMPLE_OUTPUTS = {
