@@ -131,7 +131,7 @@ export function AppProvider({ children }) {
     // signIn() returns as soon as auth resolves so the UI can navigate.
   };
 
-  const signUp = async (email, password, name) => {
+  const signUp = async (email, password, name, lang = 'en') => {
     console.log('[AppContext] signUp: start');
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -142,6 +142,12 @@ export function AppProvider({ children }) {
       console.error('[AppContext] signUp error:', error.message);
       throw error;
     }
+    // Fire welcome email — don't await so signup flow isn't blocked
+    fetch('/api/send-welcome-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, lang }),
+    }).catch(err => console.error('[AppContext] send-welcome-email failed:', err.message));
     return !data.session; // true = email confirmation required
   };
 

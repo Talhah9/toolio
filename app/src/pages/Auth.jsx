@@ -10,7 +10,7 @@ export function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   // Check hash synchronously so the first render already shows the reset form.
   // Supabase fires PASSWORD_RECOVERY during getSession() in AppContext (which runs
@@ -58,7 +58,7 @@ export function Auth() {
         setSigningIn(true);
         setTimeout(() => navigate('/dashboard'), 1200);
       } else if (mode === 'register') {
-        const needsConfirmation = await signUp(email, password, name);
+        const needsConfirmation = await signUp(email, password, name, lang);
         if (needsConfirmation) {
           setConfirmSent(true);
         } else {
