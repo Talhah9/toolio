@@ -14,8 +14,8 @@ function CGV() {
       <h2>1. Préambule</h2>
       <p>
         Les présentes Conditions Générales de Vente (« CGV ») régissent l'accès et l'utilisation du service
-        Savvly, édité en tant que micro-entreprise soumise au régime français de la micro-entreprise,
-        immatriculée en France (ci-après « Savvly », « nous »).
+        Savvly, édité par Talhah Ally, micro-entrepreneur immatriculé en France sous le numéro SIRET
+        833 320 757 00036, domicilié à Saint-Paul, La Réunion (ci-après « Savvly », « nous »).
       </p>
       <p>
         Toute souscription à un abonnement ou tout achat de crédits sur la plateforme{' '}
@@ -145,8 +145,9 @@ function Privacy() {
 
       <h2>1. Responsable du traitement</h2>
       <p>
-        Le responsable du traitement de vos données personnelles est Savvly, micro-entreprise
-        établie en France. Contact : <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
+        Le responsable du traitement de vos données personnelles est Talhah Ally (Savvly),
+        micro-entrepreneur — SIRET 833 320 757 00036 — domicilié à Saint-Paul, La Réunion.
+        Contact : <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
       </p>
 
       <h2>2. Données collectées</h2>
@@ -268,7 +269,7 @@ function Privacy() {
 
       <h2>10. Contact</h2>
       <p>
-        Responsable du traitement : Savvly — <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
+        Responsable du traitement : Talhah Ally (Savvly) — SIRET 833 320 757 00036 — Saint-Paul, La Réunion — <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
       </p>
     </div>
   );
