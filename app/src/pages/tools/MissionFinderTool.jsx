@@ -7,6 +7,7 @@ import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
+import { streamGenerate } from '../../lib/streamGenerate';
 
 const EXPERIENCE_LEVELS = [
   { id: 'Junior',    key: 'tool.mission-finder.experience.junior' },
@@ -77,17 +78,14 @@ export function MissionFinderTool({ tool, initialData }) {
     setSections({});
     try {
       const input = { expertise, tjm, experience, workPreference, location, sector: sector || undefined, goal };
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
-        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id, lang }),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      const parsed = parseSections(json.output, SECTION_KEYS);
+      const fullText = await streamGenerate(
+        { toolId: tool.id, input, session, lang },
+        () => {},
+      );
+      const parsed = parseSections(fullText, SECTION_KEYS);
       setSections(parsed);
       setActiveTab('PLATFORMS');
-      const id = await logGeneration(tool.id, { expertise, tjm, experience, workPreference, location, goal }, json.output, tool.credits);
+      const id = await logGeneration(tool.id, { expertise, tjm, experience, workPreference, location, goal }, fullText, tool.credits);
       setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));

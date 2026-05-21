@@ -8,6 +8,7 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
+import { streamGenerate } from '../../lib/streamGenerate';
 
 const CHECK_KEYS = [
   'tool.audit.check.titles',
@@ -65,22 +66,14 @@ export function AuditTool({ tool }) {
     setLoading(true);
     setSections({});
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
-        body: JSON.stringify({
-          toolId: tool.id,
-          input: { url, checks: CHECK_KEYS.filter((_, i) => checks[i]) },
-          userId: session?.user?.id,
-          lang,
-        }),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      const parsed = parseSections(json.output, TABS.map(t => t.id));
+      const fullText = await streamGenerate(
+        { toolId: tool.id, input: { url, checks: CHECK_KEYS.filter((_, i) => checks[i]) }, session, lang },
+        () => {},
+      );
+      const parsed = parseSections(fullText, TABS.map(t => t.id));
       setSections(parsed);
       setActiveTab('TECHNICAL');
-      const id = await logGeneration(tool.id, { url }, json.output, tool.credits);
+      const id = await logGeneration(tool.id, { url }, fullText, tool.credits);
       setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));

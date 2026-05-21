@@ -7,6 +7,7 @@ import { SaveButton } from '../../components/SaveButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
+import { streamGenerate } from '../../lib/streamGenerate';
 
 const GOALS = [
   { id: 'visibility', key: 'tool.linkedin-intel.goal.visibility' },
@@ -97,10 +98,8 @@ export function LinkedinIntelTool({ tool }) {
     setLoading(true);
     setSections({});
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
-        body: JSON.stringify({
+      const fullText = await streamGenerate(
+        {
           toolId: tool.id,
           input: {
             profileUrl,
@@ -110,18 +109,17 @@ export function LinkedinIntelTool({ tool }) {
             imageBase64: imageBase64 || undefined,
             imageMediaType: imageBase64 ? imageMediaType : undefined,
           },
-          userId: session?.user?.id,
+          session,
           lang,
-        }),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      console.log('[linkedin-intel] raw output:', json.output);
-      const parsed = parseSections(json.output, TABS.map(t => t.id));
+        },
+        () => {},
+      );
+      console.log('[linkedin-intel] raw output length:', fullText.length);
+      const parsed = parseSections(fullText, TABS.map(t => t.id));
       console.log('[linkedin-intel] parsed sections:', Object.keys(parsed));
       setSections(parsed);
       setActiveTab('PROFILE_AUDIT');
-      const id = await logGeneration(tool.id, { profileUrl, niche, goal }, json.output, tool.credits);
+      const id = await logGeneration(tool.id, { profileUrl, niche, goal }, fullText, tool.credits);
       setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));

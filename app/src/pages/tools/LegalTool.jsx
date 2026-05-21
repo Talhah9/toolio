@@ -7,6 +7,7 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
+import { streamGenerate } from '../../lib/streamGenerate';
 
 const DOC_KEYS = [
   { id: 'tos',     key: 'tool.legal.doc.tos' },
@@ -39,15 +40,11 @@ export function LegalTool({ tool, initialData }) {
     setOutput('');
     try {
       const input = { company, type, country, address, activity, docs };
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
-        body: JSON.stringify({ toolId: tool.id, input, userId: session?.user?.id, lang }),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      setOutput(json.output);
-      const id = await logGeneration(tool.id, input, json.output, tool.credits);
+      const fullText = await streamGenerate(
+        { toolId: tool.id, input, session, lang },
+        (chunk) => setOutput(chunk),
+      );
+      const id = await logGeneration(tool.id, input, fullText, tool.credits);
       setGenId(id);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
@@ -133,9 +130,15 @@ export function LegalTool({ tool, initialData }) {
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
               </div>
             </div>
-            {loading ? (
+            {loading && !output ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
-            ) : output ? <MarkdownResult>{output}</MarkdownResult> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            ) : output ? (
+              loading ? (
+                <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
+              ) : (
+                <MarkdownResult>{output}</MarkdownResult>
+              )
+            ) : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
       </div>

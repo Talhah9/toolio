@@ -358,17 +358,27 @@ export default async function handler(req, res) {
         ]
       : userMessage;
 
-    const message = await anthropic.messages.create({
+    // Set SSE headers before starting the stream
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
       max_tokens: MAX_TOKENS[toolId] ?? 2048,
       system: systemPrompt,
       messages: [{ role: 'user', content: userContent }],
     });
 
-    const output = message.content[0]?.text ?? '';
-    console.log('[generate] success | output length:', output.length, '| stop_reason:', message.stop_reason);
+    stream.on('text', (text) => {
+      res.write(`data: ${JSON.stringify({ text })}\n\n`);
+    });
 
-    res.json({ output });
+    const finalMsg = await stream.finalMessage();
+    console.log('[generate] success | output length:', finalMsg.content[0]?.text?.length ?? 0, '| stop_reason:', finalMsg.stop_reason);
+    res.write('data: [DONE]\n\n');
+    res.end();
+
   } catch (err) {
     const status   = err.status  ?? 500;
     const errBody  = err.error   ?? null;
@@ -380,6 +390,11 @@ export default async function handler(req, res) {
       console.error('[generate] userMessage that caused error:\n', userMessage);
     }
 
-    res.status(status >= 400 && status < 600 ? status : 500).json({ error: errMsg });
+    if (res.headersSent) {
+      res.write(`data: ${JSON.stringify({ error: errMsg })}\n\n`);
+      res.end();
+    } else {
+      res.status(status >= 400 && status < 600 ? status : 500).json({ error: errMsg });
+    }
   }
 }

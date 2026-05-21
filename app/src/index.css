@@ -1754,6 +1754,33 @@ a {
 /* ============================================================
    ≤ 480px  (small phones)
    ============================================================ */
+/* ============================================================
+   Streaming cursor
+   ============================================================ */
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.stream-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+  border-radius: 1px;
+}
+.stream-text {
+  padding: 20px 24px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  color: var(--fg);
+}
+
 @media (max-width: 480px) {
   .tools-grid { grid-template-columns: 1fr; }
   .packs-grid { grid-template-columns: 1fr; }
