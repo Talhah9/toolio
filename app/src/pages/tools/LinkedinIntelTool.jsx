@@ -283,7 +283,6 @@ export function LinkedinIntelTool({ tool }) {
                       borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
                       background: 'none',
                       border: 'none',
-                      borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       transition: 'color 0.15s',
