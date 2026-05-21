@@ -71,7 +71,7 @@ export function welcomeEmailSubject(lang) {
 
 export function welcomeEmailHtml({ firstName, lang }) {
   const c = COPY[lang] ?? COPY.en;
-  const DASHBOARD = 'https://app-alpha-rose-89.vercel.app/dashboard';
+  const DASHBOARD = 'https://savvly.co/dashboard';
 
   const toolCards = c.tools.map(tool => `
         <tr>

@@ -38,8 +38,8 @@ export default async function handler(req, res) {
       customer_email: userEmail || undefined,
       client_reference_id: userId,
       metadata: { userId, credits: String(credits ?? 0) },
-      success_url: 'https://app-alpha-rose-89.vercel.app/dashboard?payment=success',
-      cancel_url: 'https://app-alpha-rose-89.vercel.app/pricing',
+      success_url: 'https://savvly.co/dashboard?payment=success',
+      cancel_url: 'https://savvly.co/pricing',
     });
 
     res.json({ url: session.url });
