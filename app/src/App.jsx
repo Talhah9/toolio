@@ -11,6 +11,17 @@ import { Pricing } from './pages/Pricing';
 import { Account } from './pages/Account';
 import { History } from './pages/History';
 import { Legal } from './pages/Legal';
+import { Admin } from './pages/Admin';
+import { useApp } from './context/AppContext';
+
+const ADMIN_EMAIL = 'talhahally974@gmail.com';
+
+function AdminGuard() {
+  const { user, loading } = useApp();
+  if (loading) return null;
+  if (!user || user.email !== ADMIN_EMAIL) return <Navigate to="/dashboard" replace />;
+  return <AppShell />;
+}
 
 export function App() {
   return (
@@ -28,6 +39,9 @@ export function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/account" element={<Account />} />
               <Route path="/history" element={<History />} />
+            </Route>
+            <Route element={<AdminGuard />}>
+              <Route path="/admin" element={<Admin />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

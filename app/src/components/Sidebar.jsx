@@ -8,11 +8,12 @@ import { useLang } from '../context/LanguageContext';
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { plan, signOut } = useApp();
+  const { plan, signOut, user } = useApp();
   const { lang, t } = useLang();
 
   const isActive = (path) => location.pathname === path;
   const isToolActive = () => location.pathname.startsWith('/tools/');
+  const isAdmin = user?.email === 'talhahally974@gmail.com';
 
   return (
     <aside className="sidebar">
@@ -75,6 +76,15 @@ export function Sidebar() {
         <Glyph name="account" />
         <span>{t('nav.profile')}</span>
       </div>
+      {isAdmin && (
+        <div
+          className={`sidebar-item ${isActive('/admin') ? 'active' : ''}`}
+          onClick={() => navigate('/admin')}
+        >
+          <Glyph name="shield" />
+          <span>Admin</span>
+        </div>
+      )}
       <div className="sidebar-item" onClick={async () => { await signOut(); navigate('/'); }}>
         <Glyph name="logout" />
         <span>{t('nav.logout')}</span>
