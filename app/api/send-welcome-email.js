@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Toolio <onboarding@resend.dev>',
+        from: 'Savvly <onboarding@resend.dev>',
         to: [email],
         subject: welcomeEmailSubject(lang),
         html: welcomeEmailHtml({ firstName, lang }),

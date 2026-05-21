@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         const credits = parseInt(s.metadata?.credits || '0', 10);
         let description;
         if (s.mode === 'subscription') {
-          description = 'Toolio Pro';
+          description = 'Savvly Pro';
         } else if (credits > 0) {
           description = `Pack — ${credits} credits`;
         } else {

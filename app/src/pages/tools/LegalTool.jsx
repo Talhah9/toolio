@@ -62,7 +62,7 @@ export function LegalTool({ tool, initialData }) {
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
     output,
-    filename: `toolio-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+    filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
   });
 
   const TYPE_KEYS = ['sole', 'ltd', 'llc', 'partnership', 'other'];

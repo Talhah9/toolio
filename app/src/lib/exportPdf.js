@@ -42,7 +42,7 @@ export function exportPdf({ toolName, userEmail, output, filename }) {
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text('Toolio', margin, y);
+  doc.text('Savvly', margin, y);
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
@@ -137,5 +137,5 @@ export function exportPdf({ toolName, userEmail, output, filename }) {
     }
   }
 
-  doc.save(filename || `toolio-${Date.now()}.pdf`);
+  doc.save(filename || `savvly-${Date.now()}.pdf`);
 }

@@ -105,7 +105,7 @@ export function AuditTool({ tool }) {
       toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
       userEmail: user?.email,
       output: allSections,
-      filename: `toolio-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+      filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
     });
   };
 

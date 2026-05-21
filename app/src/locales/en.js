@@ -51,7 +51,7 @@ export const en = {
   'tool.copy': 'Copy',
   'tool.regenerate': 'Regenerate',
   'tool.result.placeholder': 'Your result will appear here.',
-  'tool.result.working': 'Toolio is working…',
+  'tool.result.working': 'Savvly is working…',
   'tool.history': 'Recent history',
   'tool.history.seeall': 'See all',
   'tool.error.credits': 'Not enough credits. Top up your account.',
@@ -329,7 +329,7 @@ export const en = {
   // ── Checkout ─────────────────────────────────────────────────
   'checkout.title': 'Confirm payment',
   'checkout.subtitle': 'Secure payment via Stripe',
-  'checkout.label.pro': 'Toolio Pro',
+  'checkout.label.pro': 'Savvly Pro',
   'checkout.label.pack': 'credits',
   'checkout.sub.monthly': 'Monthly subscription',
   'checkout.sub.once': 'One-time purchase',
@@ -408,7 +408,7 @@ export const en = {
 
   // ── Stats ────────────────────────────────────────────────────
   'landing.stats.users': '1,200+',
-  'landing.stats.users.label': 'freelancers using Toolio',
+  'landing.stats.users.label': 'freelancers using Savvly',
   'landing.stats.tools': '13',
   'landing.stats.tools.label': 'AI tools',
   'landing.stats.credits': '50',
@@ -426,13 +426,13 @@ export const en = {
   'landing.testimonial.3.quote': 'Finally a tool that understands French freelance law. The CGV generator is genuinely good.',
   'landing.testimonial.3.name': 'Sophie R.',
   'landing.testimonial.3.title': 'Brand Consultant · Lyon',
-  'landing.testimonial.4.quote': 'Toolio generates my contracts in seconds. I used to dread the admin — now I send the contract the same day the client says yes.',
+  'landing.testimonial.4.quote': 'Savvly generates my contracts in seconds. I used to dread the admin — now I send the contract the same day the client says yes.',
   'landing.testimonial.4.name': 'Lucas D.',
   'landing.testimonial.4.title': 'Freelance Web Designer',
   'landing.testimonial.5.quote': "I'm not a writer. But with the LinkedIn post generator I publish 3x a week and my network has grown by 400+ people.",
   'landing.testimonial.5.name': 'Camille B.',
   'landing.testimonial.5.title': 'Product Consultant',
-  'landing.testimonial.6.quote': 'I used to spend Sunday evenings catching up on invoicing and admin. Toolio gave me my weekends back.',
+  'landing.testimonial.6.quote': 'I used to spend Sunday evenings catching up on invoicing and admin. Savvly gave me my weekends back.',
   'landing.testimonial.6.name': 'Pierre M.',
   'landing.testimonial.6.title': 'Freelance Developer · Bordeaux',
 
@@ -442,7 +442,7 @@ export const en = {
   'landing.how.step1.title': 'Create your free account',
   'landing.how.step1.desc': 'No credit card. 50 credits are waiting for you. Sign up in 20 seconds.',
   'landing.how.step2.title': 'Fill in the brief',
-  'landing.how.step2.desc': 'Answer 3–5 questions about your need. Toolio handles the generation.',
+  'landing.how.step2.desc': 'Answer 3–5 questions about your need. Savvly handles the generation.',
   'landing.how.step3.title': 'Use your result',
   'landing.how.step3.desc': 'Copy, export as PDF, or save to your history. Ready in seconds.',
 
@@ -501,12 +501,12 @@ export const en = {
   'landing.final.title': 'Your first output is 90 seconds away.',
   'landing.final.sub': '50 credits free. No card. Cancel anytime.',
   'landing.final.cta': 'Create my free account →',
-  'landing.final.social': 'Join 1,200+ freelancers already using Toolio',
+  'landing.final.social': 'Join 1,200+ freelancers already using Savvly',
 
   // ── Onboarding modal ─────────────────────────────────────────
   'onboarding.step': 'Step {n} of 4',
   'onboarding.credits': 'credits to start',
-  'onboarding.step1.title': 'Welcome to Toolio',
+  'onboarding.step1.title': 'Welcome to Savvly',
   'onboarding.step1.body': "You have everything you need to move faster as a freelancer. Let's take a quick tour.",
   'onboarding.step2.title': 'Your tools',
   'onboarding.step2.free': 'Free',
@@ -738,6 +738,6 @@ export const en = {
   'footer.link.terms': 'Terms',
   'footer.link.privacy': 'Privacy',
   'footer.link.legal': 'Legal notice',
-  'footer.copyright': '© 2026 Toolio',
+  'footer.copyright': '© 2026 Savvly',
   'footer.gdpr': 'GDPR compliant',
 };

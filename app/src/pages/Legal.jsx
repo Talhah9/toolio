@@ -14,17 +14,17 @@ function CGV() {
       <h2>1. Préambule</h2>
       <p>
         Les présentes Conditions Générales de Vente (« CGV ») régissent l'accès et l'utilisation du service
-        Toolio, édité en tant que micro-entreprise soumise au régime français de la micro-entreprise,
-        immatriculée en France (ci-après « Toolio », « nous »).
+        Savvly, édité en tant que micro-entreprise soumise au régime français de la micro-entreprise,
+        immatriculée en France (ci-après « Savvly », « nous »).
       </p>
       <p>
         Toute souscription à un abonnement ou tout achat de crédits sur la plateforme{' '}
-        <strong>toolio.fr</strong> implique l'acceptation pleine et entière des présentes CGV.
+        <strong>Savvly.fr</strong> implique l'acceptation pleine et entière des présentes CGV.
       </p>
 
       <h2>2. Objet du service</h2>
       <p>
-        Toolio est une plateforme SaaS (Software as a Service) fournissant des outils de génération de
+        Savvly est une plateforme SaaS (Software as a Service) fournissant des outils de génération de
         contenu assistée par intelligence artificielle, destinés aux freelances et indépendants. Les
         fonctionnalités incluent notamment : rédaction de contrats, devis, posts LinkedIn, audit de site
         web, génération d'images, et analyses stratégiques.
@@ -36,17 +36,17 @@ function CGV() {
 
       <h2>3. Prix et modalités de paiement</h2>
       <p>
-        Toolio propose des abonnements mensuels (offre Free et offre Pro) ainsi que des packs de crédits
+        Savvly propose des abonnements mensuels (offre Free et offre Pro) ainsi que des packs de crédits
         achetables à l'unité. Les prix sont affichés en euros (€) toutes taxes comprises sur la page
         Tarifs.
       </p>
       <p>
-        En tant que micro-entreprise, Toolio bénéficie de la franchise en base de TVA en vertu de
+        En tant que micro-entreprise, Savvly bénéficie de la franchise en base de TVA en vertu de
         l'article 293 B du Code général des impôts. <strong>TVA non applicable.</strong>
       </p>
       <p>
         Le paiement est effectué via la plateforme sécurisée <strong>Stripe</strong> (Stripe, Inc., certifié
-        PCI DSS). Aucune donnée bancaire n'est stockée par Toolio. L'abonnement est débité à la date de
+        PCI DSS). Aucune donnée bancaire n'est stockée par Savvly. L'abonnement est débité à la date de
         souscription puis à chaque échéance mensuelle.
       </p>
 
@@ -86,27 +86,27 @@ function CGV() {
 
       <h2>6. Propriété intellectuelle</h2>
       <p>
-        La plateforme Toolio, son code source, son design et ses marques sont la propriété exclusive
-        de Toolio. Toute reproduction ou utilisation non autorisée est interdite.
+        La plateforme Savvly, son code source, son design et ses marques sont la propriété exclusive
+        de Savvly. Toute reproduction ou utilisation non autorisée est interdite.
       </p>
       <p>
-        Les contenus générés par l'IA appartiennent à l'utilisateur qui les a commandés. Toolio ne
+        Les contenus générés par l'IA appartiennent à l'utilisateur qui les a commandés. Savvly ne
         revendique aucun droit sur les sorties produites.
       </p>
 
       <h2>7. Limitation de responsabilité</h2>
       <p>
-        Les contenus générés par Toolio sont produits par des modèles d'intelligence artificielle et
+        Les contenus générés par Savvly sont produits par des modèles d'intelligence artificielle et
         peuvent contenir des erreurs, imprécisions ou inexactitudes. Ils ne constituent pas des
         conseils juridiques, fiscaux ou professionnels. L'utilisateur est seul responsable de
         l'usage qu'il en fait.
       </p>
       <p>
-        La responsabilité de Toolio est expressément limitée au montant des sommes versées par
+        La responsabilité de Savvly est expressément limitée au montant des sommes versées par
         l'utilisateur au cours des trois (3) derniers mois précédant le litige.
       </p>
       <p>
-        Toolio ne saurait être tenu responsable des interruptions de service, bugs ou pertes de
+        Savvly ne saurait être tenu responsable des interruptions de service, bugs ou pertes de
         données indépendants de sa volonté (force majeure, défaillance d'un prestataire tiers, etc.).
       </p>
 
@@ -145,7 +145,7 @@ function Privacy() {
 
       <h2>1. Responsable du traitement</h2>
       <p>
-        Le responsable du traitement de vos données personnelles est Toolio, micro-entreprise
+        Le responsable du traitement de vos données personnelles est Savvly, micro-entreprise
         établie en France. Contact : <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
       </p>
 
@@ -154,7 +154,7 @@ function Privacy() {
       <ul>
         <li><strong>Données d'identification</strong> : adresse email, prénom et nom (optionnels)</li>
         <li><strong>Données de paiement</strong> : gérées exclusivement par Stripe (tokenisées, jamais
-        stockées par Toolio)</li>
+        stockées par Savvly)</li>
         <li><strong>Données d'utilisation</strong> : historique des générations, crédits consommés,
         plan souscrit</li>
         <li><strong>Données techniques</strong> : adresse IP (logs serveur, conservation max. 30 jours),
@@ -243,7 +243,7 @@ function Privacy() {
 
       <h2>7. Cookies</h2>
       <p>
-        Toolio utilise uniquement des cookies techniques strictement nécessaires au fonctionnement
+        Savvly utilise uniquement des cookies techniques strictement nécessaires au fonctionnement
         du service (session d'authentification Supabase). Aucun cookie publicitaire, de suivi
         comportemental ou de réseaux sociaux n'est déposé.
       </p>
@@ -268,7 +268,7 @@ function Privacy() {
 
       <h2>10. Contact</h2>
       <p>
-        Responsable du traitement : Toolio — <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
+        Responsable du traitement : Savvly — <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
       </p>
     </div>
   );

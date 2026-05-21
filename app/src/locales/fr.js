@@ -51,7 +51,7 @@ export const fr = {
   'tool.copy': 'Copier',
   'tool.regenerate': 'Régénérer',
   'tool.result.placeholder': 'Le résultat apparaîtra ici.',
-  'tool.result.working': 'Toolio génère…',
+  'tool.result.working': 'Savvly génère…',
   'tool.history': 'Historique récent',
   'tool.history.seeall': 'Tout voir',
   'tool.error.credits': 'Crédits insuffisants. Rechargez votre compte.',
@@ -329,7 +329,7 @@ export const fr = {
   // ── Checkout ─────────────────────────────────────────────────
   'checkout.title': 'Confirmer le paiement',
   'checkout.subtitle': 'Paiement sécurisé via Stripe',
-  'checkout.label.pro': 'Toolio Pro',
+  'checkout.label.pro': 'Savvly Pro',
   'checkout.label.pack': 'crédits',
   'checkout.sub.monthly': 'Abonnement mensuel',
   'checkout.sub.once': 'Achat unique',
@@ -408,7 +408,7 @@ export const fr = {
 
   // ── Stats ────────────────────────────────────────────────────
   'landing.stats.users': '1 200+',
-  'landing.stats.users.label': 'freelances utilisent Toolio',
+  'landing.stats.users.label': 'freelances utilisent Savvly',
   'landing.stats.tools': '13',
   'landing.stats.tools.label': 'outils IA',
   'landing.stats.credits': '50',
@@ -426,13 +426,13 @@ export const fr = {
   'landing.testimonial.3.quote': 'Enfin un outil qui comprend le droit freelance français. Le générateur de CGV est vraiment bien fait.',
   'landing.testimonial.3.name': 'Sophie R.',
   'landing.testimonial.3.title': 'Consultante brand · Lyon',
-  'landing.testimonial.4.quote': "Toolio génère mes contrats en quelques secondes. J'appréhendais l'administratif — maintenant j'envoie le contrat le jour même où le client valide.",
+  'landing.testimonial.4.quote': "Savvly génère mes contrats en quelques secondes. J'appréhendais l'administratif — maintenant j'envoie le contrat le jour même où le client valide.",
   'landing.testimonial.4.name': 'Lucas D.',
   'landing.testimonial.4.title': 'Web Designer Freelance',
   'landing.testimonial.5.quote': "Je ne suis pas rédactrice. Mais avec le générateur de posts LinkedIn, je publie 3 fois par semaine et mon réseau a grandi de 400 personnes.",
   'landing.testimonial.5.name': 'Camille B.',
   'landing.testimonial.5.title': 'Consultante Produit',
-  'landing.testimonial.6.quote': "Je passais mes dimanches soirs sur la facturation et l'admin. Toolio m'a rendu mes week-ends.",
+  'landing.testimonial.6.quote': "Je passais mes dimanches soirs sur la facturation et l'admin. Savvly m'a rendu mes week-ends.",
   'landing.testimonial.6.name': 'Pierre M.',
   'landing.testimonial.6.title': 'Développeur Freelance · Bordeaux',
 
@@ -442,7 +442,7 @@ export const fr = {
   'landing.how.step1.title': 'Créez votre compte gratuit',
   'landing.how.step1.desc': 'Sans carte bancaire. 50 crédits vous attendent. Inscription en 20 secondes.',
   'landing.how.step2.title': 'Remplissez le brief',
-  'landing.how.step2.desc': 'Répondez à 3–5 questions sur votre besoin. Toolio gère la génération.',
+  'landing.how.step2.desc': 'Répondez à 3–5 questions sur votre besoin. Savvly gère la génération.',
   'landing.how.step3.title': 'Utilisez votre résultat',
   'landing.how.step3.desc': 'Copiez, exportez en PDF ou sauvegardez dans votre historique. Prêt en secondes.',
 
@@ -501,12 +501,12 @@ export const fr = {
   'landing.final.title': 'Votre premier résultat est à 90 secondes.',
   'landing.final.sub': '50 crédits offerts. Sans carte. Résiliation libre.',
   'landing.final.cta': 'Créer mon compte gratuit →',
-  'landing.final.social': 'Rejoignez 1 200+ freelances qui utilisent déjà Toolio',
+  'landing.final.social': 'Rejoignez 1 200+ freelances qui utilisent déjà Savvly',
 
   // ── Onboarding modal ─────────────────────────────────────────
   'onboarding.step': 'Étape {n} sur 4',
   'onboarding.credits': 'crédits pour commencer',
-  'onboarding.step1.title': 'Bienvenue sur Toolio',
+  'onboarding.step1.title': 'Bienvenue sur Savvly',
   'onboarding.step1.body': "Vous avez tout ce qu'il faut pour avancer plus vite en tant que freelance. Faisons un tour rapide.",
   'onboarding.step2.title': 'Vos outils',
   'onboarding.step2.free': 'Gratuit',
@@ -738,6 +738,6 @@ export const fr = {
   'footer.link.terms': 'Conditions',
   'footer.link.privacy': 'Confidentialité',
   'footer.link.legal': 'Mentions légales',
-  'footer.copyright': '© 2026 Toolio — Fait à Paris',
+  'footer.copyright': '© 2026 Savvly — Fait à Paris',
   'footer.gdpr': 'Conforme RGPD',
 };

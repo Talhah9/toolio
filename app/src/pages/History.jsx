@@ -81,7 +81,7 @@ export function History() {
       toolName: name,
       userEmail: user?.email,
       output: row.output,
-      filename: `toolio-${row.tool_id}-${row.created_at?.slice(0, 10)}.pdf`,
+      filename: `savvly-${row.tool_id}-${row.created_at?.slice(0, 10)}.pdf`,
     });
   };
 

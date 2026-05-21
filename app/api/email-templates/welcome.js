@@ -1,7 +1,7 @@
 const COPY = {
   en: {
-    subject: 'Welcome to Toolio 🎉',
-    tagline: 'Every tool a freelancer needs.',
+    subject: 'Welcome to Savvly 🎉',
+    tagline: 'Every tool a savvy freelancer needs. Powered by AI.',
     hero: (firstName) => firstName ? `Welcome ${firstName} 👋` : 'Welcome 👋',
     heroSub: "You have <strong style=\"color:#4F46E5;\">50 credits</strong> to get started. No card needed.",
     toolsHeading: 'Start with these',
@@ -27,13 +27,13 @@ const COPY = {
     ],
     cta: 'Start for free →',
     creditsNote: 'Your 50 credits <strong>never expire</strong>. Use them anytime.',
-    footerLine1: 'You received this email because you created a Toolio account.',
+    footerLine1: 'You received this email because you created a Savvly account.',
     unsubscribe: 'Unsubscribe',
-    legal: '© 2026 Toolio. All rights reserved.',
+    legal: '© 2026 Savvly. All rights reserved.',
   },
   fr: {
-    subject: 'Bienvenue sur Toolio 🎉',
-    tagline: 'Tous les outils du freelance.',
+    subject: 'Bienvenue sur Savvly 🎉',
+    tagline: 'Tous les outils dont un freelance avisé a besoin. Propulsé par l'IA.',
     hero: (firstName) => firstName ? `Bienvenue ${firstName} 👋` : 'Bienvenue 👋',
     heroSub: "Vous avez <strong style=\"color:#4F46E5;\">50 crédits</strong> pour commencer. Sans carte bancaire.",
     toolsHeading: 'Commencez par ces outils',
@@ -59,9 +59,9 @@ const COPY = {
     ],
     cta: 'Commencer gratuitement →',
     creditsNote: 'Vos 50 crédits <strong>n\'expirent jamais</strong>. Utilisez-les quand vous voulez.',
-    footerLine1: 'Vous recevez cet email car vous avez créé un compte Toolio.',
+    footerLine1: 'Vous recevez cet email car vous avez créé un compte Savvly.',
     unsubscribe: 'Se désabonner',
-    legal: '© 2026 Toolio. Tous droits réservés.',
+    legal: '© 2026 Savvly. Tous droits réservés.',
   },
 };
 
@@ -120,7 +120,7 @@ export function welcomeEmailHtml({ firstName, lang }) {
           <tr>
             <td style="background:#0a0a0a;border-radius:12px 12px 0 0;padding:28px 40px;text-align:center;">
               <p style="margin:0 0 6px;font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#ffffff;">
-                Toolio<span style="color:#4F46E5;">.</span>
+                Savvly<span style="color:#4F46E5;">.</span>
               </p>
               <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.45);letter-spacing:0.02em;">
                 ${c.tagline}

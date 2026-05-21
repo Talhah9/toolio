@@ -72,7 +72,7 @@ export function ImageTool({ tool }) {
     const blob = new Blob([bytes], { type: 'image/png' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `toolio-image-${Date.now()}.png`;
+    a.download = `savvly-image-${Date.now()}.png`;
     a.click();
     URL.revokeObjectURL(a.href);
   };

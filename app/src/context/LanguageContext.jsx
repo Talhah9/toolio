@@ -5,12 +5,12 @@ import { fr } from '../locales/fr';
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => localStorage.getItem('toolio-lang') || 'en');
+  const [lang, setLang] = useState(() => localStorage.getItem('savvly-lang') || 'en');
 
   const toggleLang = useCallback(() => {
     setLang(l => {
       const next = l === 'en' ? 'fr' : 'en';
-      localStorage.setItem('toolio-lang', next);
+      localStorage.setItem('savvly-lang', next);
       return next;
     });
   }, []);
