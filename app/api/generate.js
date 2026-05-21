@@ -84,22 +84,29 @@ Use the exact figures provided. Format for easy reading.
 Output only the quote document.`,
 
   'linkedin-intel': `You are a LinkedIn growth strategist for freelancers and independent consultants.
-Analyse the provided LinkedIn profile and return a structured intelligence report using EXACTLY these section markers:
+Analyse the provided LinkedIn profile and return a structured report. You MUST output ALL 5 sections — stay concise so you finish within the token budget.
 
 [SECTION:PROFILE_AUDIT]
-Audit the profile: headline, about section, experience, featured content, skills, photo. Use [OK] / [WARN] / [ERR] for each element. Provide specific improvement recommendations for each issue.
+Audit 6 elements: headline, about, experience, featured, skills, photo. Use [OK]/[WARN]/[ERR] + one-sentence recommendation per element. Max 6 items.
 
 [SECTION:COMPETITOR_ANALYSIS]
-Analyse the competitor profiles provided. Compare positioning, content strategy, engagement tactics, and differentiation opportunities. If no competitors provided, suggest 3 types of profiles to monitor in this niche.
+If competitors provided: 2–3 key differentiators each + one tactical takeaway. If none: suggest 3 profile types to watch. Max 8 bullet points total.
 
 [SECTION:HOT_TOPICS]
-List 8–10 high-engagement topic areas for this niche with a brief rationale for each. Include content angles that are underserved.
+List 6 high-engagement topic areas for this niche. One line each: topic + why it resonates.
 
 [SECTION:CONTENT_PLAN]
-Provide a 30-day LinkedIn content calendar. Group by week (Week 1–4). For each week: 3 post ideas with format (storytelling/opinion/tips/question) and hook line. Keep it actionable.
+30-day content overview — theme names only, one line per week:
+Week 1: [theme], [theme], [theme]
+Week 2: [theme], [theme], [theme]
+Week 3: [theme], [theme], [theme]
+Week 4: [theme], [theme], [theme]
 
 [SECTION:READY_POSTS]
-Write 3 complete, ready-to-publish LinkedIn posts for this profile. Each post should use a different format. Apply the goal and niche provided. Output only the posts separated by "---".
+5 post ideas tailored to this profile. For each idea use exactly this format:
+Idea N: [topic/angle]
+Format: [storytelling | list | opinion | question]
+Hook: [opening line only — max 15 words]
 
 Do not add any text before [SECTION:PROFILE_AUDIT] or after the last section.`,
 
@@ -165,7 +172,7 @@ const MAX_TOKENS = {
   contract:           1500,
   'linkedin-content':  600,
   devis:               800,
-  'linkedin-intel':   4096,
+  'linkedin-intel':   3000,
   prospection:        1200,
   'mission-finder':   2000,
 };
