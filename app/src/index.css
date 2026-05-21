@@ -1781,6 +1781,117 @@ a {
   color: var(--fg);
 }
 
+/* ============================================================
+   Live Activity Feed
+   ============================================================ */
+.activity-feed-wrap {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 50;
+}
+.activity-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+  min-width: 230px;
+  max-width: 290px;
+}
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  flex-shrink: 0;
+}
+.activity-name  { font-size: 13px; font-weight: 600; color: var(--fg); }
+.activity-action { font-size: 12px; color: var(--fg-3); }
+@media (max-width: 768px) { .activity-feed-wrap { display: none; } }
+
+/* ============================================================
+   Early Access Urgency Bar
+   ============================================================ */
+.urgency-bar {
+  background: linear-gradient(135deg, #f5f3ff, #eef2ff);
+  border-top: 1px solid #e0d9ff;
+  border-bottom: 1px solid #e0d9ff;
+  padding: 14px 0;
+}
+.urgency-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.urgency-flame {
+  font-size: 18px;
+  animation: pulseFlame 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulseFlame {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.25) rotate(-5deg); }
+}
+.urgency-text {
+  font-size: 14px;
+  color: var(--fg-2);
+  flex: 1;
+  min-width: 180px;
+}
+.urgency-progress-wrap {
+  width: 120px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.urgency-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4F46E5, #818CF8);
+  border-radius: 10px;
+}
+.urgency-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 28px;
+}
+
+/* ============================================================
+   Tool popularity badges
+   ============================================================ */
+.tool-usage-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fg-4);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+.tool-pro-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid #c7d2fe;
+  border-radius: 20px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+
 @media (max-width: 480px) {
   .tools-grid { grid-template-columns: 1fr; }
   .packs-grid { grid-template-columns: 1fr; }

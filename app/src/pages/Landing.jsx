@@ -17,6 +17,39 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
 };
 
+const TOOL_POPULARITY = {
+  'audit':            1247,
+  'compete':           683,
+  'legal':            2134,
+  'contract':         1891,
+  'linkedin-content': 3421,
+  'image':             912,
+  'devis':            1567,
+  'relance':           847,
+  'statut':            623,
+  'urssaf':            541,
+  'linkedin-intel':    489,
+  'prospection':       731,
+  'mission-finder':    298,
+};
+
+const ACTIVITY = {
+  en: [
+    { name: 'Lucas',  action: 'just generated a contract' },
+    { name: 'Marie',  action: 'joined 2 minutes ago' },
+    { name: 'Thomas', action: 'sent a quote to his client' },
+    { name: 'Sophie', action: 'generated her CGV in 30s' },
+    { name: 'Alex',   action: 'just upgraded to Pro' },
+  ],
+  fr: [
+    { name: 'Lucas',  action: 'vient de générer un contrat' },
+    { name: 'Marie',  action: 'vient de rejoindre Savvly' },
+    { name: 'Thomas', action: 'a envoyé un devis à son client' },
+    { name: 'Sophie', action: 'a généré ses CGV en 30s' },
+    { name: 'Alex',   action: 'vient de passer en Pro' },
+  ],
+};
+
 // ── Shared animation primitives ───────────────────────────────
 
 function FadeUp({ children, delay = 0, style, className }) {
@@ -46,12 +79,138 @@ function StaggerGrid({ children, style, className }) {
       ref={ref}
       initial={reduce ? false : 'hidden'}
       animate={inView ? 'visible' : 'hidden'}
-      variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+      variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
       style={style}
       className={className}
     >
       {children}
     </motion.div>
+  );
+}
+
+// ── Animated counter hook ─────────────────────────────────────
+
+function useCountUp(end, duration, inView) {
+  const [count, setCount] = useState(0);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reduce) { setCount(end); return; }
+    let startTime = null;
+    let rafId;
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      setCount(Math.floor(easeOut(progress) * end));
+      if (progress < 1) rafId = requestAnimationFrame(animate);
+      else setCount(end);
+    };
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [inView, end, duration, reduce]);
+
+  return count;
+}
+
+function AnimatedStat({ end, suffix = '', duration = 1.5, label }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-50px' });
+  const count = useCountUp(end, duration, inView);
+  return (
+    <div ref={ref} className="stat-item">
+      <div className="stat-value" style={{ color: '#fff' }}>
+        {count.toLocaleString()}{suffix}
+      </div>
+      <div className="stat-label" style={{ color: 'rgba(255,255,255,0.5)' }}>{label}</div>
+    </div>
+  );
+}
+
+// ── Live activity feed ────────────────────────────────────────
+
+function ActivityFeed({ lang }) {
+  const [visible, setVisible] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (reduce) return;
+    let hideTimer;
+    let nextTimer;
+    let idx = 0;
+
+    const showNext = () => {
+      const msgs = lang === 'fr' ? ACTIVITY.fr : ACTIVITY.en;
+      setCurrentIdx(idx % msgs.length);
+      idx += 1;
+      setVisible(true);
+      hideTimer = setTimeout(() => {
+        setVisible(false);
+        nextTimer = setTimeout(showNext, 8000 + Math.random() * 4000);
+      }, 4000);
+    };
+
+    nextTimer = setTimeout(showNext, 3000);
+    return () => { clearTimeout(hideTimer); clearTimeout(nextTimer); };
+  }, [lang, reduce]);
+
+  const msgs = lang === 'fr' ? ACTIVITY.fr : ACTIVITY.en;
+  const msg = msgs[currentIdx];
+
+  return (
+    <div className="activity-feed-wrap" aria-live="polite" aria-atomic="true">
+      <AnimatePresence>
+        {visible && (
+          <motion.div
+            key={currentIdx}
+            className="activity-toast"
+            initial={{ opacity: 0, y: 16, x: -8 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
+            <span className="activity-dot" aria-hidden="true" />
+            <div>
+              <span className="activity-name">{msg.name}</span>
+              <span className="activity-action"> {msg.action}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ── Early access urgency bar ──────────────────────────────────
+
+function UrgencyBar({ lang }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const reduce = useReducedMotion();
+  const spots = 67;
+
+  return (
+    <div ref={ref} className="urgency-bar">
+      <div className="urgency-inner">
+        <span className="urgency-flame" aria-hidden="true">🔥</span>
+        <span className="urgency-text">
+          {lang === 'fr'
+            ? <><strong>{spots}/100 places</strong> d'accès anticipé réservées</>
+            : <>Early access pricing — <strong>{spots}/100 spots</strong> taken</>}
+        </span>
+        <div className="urgency-progress-wrap" role="progressbar" aria-valuenow={spots} aria-valuemin={0} aria-valuemax={100}>
+          <motion.div
+            className="urgency-progress-fill"
+            initial={{ width: 0 }}
+            animate={inView ? { width: `${spots}%` } : { width: 0 }}
+            transition={reduce ? { duration: 0 } : { duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.3 }}
+          />
+        </div>
+        <span className="urgency-pct">{spots}%</span>
+      </div>
+    </div>
   );
 }
 
@@ -596,17 +755,10 @@ export function Landing() {
         <div className="container">
           <FadeUp>
             <div className="stat-bar">
-              {[
-                { value: t('landing.stats.users'), label: t('landing.stats.users.label') },
-                { value: t('landing.stats.tools'), label: t('landing.stats.tools.label') },
-                { value: t('landing.stats.credits'), label: t('landing.stats.credits.label') },
-                { value: t('landing.stats.hosting'), label: t('landing.stats.hosting.label') },
-              ].map((item, i) => (
-                <div key={i} className="stat-item">
-                  <div className="stat-value" style={{ color: '#fff' }}>{item.value}</div>
-                  <div className="stat-label" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.label}</div>
-                </div>
-              ))}
+              <AnimatedStat end={1200} suffix="+" duration={1.5} label={t('landing.stats.users.label')} />
+              <AnimatedStat end={13}   suffix=""  duration={0.8} label={t('landing.stats.tools.label')} />
+              <AnimatedStat end={50}   suffix=""  duration={1.0} label={t('landing.stats.credits.label')} />
+              <AnimatedStat end={99}   suffix="%" duration={1.2} label={t('landing.stats.hosting.label')} />
             </div>
           </FadeUp>
 
@@ -635,6 +787,7 @@ export function Landing() {
           <StaggerGrid className="tools-grid" style={{ marginBottom: 40 }}>
             {freeTools.map(tool => {
               const { name, desc } = getToolText(tool, lang);
+              const uses = TOOL_POPULARITY[tool.id];
               return (
                 <motion.div
                   key={tool.id}
@@ -662,7 +815,10 @@ export function Landing() {
                       ? <span style={{ color: '#10B981', fontWeight: 600, fontSize: 13 }}>{t('landing.tools.free')}</span>
                       : <span className="tabular">{tool.credits} {t('landing.tools.credits')}</span>
                     }
-                    <Glyph name="arrow-right" size={14} />
+                    <div className="row" style={{ gap: 8, alignItems: 'center' }}>
+                      {uses && <span className="tool-usage-badge">{uses.toLocaleString()} uses</span>}
+                      <Glyph name="arrow-right" size={14} />
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -697,7 +853,10 @@ export function Landing() {
                       ? <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: 13 }}>{t('landing.tools.free')}</span>
                       : <span className="tabular">{tool.credits} {t('landing.tools.credits')}</span>
                     }
-                    <Glyph name="arrow-right" size={14} />
+                    <div className="row" style={{ gap: 8, alignItems: 'center' }}>
+                      <span className="tool-pro-badge">Pro ★</span>
+                      <Glyph name="arrow-right" size={14} />
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -731,6 +890,11 @@ export function Landing() {
           </StaggerGrid>
         </div>
       </section>
+
+      {/* ── 6b. URGENCY BAR ───────────────────────────────────── */}
+      <FadeUp>
+        <UrgencyBar lang={lang} />
+      </FadeUp>
 
       {/* ── 7. PRICING ────────────────────────────────────────── */}
       <section id="pricing" className="section">
@@ -864,6 +1028,9 @@ export function Landing() {
       </FadeUp>
 
       <MarketingFooter />
+
+      {/* ── LIVE ACTIVITY FEED (fixed, desktop only) ──────────── */}
+      <ActivityFeed lang={lang} />
     </>
   );
 }
