@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
+import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -44,7 +45,7 @@ function parseSections(output, keys) {
 }
 
 export function LinkedinIntelTool({ tool }) {
-  const { credits, logGeneration, session } = useApp();
+  const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
   const fileRef = useRef(null);
 
@@ -56,9 +57,11 @@ export function LinkedinIntelTool({ tool }) {
   const [imageMediaType, setImageMediaType] = useState('image/jpeg');
   const [imagePreview, setImagePreview] = useState('');
   const [sections, setSections] = useState({});
+  const [rawOutput, setRawOutput] = useState('');
   const [activeTab, setActiveTab] = useState('PROFILE_AUDIT');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -97,6 +100,7 @@ export function LinkedinIntelTool({ tool }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setSections({});
+    setRawOutput('');
     try {
       const fullText = await streamGenerate(
         {
@@ -118,6 +122,7 @@ export function LinkedinIntelTool({ tool }) {
       const parsed = parseSections(fullText, TABS.map(t => t.id));
       console.log('[linkedin-intel] parsed sections:', Object.keys(parsed));
       setSections(parsed);
+      setRawOutput(fullText);
       setActiveTab('PROFILE_AUDIT');
       const id = await logGeneration(tool.id, { profileUrl, niche, goal }, fullText, tool.credits);
       setGenId(id);
@@ -263,8 +268,12 @@ export function LinkedinIntelTool({ tool }) {
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
                   <Glyph name="copy" size={12} /> {t('tool.copy')}
                 </button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!hasOutput}>
+                  <Glyph name="expand" size={12} /> Fullscreen
+                </button>
               </div>
             </div>
+            {viewerOpen && <ResultViewer output={rawOutput} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
 
             {hasOutput && (
               <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', gap: 0, overflowX: 'auto' }}>

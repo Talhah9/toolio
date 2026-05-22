@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
+import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -44,7 +45,7 @@ function parseSections(output, keys) {
 }
 
 export function ProspectionTool({ tool, initialData }) {
-  const { credits, logGeneration, session } = useApp();
+  const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
 
   const [niche, setNiche] = useState(initialData?.niche ?? '');
@@ -53,9 +54,11 @@ export function ProspectionTool({ tool, initialData }) {
   const [tone, setTone] = useState(initialData?.tone ?? 'Professional');
   const [pain, setPain] = useState(initialData?.pain ?? '');
   const [sections, setSections] = useState({});
+  const [rawOutput, setRawOutput] = useState('');
   const [activeTab, setActiveTab] = useState('VERSION_A');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -67,6 +70,7 @@ export function ProspectionTool({ tool, initialData }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setSections({});
+    setRawOutput('');
     try {
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { niche, target, channel, tone, pain: pain || undefined }, session, lang },
@@ -74,6 +78,7 @@ export function ProspectionTool({ tool, initialData }) {
       );
       const parsed = parseSections(fullText, SECTION_KEYS);
       setSections(parsed);
+      setRawOutput(fullText);
       setActiveTab('VERSION_A');
       const id = await logGeneration(tool.id, { niche, target, channel, tone }, fullText, tool.credits);
       setGenId(id);
@@ -213,8 +218,12 @@ export function ProspectionTool({ tool, initialData }) {
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!hasOutput || loading}>
                   <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
                 </button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!hasOutput}>
+                  <Glyph name="expand" size={12} /> Fullscreen
+                </button>
               </div>
             </div>
+            {viewerOpen && <ResultViewer output={rawOutput} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
 
             {hasOutput && (
               <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', gap: 0 }}>

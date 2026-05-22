@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
+import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -26,7 +27,7 @@ const FORMATS = [
 const LI_LIMIT = 3000;
 
 export function LinkedinTool({ tool, initialData }) {
-  const { credits, logGeneration, session } = useApp();
+  const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
   const [topic, setTopic] = useState(initialData?.topic ?? '');
   const [tone, setTone] = useState(initialData?.tone ?? 'direct');
@@ -34,6 +35,7 @@ export function LinkedinTool({ tool, initialData }) {
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const charCount = output.length;
@@ -120,8 +122,10 @@ export function LinkedinTool({ tool, initialData }) {
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!output}><Glyph name="expand" size={12} /> Fullscreen</button>
               </div>
             </div>
+            {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {loading && !output ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : output ? (

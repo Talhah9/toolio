@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
+import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
@@ -52,9 +53,11 @@ export function AuditTool({ tool }) {
   const [url, setUrl] = useState('');
   const [checks, setChecks] = useState(CHECK_KEYS.map(() => true));
   const [sections, setSections] = useState({});
+  const [rawOutput, setRawOutput] = useState('');
   const [activeTab, setActiveTab] = useState('TECHNICAL');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -65,6 +68,7 @@ export function AuditTool({ tool }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setSections({});
+    setRawOutput('');
     try {
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { url, checks: CHECK_KEYS.filter((_, i) => checks[i]) }, session, lang },
@@ -72,6 +76,7 @@ export function AuditTool({ tool }) {
       );
       const parsed = parseSections(fullText, TABS.map(t => t.id));
       setSections(parsed);
+      setRawOutput(fullText);
       setActiveTab('TECHNICAL');
       const id = await logGeneration(tool.id, { url }, fullText, tool.credits);
       setGenId(id);
@@ -159,9 +164,11 @@ export function AuditTool({ tool }) {
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {hasOutput && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!hasOutput || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!hasOutput}><Glyph name="expand" size={12} /> Fullscreen</button>
               </div>
             </div>
 
+            {viewerOpen && <ResultViewer output={rawOutput} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {hasOutput && (
               <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', gap: 0, overflowX: 'auto' }}>
                 {TABS.map(tab => (

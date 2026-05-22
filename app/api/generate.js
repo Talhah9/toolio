@@ -373,8 +373,10 @@ export default async function handler(req, res) {
 
   const basePrompt = SYSTEM_PROMPTS[toolId];
 
+  const FORMAT_INSTRUCTION = '\n\nFormatting rules: Use ## headings to separate major sections. Use bullet points for lists. Use markdown tables where data has multiple dimensions. Be specific and actionable — include real names, numbers, percentages, and concrete examples. Avoid generic advice.';
+  const DETAIL_INSTRUCTION = (toolId === 'audit' || toolId === 'compete') ? '\n\nInclude specific numbers, percentages, and concrete examples wherever possible.' : '';
   const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
-  const systemPrompt = basePrompt + ASCII_INSTRUCTION + langInstruction;
+  const systemPrompt = basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + ASCII_INSTRUCTION + langInstruction;
 
   let userMessage;
   try {
@@ -405,8 +407,8 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // compete and audit: try web search agentic loop first, fall back to regular stream
-    if (toolId === 'compete' || toolId === 'audit') {
+    // compete, audit, and linkedin-intel: try web search first, fall back to regular stream
+    if (toolId === 'compete' || toolId === 'audit' || toolId === 'linkedin-intel') {
       let webText = null;
       try {
         webText = await runWithWebSearch(anthropic, systemPrompt, userContent, MAX_TOKENS[toolId] ?? 2048);

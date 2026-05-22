@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
+import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { useToast } from '../../components/Toast';
@@ -52,12 +53,13 @@ const TONES = [
 ];
 
 export function RelanceTool({ tool }) {
-  const { credits, consumeCredits } = useApp();
-  const { t } = useLang();
+  const { credits, consumeCredits, user } = useApp();
+  const { t, lang } = useLang();
   const [context, setContext] = useState('');
   const [tone, setTone] = useState('cordial');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const generate = () => {
@@ -172,8 +174,12 @@ export function RelanceTool({ tool }) {
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}>
                   <Glyph name="refresh" size={12} /> {t('tool.regenerate')}
                 </button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!output}>
+                  <Glyph name="expand" size={12} /> Fullscreen
+                </button>
               </div>
             </div>
+            {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {loading ? (
               <div className="result-empty">
                 <span className="row" style={{ gap: 8 }}>

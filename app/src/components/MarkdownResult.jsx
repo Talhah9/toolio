@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm';
 
 // Splits a text string on [OK] / [WARN] / [ERR] tokens and returns
 // an array of strings and badge <span> elements.
-function processBadges(children) {
+export function processBadges(children) {
   return React.Children.map(children, child => {
     if (typeof child !== 'string') return child;
     const parts = child.split(/(\[OK\]|\[WARN\]|\[ERR\])/g);

@@ -1,141 +1,253 @@
 import jsPDF from 'jspdf';
 
-// Strip characters and patterns jsPDF can't handle
+const ACCENT   = [79, 70, 229];   // #4F46E5
+const ACCENT_L = [238, 242, 255]; // #EEF2FF
+const GREY_1   = [245, 245, 250]; // alternating row
+const GREY_2   = [220, 220, 228]; // border/rule
+const TEXT_DARK = [15, 15, 15];
+const TEXT_MID  = [80, 80, 90];
+const TEXT_SOFT = [150, 150, 160];
+
 function sanitize(str) {
+  if (!str) return '';
   return str
-    // Remove ALL emoji and special unicode (comprehensive range)
     .replace(/[\u{1F000}-\u{1FFFF}|\u{2600}-\u{27BF}|\u{FE00}-\u{FE0F}|\u{1F900}-\u{1F9FF}|\u{2300}-\u{23FF}|\u{2B00}-\u{2BFF}|\u{1FA00}-\u{1FA9F}]/gu, '')
-    // Lines that are only % characters (Claude separator artifacts)
     .replace(/^%+$/gm, '')
-    // Arrow and special punctuation → ASCII equivalents
-    .replace(/→/g, '->')
-    .replace(/←/g, '<-')
-    .replace(/['']/g, "'")
-    .replace(/[""]/g, '"')
+    .replace(/→/g, '->').replace(/←/g, '<-')
+    .replace(/['']/g, "'").replace(/[""]/g, '"')
     .replace(/[–—]/g, '-')
-    // Remove markdown bold/italic
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/\*(.*?)\*/g, '$1')
-    .replace(/`(.*?)`/g, '$1')
-    // Clean up multiple spaces
+    .replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/`(.*?)`/g, '$1')
+    .replace(/\[OK\]/g, '[OK]').replace(/\[WARN\]/g, '[WARN]').replace(/\[ERR\]/g, '[ERR]')
     .replace(/  +/g, ' ')
-    // Strip any remaining non-ASCII as last resort
     .replace(/[^\x00-\x7F]/g, '')
     .trim();
 }
 
 export function exportPdf({ toolName, userEmail, output, filename }) {
-  const doc    = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const pageW  = 210;
-  const pageH  = 297;
-  const margin = 20;
-  const maxW   = pageW - margin * 2;
-  const lineH  = 7;
-  const date   = new Date().toLocaleDateString('en-GB');
+  const doc   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageW = 210, pageH = 297;
+  const margin = 18, maxW = pageW - margin * 2;
+  const LH = 6;       // line height
+  const CELL_H = 7;   // table row height
+  const FOOTER_H = 14; // reserved at bottom for footer
 
   let y = margin;
+  let page = 1;
 
-  const addPage = () => { doc.addPage(); y = margin; };
-  const checkY  = (needed) => { if (y + needed > pageH - margin) addPage(); };
-
-  // ── Header ──────────────────────────────────────────────────
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text('Savvly', margin, y);
-
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(140, 140, 140);
-  doc.text(date, pageW - margin, y, { align: 'right' });
-
-  y += 6;
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 30, 30);
-  doc.text(sanitize(toolName), margin, y);
-
-  if (userEmail) {
-    y += 5;
-    doc.setFontSize(9);
+  // ── Footer helper ───────────────────────────────────────────────
+  function addFooter(p) {
+    doc.setPage(p);
+    const fy = pageH - 7;
+    doc.setDrawColor(...GREY_2);
+    doc.line(margin, fy - 4, pageW - margin, fy - 4);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(140, 140, 140);
-    doc.text(userEmail, margin, y);
+    doc.setTextColor(...TEXT_SOFT);
+    doc.text('savvly.co', margin, fy);
+    doc.text(`Page ${p}`, pageW - margin, fy, { align: 'right' });
   }
 
-  // ── Divider ─────────────────────────────────────────────────
+  function addPage() {
+    addFooter(page);
+    doc.addPage();
+    page++;
+    y = margin;
+    doc.setTextColor(...TEXT_DARK);
+  }
+
+  function checkY(needed) {
+    if (y + needed > pageH - FOOTER_H - margin) addPage();
+  }
+
+  // ── Header bar ──────────────────────────────────────────────────
+  doc.setFillColor(...ACCENT);
+  doc.rect(0, 0, pageW, 13, 'F');
+
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text('Savvly', margin, 9);
+
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text(new Date().toLocaleDateString('en-GB'), pageW - margin, 9, { align: 'right' });
+
+  // ── Tool name + email ───────────────────────────────────────────
+  y = 22;
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...TEXT_DARK);
+  doc.text(sanitize(toolName || ''), margin, y);
   y += 7;
-  doc.setDrawColor(220, 220, 220);
+
+  if (userEmail) {
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...TEXT_SOFT);
+    doc.text(userEmail, margin, y);
+    y += 6;
+  }
+
+  // Divider
+  doc.setDrawColor(...GREY_2);
   doc.line(margin, y, pageW - margin, y);
   y += 8;
 
-  // ── Body ─────────────────────────────────────────────────────
-  doc.setTextColor(30, 30, 30);
+  // ── Body ─────────────────────────────────────────────────────────
+  doc.setTextColor(...TEXT_DARK);
 
-  for (const rawLine of output.split('\n')) {
-    const trimmed = rawLine.trim();
+  const lines = (output || '').split('\n');
 
-    // Horizontal rules: ---, ===, ***
-    if (/^[-=*]{3,}$/.test(trimmed)) {
+  // Track table state
+  let tableStarted = false;
+  let tableIsHeader = false;
+  let tableDataRow = 0;
+  let colCount = 0;
+
+  for (let li = 0; li < lines.length; li++) {
+    const raw = lines[li];
+    const trim = raw.trim();
+
+    // ── Skip HR ──────────────────────────────────────────────────
+    if (/^[-=*]{3,}$/.test(trim)) {
       checkY(8);
       y += 2;
-      doc.setDrawColor(200, 200, 200);
+      doc.setDrawColor(...GREY_2);
       doc.line(margin, y, pageW - margin, y);
       y += 6;
+      tableStarted = false;
       continue;
     }
 
-    // Table separator rows  | --- | :---: |
-    if (/^\|[\s\-:|]+\|/.test(trimmed)) continue;
+    // ── Table separator ──────────────────────────────────────────
+    if (/^\|[\s\-:|]+\|$/.test(trim)) {
+      tableIsHeader = false;
+      tableDataRow = 0;
+      continue;
+    }
 
-    // Headings
-    const isH1 = rawLine.startsWith('# ');
-    const isH2 = rawLine.startsWith('## ');
-    const isH3 = rawLine.startsWith('### ');
+    // ── Table row ────────────────────────────────────────────────
+    if (trim.startsWith('|')) {
+      const cells = trim.replace(/^\||\|$/g, '').split('|').map(c => sanitize(c.trim()));
+      if (!cells.length) continue;
+
+      if (!tableStarted) {
+        // First row = header
+        tableStarted = true;
+        tableIsHeader = true;
+        tableDataRow = 0;
+        colCount = cells.length;
+        y += 2;
+      }
+
+      const colW = maxW / colCount;
+      checkY(CELL_H + 2);
+
+      cells.forEach((cell, ci) => {
+        const cx = margin + ci * colW;
+        const cy = y - CELL_H + 2;
+
+        if (tableIsHeader) {
+          doc.setFillColor(...ACCENT);
+          doc.rect(cx, cy, colW, CELL_H, 'F');
+        } else if (tableDataRow % 2 === 0) {
+          doc.setFillColor(...GREY_1);
+          doc.rect(cx, cy, colW, CELL_H, 'F');
+        }
+
+        // Cell border
+        doc.setDrawColor(...GREY_2);
+        doc.rect(cx, cy, colW, CELL_H, 'S');
+
+        // Text
+        doc.setFontSize(9);
+        doc.setFont('helvetica', tableIsHeader ? 'bold' : 'normal');
+        doc.setTextColor(...(tableIsHeader ? [255, 255, 255] : TEXT_DARK));
+        const cellText = cell.length > 35 ? cell.slice(0, 33) + '..' : cell;
+        doc.text(cellText, cx + 2.5, y - 0.5);
+      });
+
+      y += CELL_H;
+      if (!tableIsHeader) tableDataRow++;
+      tableIsHeader = false;
+      continue;
+    }
+
+    // Not a table row
+    tableStarted = false;
+    tableIsHeader = false;
+    tableDataRow = 0;
+
+    // ── Blank line ───────────────────────────────────────────────
+    if (trim === '') {
+      y += 2.5;
+      continue;
+    }
+
+    // ── Headings ─────────────────────────────────────────────────
+    const isH1 = raw.startsWith('# ')  && !raw.startsWith('## ');
+    const isH2 = raw.startsWith('## ') && !raw.startsWith('### ');
+    const isH3 = raw.startsWith('### ');
 
     if (isH1 || isH2 || isH3) {
-      const text     = sanitize(rawLine.replace(/^#{1,3}\s+/, ''));
-      const fontSize = isH1 ? 13 : isH2 ? 11 : 10;
-      checkY(lineH + (isH1 ? 4 : 2));
-      y += isH1 ? 4 : 2;
-      doc.setFontSize(fontSize);
-      doc.setFont('helvetica', 'bold');
-      doc.text(text, margin, y);
-      y += lineH;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      continue;
-    }
+      const text = sanitize(raw.replace(/^#{1,3}\s+/, ''));
+      if (!text) continue;
 
-    // Table rows  | col | col |
-    if (trimmed.startsWith('|')) {
-      const cells = trimmed.replace(/^\||\|$/g, '').split('|').map(c => c.trim());
-      const text  = sanitize(cells.join('   '));
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      for (const wl of doc.splitTextToSize(text, maxW)) {
-        checkY(lineH);
-        doc.text(wl, margin, y);
-        y += lineH;
+      if (isH1) {
+        checkY(16);
+        y += 6;
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...TEXT_DARK);
+        doc.text(text, margin, y);
+        y += 5;
+        doc.setDrawColor(...GREY_2);
+        doc.line(margin, y, pageW - margin, y);
+        y += 5;
+      } else if (isH2) {
+        checkY(14);
+        y += 5;
+        // Accent bar
+        doc.setFillColor(...ACCENT);
+        doc.rect(margin, y - 5, 3, 8, 'F');
+        // Soft background
+        doc.setFillColor(...ACCENT_L);
+        doc.rect(margin + 3, y - 5, maxW - 3, 8, 'F');
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...ACCENT);
+        doc.text(text, margin + 6, y);
+        doc.setTextColor(...TEXT_DARK);
+        y += 7;
+      } else {
+        checkY(10);
+        y += 4;
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...TEXT_MID);
+        doc.text(text.toUpperCase(), margin, y);
+        doc.setTextColor(...TEXT_DARK);
+        y += LH;
       }
       continue;
     }
 
-    // Empty line
-    if (trimmed === '') {
-      y += 3;
-      continue;
-    }
-
-    // Regular text
+    // ── Regular lines ────────────────────────────────────────────
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    for (const wl of doc.splitTextToSize(sanitize(rawLine), maxW)) {
-      checkY(lineH);
+    doc.setTextColor(...TEXT_DARK);
+
+    const wrapped = doc.splitTextToSize(sanitize(raw), maxW);
+    for (const wl of wrapped) {
+      checkY(LH);
       doc.text(wl, margin, y);
-      y += lineH;
+      y += LH;
     }
   }
+
+  // ── Footers on all pages ────────────────────────────────────────
+  const total = doc.getNumberOfPages ? doc.getNumberOfPages() : doc.internal.getNumberOfPages();
+  for (let p = 1; p <= total; p++) addFooter(p);
 
   doc.save(filename || `savvly-${Date.now()}.pdf`);
 }
