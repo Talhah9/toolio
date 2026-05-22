@@ -7,13 +7,31 @@ import { Glyph } from './Glyph';
 import { processBadges } from './MarkdownResult';
 import { exportPdf } from '../lib/exportPdf';
 
-// Convert [SECTION:KEY_NAME] markers (from tabbed tool raw output) to ## headings
 function prepareContent(raw) {
   return (raw || '')
+    .replace(/\[SCORE:\d+\]\s*/g, '')
     .replace(/\[SECTION:([A-Z_]+)\]/g, (_, k) =>
       `\n\n## ${k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}\n`
     )
     .trim();
+}
+
+function getFirstText(node) {
+  if (typeof node === 'string') return node;
+  if (Array.isArray(node)) {
+    for (const child of node) { const t = getFirstText(child); if (t) return t; }
+  }
+  if (node?.props?.children) return getFirstText(node.props.children);
+  return '';
+}
+
+function getCalloutType(children) {
+  const text = getFirstText(children);
+  if (text.startsWith('✅')) return 'ok';
+  if (text.startsWith('⚠️')) return 'warn';
+  if (text.startsWith('💡')) return 'tip';
+  if (text.startsWith('🚨')) return 'critical';
+  return null;
 }
 
 const mkComponents = {
@@ -29,7 +47,11 @@ const mkComponents = {
   code:       ({ inline, children }) => inline
     ? <code className="rv-code-inline">{children}</code>
     : <pre className="rv-pre"><code>{children}</code></pre>,
-  blockquote: ({ children }) => <blockquote className="rv-blockquote">{children}</blockquote>,
+  blockquote: ({ children }) => {
+    const type = getCalloutType(children);
+    if (type) return <div className={`callout callout-${type}`}>{children}</div>;
+    return <blockquote className="rv-blockquote">{children}</blockquote>;
+  },
   strong:     ({ children }) => <strong>{processBadges(children)}</strong>,
 };
 

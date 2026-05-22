@@ -12,6 +12,7 @@ import { Account } from './pages/Account';
 import { History } from './pages/History';
 import { Legal } from './pages/Legal';
 import { Admin } from './pages/Admin';
+import { ShareResult } from './pages/ShareResult';
 import { useApp } from './context/AppContext';
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
@@ -44,6 +45,7 @@ export function App() {
               <Route path="/admin" element={<Admin />} />
             </Route>
           </Route>
+          <Route path="/share/:id" element={<ShareResult />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

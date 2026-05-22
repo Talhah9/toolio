@@ -4,6 +4,7 @@ import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { SaveButton } from '../../components/SaveButton';
+import { ShareButton } from '../../components/ShareButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -137,6 +138,7 @@ export function ContratTool({ tool, initialData }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
+                <ShareButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>

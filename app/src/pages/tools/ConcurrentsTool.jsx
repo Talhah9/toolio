@@ -5,6 +5,8 @@ import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
 import { SaveButton } from '../../components/SaveButton';
+import { ShareButton } from '../../components/ShareButton';
+import { ScoreGauge, parseScore, stripScore } from '../../components/ScoreGauge';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -25,6 +27,7 @@ export function ConcurrentsTool({ tool }) {
   const [yourUrl, setYourUrl] = useState('');
   const [focus, setFocus] = useState(['positioning', 'keywords', 'content']);
   const [output, setOutput] = useState('');
+  const [score, setScore] = useState(null);
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -38,11 +41,13 @@ export function ConcurrentsTool({ tool }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
+    setScore(null);
     try {
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { competitorUrl, yourUrl, focus }, session, lang },
         (chunk) => setOutput(chunk),
       );
+      setScore(parseScore(fullText));
       const id = await logGeneration(tool.id, { competitorUrl, yourUrl, focus }, fullText, tool.credits);
       setGenId(id);
     } catch (err) {
@@ -111,6 +116,7 @@ export function ConcurrentsTool({ tool }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
+                <ShareButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
                 {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
                 <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
@@ -118,11 +124,12 @@ export function ConcurrentsTool({ tool }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
+            {!loading && output && score !== null && <ScoreGauge score={score} lang={lang} />}
             {loading && !output ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
             ) : output && loading ? (
               <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
-            ) : output ? <MarkdownResult>{output}</MarkdownResult> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            ) : output ? <MarkdownResult>{stripScore(output)}</MarkdownResult> : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
       </div>

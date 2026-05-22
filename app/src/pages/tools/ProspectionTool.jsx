@@ -5,6 +5,7 @@ import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
 import { SaveButton } from '../../components/SaveButton';
+import { ShareButton } from '../../components/ShareButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -57,6 +58,7 @@ export function ProspectionTool({ tool, initialData }) {
   const [rawOutput, setRawOutput] = useState('');
   const [activeTab, setActiveTab] = useState('VERSION_A');
   const [loading, setLoading] = useState(false);
+  const [regenLoading, setRegenLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
@@ -105,6 +107,29 @@ export function ProspectionTool({ tool, initialData }) {
     if (!text) return;
     navigator.clipboard?.writeText(text);
     toast(t('tool.copied'));
+  };
+
+  const regenerateSection = async () => {
+    setRegenLoading(true);
+    try {
+      const sectionKey = activeTab === 'FOLLOWUP' ? 'FOLLOWUP_D3' : activeTab;
+      const fullText = await streamGenerate(
+        { toolId: tool.id, input: { niche, target, channel, tone, pain: pain || undefined, _sectionKey: sectionKey }, session, lang },
+        () => {},
+      );
+      const marker = `[SECTION:${sectionKey}]`;
+      const markerPos = fullText.toUpperCase().indexOf(marker.toUpperCase());
+      const content = markerPos !== -1 ? fullText.slice(markerPos + marker.length).trim() : fullText.trim();
+      if (activeTab === 'FOLLOWUP') {
+        setSections(prev => ({ ...prev, FOLLOWUP_D3: content }));
+      } else {
+        setSections(prev => ({ ...prev, [activeTab]: content }));
+      }
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
+      setRegenLoading(false);
+    }
   };
 
   return (
@@ -212,6 +237,7 @@ export function ProspectionTool({ tool, initialData }) {
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
+                <ShareButton generationId={genId} />
                 <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}>
                   <Glyph name="copy" size={12} /> {t('tool.copy')}
                 </button>
@@ -226,30 +252,41 @@ export function ProspectionTool({ tool, initialData }) {
             {viewerOpen && <ResultViewer output={rawOutput} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
 
             {hasOutput && (
-              <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', gap: 0 }}>
-                {MSG_TABS.map(tab => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    style={{
-                      padding: '10px 14px',
-                      fontSize: 12,
-                      fontWeight: activeTab === tab.id ? 600 : 400,
-                      color: activeTab === tab.id ? 'var(--accent)' : 'var(--fg-3)',
-                      background: 'none',
-                      borderTop: 'none',
-                      borderLeft: 'none',
-                      borderRight: 'none',
-                      borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'color 0.15s',
-                    }}
-                  >
-                    {t(tab.key)}
-                  </button>
-                ))}
+              <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex' }}>
+                  {MSG_TABS.map(tab => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      style={{
+                        padding: '10px 14px',
+                        fontSize: 12,
+                        fontWeight: activeTab === tab.id ? 600 : 400,
+                        color: activeTab === tab.id ? 'var(--accent)' : 'var(--fg-3)',
+                        background: 'none',
+                        borderTop: 'none',
+                        borderLeft: 'none',
+                        borderRight: 'none',
+                        borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'color 0.15s',
+                      }}
+                    >
+                      {t(tab.key)}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ margin: '0 8px', flexShrink: 0, fontSize: 11 }}
+                  onClick={regenerateSection}
+                  disabled={regenLoading || loading}
+                  title="Regenerate this section"
+                >
+                  <Glyph name="refresh" size={11} /> {regenLoading ? '…' : 'Regen'}
+                </button>
               </div>
             )}
 

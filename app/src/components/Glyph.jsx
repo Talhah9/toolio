@@ -132,6 +132,8 @@ export function Glyph({ name, size = 16 }) {
       return <svg {...props}><path d="M8 3v10M4 9l4 4 4-4" /></svg>;
     case 'expand':
       return <svg {...props}><path d="M10 2.5h3.5V6M13.5 2.5L9.5 6.5M6 13.5H2.5V10M2.5 13.5l4-4" /></svg>;
+    case 'share':
+      return <svg {...props}><path d="M11 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM5 6a2 2 0 1 1 0 4A2 2 0 0 1 5 6zM11 9.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM7 7.5l2 1.5M9 5.5L7 7" /></svg>;
     case 'lightning':
       return <svg {...props}><path d="M9 1.5L3 9h4l-1 5.5 6-7.5H8z" /></svg>;
     case 'image':

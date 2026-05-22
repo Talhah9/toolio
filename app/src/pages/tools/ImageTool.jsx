@@ -3,6 +3,7 @@ import { ToolShell } from '../../components/ToolShell';
 import { Glyph } from '../../components/Glyph';
 import { CreditGate } from '../../components/CreditGate';
 import { SaveButton } from '../../components/SaveButton';
+import { ShareButton } from '../../components/ShareButton';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
@@ -143,6 +144,7 @@ export function ImageTool({ tool }) {
               {output && (
                 <div className="row" style={{ gap: 6 }}>
                   <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
+                  <ShareButton generationId={genId} />
                   <button className="btn btn-ghost btn-sm" onClick={download}>
                     <Glyph name="arrow-down" size={12} /> {t('tool.download')}
                   </button>

@@ -22,12 +22,15 @@ const TOOL_CREDITS = {
 const KNOWN_TOOLS = new Set(Object.keys(TOOL_CREDITS));
 const MAX_FIELD_LENGTH = 5000;
 
-// Appended to every system prompt — keeps PDF export clean.
-const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji, special unicode characters, or %%%% separators in your response. Use plain ASCII text only. For section dividers use --- instead.';
+// Appended to every system prompt.
+const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji or special unicode characters, EXCEPT in blockquote callouts. For callouts ONLY you may use these four: ✅ ⚠️ 💡 🚨 — place one at the start of a blockquote line (> ✅ Good: ...). Do not use any other emoji or unicode. For section dividers use --- instead.';
+
+const CALLOUT_INSTRUCTION = '\n\nUse blockquote callouts to highlight key insights (sparingly, max 3 per response): > ✅ Good: [finding] | > ⚠️ Warning: [finding] | > 💡 Tip: [recommendation] | > 🚨 Critical: [issue].';
 
 const SYSTEM_PROMPTS = {
   audit: `You are an expert SEO & CRO auditor. Be concise — every section must fit within a tight token budget.
 Rules:
+- Start your entire response with [SCORE:XX] on its own line (0-100 overall score for this site)
 - Use [OK] / [WARN] / [ERR] per finding
 - Max 3 bullet points per section
 - Max 2 sentences per bullet point
@@ -50,9 +53,10 @@ Above-the-fold clarity, CTA copy, trust signals, mobile UX. 3 findings max.
 [SECTION:ACTIONS]
 Top 5 priority fixes ranked by impact. Number each. One sentence per action.
 
-Do not add any text before [SECTION:TECHNICAL] or after the last section.`,
+Do not add any text before [SCORE:XX] or after the last section.`,
 
   compete: `You are a competitive intelligence expert for freelancers and small businesses.
+Start your response with [SCORE:XX] on its own line (0-100 threat score — how strong is this competitor?).
 Analyze competitor positioning, offer structure, keywords, content strategy, and weaknesses.
 Provide specific, actionable intelligence - not generic advice.
 End with a "YOUR MOVE" section with 2-3 concrete tactics to differentiate.
@@ -177,7 +181,7 @@ const MAX_TOKENS = {
   'mission-finder':   2000,
 };
 
-function buildUserMessage(toolId, input) {
+function buildBaseMessage(toolId, input) {
   switch (toolId) {
     case 'audit': {
       const focusAreas = Array.isArray(input.checks)
@@ -291,6 +295,14 @@ Generate a complete mission-finding strategy.`;
   }
 }
 
+function buildUserMessage(toolId, input) {
+  const base = buildBaseMessage(toolId, input);
+  if (input._sectionKey) {
+    return `${base}\n\nREGENERATE ONLY the [SECTION:${input._sectionKey}] section. Output ONLY the content for that section — no section marker, no other sections.`;
+  }
+  return base;
+}
+
 // Agentic loop for tools that use web_search_20250305.
 // Runs up to 5 turns: if the model calls web_search, Anthropic executes the search
 // server-side and we pass the tool_result back to continue. Falls back to null on error.
@@ -375,8 +387,9 @@ export default async function handler(req, res) {
 
   const FORMAT_INSTRUCTION = '\n\nFormatting rules: Use ## headings to separate major sections. Use bullet points for lists. Use markdown tables where data has multiple dimensions. Be specific and actionable — include real names, numbers, percentages, and concrete examples. Avoid generic advice.';
   const DETAIL_INSTRUCTION = (toolId === 'audit' || toolId === 'compete') ? '\n\nInclude specific numbers, percentages, and concrete examples wherever possible.' : '';
+  const calloutInstruction = (toolId === 'audit' || toolId === 'compete' || toolId === 'linkedin-intel') ? CALLOUT_INSTRUCTION : '';
   const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
-  const systemPrompt = basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + ASCII_INSTRUCTION + langInstruction;
+  const systemPrompt = basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + calloutInstruction + ASCII_INSTRUCTION + langInstruction;
 
   let userMessage;
   try {
