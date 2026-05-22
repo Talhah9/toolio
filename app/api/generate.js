@@ -222,19 +222,23 @@ Provide a complete competitive analysis based solely on the <WEBSITE_CONTENT> pr
         tos:     'Terms of Service',
         privacy: 'Privacy Policy',
         notice:  'Legal Notice',
-        cookies: 'Cookie Policy',
       };
-      const docList = Array.isArray(input.docs) && input.docs.length > 0
-        ? input.docs.map(d => DOC_LABELS[d] ?? d).join(', ')
-        : 'Terms of Service, Privacy Policy';
+      const docType = input.docType || 'all';
+      const isAll = docType === 'all';
+      const docInstruction = isAll
+        ? `Documents needed: Terms of Service, Privacy Policy, Legal Notice
+
+Generate all three documents in one response. Each document must be complete with all legally required clauses. Keep each document focused and well-structured — aim for conciseness without omitting required content.`
+        : `Document needed: ${DOC_LABELS[docType] || 'Terms of Service'}
+
+Generate ONLY this document. Make it detailed, comprehensive, and complete. Include every legally required clause for the jurisdiction. Do not summarise — write the full document as it would appear on a website.`;
       return `Company name: ${input.company}
 Business type: ${input.type || 'not specified'}
 Country/jurisdiction: ${input.country || 'not specified'}
 Address: ${input.address || 'not specified'}
 Business activity: ${input.activity || 'not specified'}
-Documents needed: ${docList}
 
-Generate the complete requested legal documents.`;
+${docInstruction}`;
     }
 
     case 'contract':

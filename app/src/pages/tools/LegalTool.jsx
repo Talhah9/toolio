@@ -11,11 +11,11 @@ import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
 
-const DOC_KEYS = [
-  { id: 'tos',     key: 'tool.legal.doc.tos' },
-  { id: 'privacy', key: 'tool.legal.doc.privacy' },
-  { id: 'notice',  key: 'tool.legal.doc.notice' },
-  { id: 'cookies', key: 'tool.legal.doc.cookies' },
+const DOCTYPE_OPTIONS = [
+  { id: 'tos',     key: 'tool.legal.doctype.tos' },
+  { id: 'privacy', key: 'tool.legal.doctype.privacy' },
+  { id: 'notice',  key: 'tool.legal.doctype.notice' },
+  { id: 'all',     key: 'tool.legal.doctype.all' },
 ];
 
 export function LegalTool({ tool, initialData }) {
@@ -26,14 +26,12 @@ export function LegalTool({ tool, initialData }) {
   const [country, setCountry] = useState('');
   const [address, setAddress] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
-  const [docs, setDocs] = useState(initialData?.docs ?? ['tos', 'privacy']);
+  const [docType, setDocType] = useState(initialData?.docType ?? 'tos');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
-
-  const toggleDoc = (id) => setDocs(d => d.includes(id) ? d.filter(x => x !== id) : [...d, id]);
 
   const generate = async () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
@@ -42,7 +40,7 @@ export function LegalTool({ tool, initialData }) {
     setLoading(true);
     setOutput('');
     try {
-      const input = { company, type, country, address, activity, docs };
+      const input = { company, type, country, address, activity, docType };
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
         (chunk) => setOutput(chunk),
@@ -101,14 +99,20 @@ export function LegalTool({ tool, initialData }) {
           </div>
 
           <div className="field">
-            <label className="label">{t('tool.legal.docs.label')}</label>
+            <label className="label">{t('tool.legal.doctype.label')}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {DOC_KEYS.map(doc => (
-                <label key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 14 }}>
-                  <input type="checkbox" checked={docs.includes(doc.id)} onChange={() => toggleDoc(doc.id)} style={{ accentColor: 'var(--accent)', width: 15, height: 15 }} />
-                  <span>{t(doc.key)}</span>
-                </label>
-              ))}
+              {DOCTYPE_OPTIONS.map(opt => {
+                const active = docType === opt.id;
+                return (
+                  <button key={opt.id} type="button" onClick={() => setDocType(opt.id)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 13, textAlign: 'left', border: '1px solid ' + (active ? 'var(--accent)' : 'var(--border)'), background: active ? 'color-mix(in srgb, var(--accent) 10%, var(--bg))' : 'var(--bg)', color: active ? 'var(--accent)' : 'var(--fg-2)', fontWeight: active ? 600 : 400, transition: 'all 0.15s' }}>
+                    <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid ' + (active ? 'var(--accent)' : 'var(--border)'), flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {active && <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', display: 'block' }} />}
+                    </span>
+                    {t(opt.key)}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
