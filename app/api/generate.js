@@ -55,12 +55,20 @@ Top 5 priority fixes ranked by impact. Number each. One sentence per action.
 
 Do not add any text before [SCORE:XX] or after the last section.`,
 
-  compete: `You are a competitive intelligence expert for freelancers and small businesses.
-Start your response with [SCORE:XX] on its own line (0-100 threat score — how strong is this competitor?).
-Analyze competitor positioning, offer structure, keywords, content strategy, and weaknesses.
-Provide specific, actionable intelligence - not generic advice.
-End with a "YOUR MOVE" section with 2-3 concrete tactics to differentiate.
-Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.`,
+  compete: `You are analyzing a specific competitor website. Your job is to extract real intelligence from their actual website content.
+
+STRICT RULES:
+1. ONLY analyze what you find on the provided URL and the fetched page content — nothing else
+2. Do NOT use generic industry information, SEO trends, or assumptions about the sector
+3. Do NOT invent services, keywords, or positioning that are not explicitly visible on the site
+4. If you cannot find specific information, write "Not found on site" — never fabricate
+5. Every claim must come directly from the website content provided
+6. Focus exclusively on: homepage copy, about page, services/offer, pricing, positioning language
+7. If web search returns unrelated articles or generic results, IGNORE them — focus only on the target URL
+
+Start your response with [SCORE:XX] on its own line (0-100 threat score based ONLY on what you actually found on the site).
+Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.
+End with a "YOUR MOVE" section with 2-3 concrete, specific tactics to differentiate from this particular competitor.`,
 
   legal: `You are a legal expert specialising in French and international business law for freelancers and small businesses.
 Generate complete, ready-to-use legal documents — not templates with placeholders.
@@ -303,6 +311,44 @@ function buildUserMessage(toolId, input) {
   return base;
 }
 
+// Fetches a competitor URL server-side and extracts readable text from the HTML.
+// Returns null on any failure so callers can silently skip.
+async function fetchPageContent(url, maxChars = 8000) {
+  try {
+    const resp = await fetch(url, {
+      signal: AbortSignal.timeout(6000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Toolio/1.0; +https://toolio.co)',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+      },
+    });
+    if (!resp.ok) {
+      console.warn('[fetchPageContent] non-ok status:', resp.status, url);
+      return null;
+    }
+    const html = await resp.text();
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<head[\s\S]*?<\/head>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, maxChars);
+    return text || null;
+  } catch (err) {
+    console.warn('[fetchPageContent] failed for', url, ':', err.message);
+    return null;
+  }
+}
+
 // Agentic loop for tools that use web_search_20250305.
 // Runs up to 5 turns: if the model calls web_search, Anthropic executes the search
 // server-side and we pass the tool_result back to continue. Falls back to null on error.
@@ -408,12 +454,25 @@ export default async function handler(req, res) {
     }
 
     // Vision support for linkedin-intel: attach image when screenshot is provided
-    const userContent = (toolId === 'linkedin-intel' && input.imageBase64)
+    let userContent = (toolId === 'linkedin-intel' && input.imageBase64)
       ? [
           { type: 'image', source: { type: 'base64', media_type: input.imageMediaType || 'image/jpeg', data: input.imageBase64 } },
           { type: 'text', text: userMessage },
         ]
       : userMessage;
+
+    // For compete: pre-fetch the competitor page and inject its content so Claude
+    // has grounded source material before the web_search tool runs.
+    if (toolId === 'compete' && input.competitorUrl) {
+      const pageContent = await fetchPageContent(input.competitorUrl);
+      if (pageContent) {
+        console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
+        userContent = `${userContent}\n\n---\nDIRECT PAGE CONTENT extracted from ${input.competitorUrl} (treat this as your primary source — prioritize over any web search results):\n\n${pageContent}`;
+      } else {
+        console.log('[generate] page fetch failed or empty | url:', input.competitorUrl);
+        userContent = `${userContent}\n\nNote: the page could not be fetched directly. Use the web search tool to access ${input.competitorUrl} and analyse only what you find there.`;
+      }
+    }
 
     // Set SSE headers before starting the stream
     res.setHeader('Content-Type', 'text/event-stream');
