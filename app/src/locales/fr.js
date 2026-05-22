@@ -169,6 +169,12 @@ export const fr = {
   'tool.linkedin.error.topic': 'Entrez un sujet ou une idée.',
 
   // ── Devis tool ───────────────────────────────────────────────
+  'tool.devis.prestataire.section': 'Prestataire',
+  'tool.devis.prestataire.name': 'Nom',
+  'tool.devis.prestataire.email': 'Email',
+  'tool.devis.prestataire.tel': 'Téléphone',
+  'tool.devis.prestataire.address': 'Adresse',
+  'tool.devis.prestataire.hint': 'Sauvegardé automatiquement',
   'tool.devis.client.section': 'Client',
   'tool.devis.client.name': 'Nom',
   'tool.devis.client.company': 'Entreprise',
@@ -655,8 +661,9 @@ export const fr = {
   'tool.linkedin-intel.tab.audit': 'Audit du profil',
   'tool.linkedin-intel.tab.competitors': 'Concurrents',
   'tool.linkedin-intel.tab.topics': 'Sujets tendance',
-  'tool.linkedin-intel.tab.plan': 'Plan 30 jours',
+  'tool.linkedin-intel.tab.ideas': 'Idées de posts',
   'tool.linkedin-intel.tab.posts': 'Posts prêts',
+  'tool.linkedin-intel.develop': 'Développer cette idée',
 
   // ── Prospection & Outreach tool ──────────────────────────────
   'tool.prospection.niche.label': 'Votre niche / service',

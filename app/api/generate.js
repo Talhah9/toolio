@@ -95,9 +95,15 @@ Output only the post — no preamble, no "Here is your post:" framing.`,
 
   devis: `You are a professional quote generator for freelancers.
 Create clean, formatted quote documents that are ready to send to clients.
-Include: quote number, date, validity period (30 days), "From" and "To" sections, a formatted table of line items (description, qty, unit price, total), subtotal, VAT calculation, total, and payment terms.
-Use the exact figures provided. Format for easy reading.
-Output only the quote document.`,
+Include: a quote number (DEVIS-YYYY-NNN format), the exact date provided, validity period (30 days from provided date), a "Prestataire" (From) section and a "Client" (To) section, a formatted table of line items (description, qty, unit price, total), subtotal, VAT calculation, total, and payment terms with exact due date calculated from the provided date.
+CRITICAL: Use the EXACT prices and quantities provided — never round, modify or recalculate any figure. Copy them verbatim.
+CRITICAL: Use the exact date provided for the quote date. Calculate payment due dates from that exact date.
+Output only the quote document — no preamble or explanation.`,
+
+  relance: `You are an expert at writing professional payment follow-up messages for freelancers.
+Generate a follow-up message based EXACTLY on the user's situation. Use the exact amount, invoice number, delay and context provided.
+Never invent names, invoice numbers, amounts or dates not provided by the user. Never use placeholder or example text.
+Write a subject line and body. Output only the message — no preamble, no explanation.`,
 
   'linkedin-intel': `You are a LinkedIn growth strategist for freelancers and independent consultants.
 Analyse the provided LinkedIn profile and return a structured report. You MUST output ALL 5 sections — stay concise so you finish within the token budget.
@@ -112,11 +118,10 @@ If competitors provided: 2–3 key differentiators each + one tactical takeaway.
 List 6 high-engagement topic areas for this niche. One line each: topic + why it resonates.
 
 [SECTION:CONTENT_PLAN]
-30-day content overview — theme names only, one line per week:
-Week 1: [theme], [theme], [theme]
-Week 2: [theme], [theme], [theme]
-Week 3: [theme], [theme], [theme]
-Week 4: [theme], [theme], [theme]
+List 6 post ideas tailored to this profile and niche. For each idea use EXACTLY this format:
+Idea N: [topic/angle]
+Format: [storytelling | list | opinion | question]
+Angle: [one sentence on the specific perspective to take]
 
 [SECTION:READY_POSTS]
 5 post ideas tailored to this profile. For each idea use exactly this format:
@@ -188,6 +193,7 @@ const MAX_TOKENS = {
   contract:           1500,
   'linkedin-content':  600,
   devis:               800,
+  relance:             400,
   'linkedin-intel':   3000,
   prospection:        1200,
   'mission-finder':   2000,
@@ -251,9 +257,20 @@ Write a LinkedIn post.`;
 
     case 'devis': {
       const lines = Array.isArray(input.lines)
-        ? input.lines.filter(l => l.desc).map(l => `- ${l.desc}: qty ${l.qty || 1} × €${l.price || 0}`).join('\n')
+        ? input.lines.filter(l => l.desc).map(l => `- ${l.desc}: qty ${l.qty || 1} x EUR${l.price || 0}`).join('\n')
         : '';
-      return `Client: ${input.clientName}${input.clientCompany ? ` (${input.clientCompany})` : ''}
+      const prestataire = [
+        input.prestataireNom     ? `Nom: ${input.prestataireNom}` : null,
+        input.prestataireEmail   ? `Email: ${input.prestataireEmail}` : null,
+        input.prestataireTel     ? `Tel: ${input.prestataireTel}` : null,
+        input.prestataireAdresse ? `Adresse: ${input.prestataireAdresse}` : null,
+      ].filter(Boolean).join('\n');
+      return `Quote date: ${input.today || ''}
+
+Prestataire (From):
+${prestataire || '(not provided)'}
+
+Client (To): ${input.clientName}${input.clientCompany ? ` — ${input.clientCompany}` : ''}
 ${input.clientEmail ? `Email: ${input.clientEmail}` : ''}
 
 Services:
@@ -265,6 +282,12 @@ ${input.notes ? `Notes: ${input.notes}` : ''}
 
 Generate a professional quote document.`;
     }
+
+    case 'relance':
+      return `Situation: ${input.context}
+Tone: ${input.tone}
+
+Write a payment follow-up message.`;
 
     case 'linkedin-intel': {
       const competitors = Array.isArray(input.competitors) && input.competitors.filter(Boolean).length > 0
@@ -470,13 +493,12 @@ export default async function handler(req, res) {
     // has grounded source material before the web_search tool runs.
     if (toolId === 'compete' && input.competitorUrl) {
       const pageContent = await fetchPageContent(input.competitorUrl);
-      if (pageContent) {
-        console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
-        userContent = `<WEBSITE_CONTENT>\n${pageContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
-      } else {
-        console.log('[generate] page fetch failed or empty | url:', input.competitorUrl);
-        userContent = `${userContent}\n\nNote: the page could not be fetched directly. Use the web search tool to access ${input.competitorUrl} and analyse only what you find there.`;
+      if (!pageContent || pageContent.length < 100) {
+        console.log('[generate] page fetch failed or too short | url:', input.competitorUrl, '| chars:', pageContent?.length ?? 0);
+        return res.status(400).json({ error: 'Unable to fetch site content. Please try again.' });
       }
+      console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
+      userContent = `<WEBSITE_CONTENT>\n${pageContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
     }
 
     // Set SSE headers before starting the stream
@@ -485,7 +507,7 @@ export default async function handler(req, res) {
     res.setHeader('Connection', 'keep-alive');
 
     // compete, audit, and linkedin-intel: try web search first, fall back to regular stream
-    if (toolId === 'compete' || toolId === 'audit' || toolId === 'linkedin-intel') {
+    if (toolId === 'audit' || toolId === 'linkedin-intel') {
       let webText = null;
       try {
         webText = await runWithWebSearch(anthropic, systemPrompt, userContent, MAX_TOKENS[toolId] ?? 2048);

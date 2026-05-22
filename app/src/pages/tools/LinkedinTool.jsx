@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -30,7 +31,8 @@ const LI_LIMIT = 3000;
 export function LinkedinTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
-  const [topic, setTopic] = useState(initialData?.topic ?? '');
+  const location = useLocation();
+  const [topic, setTopic] = useState(location.state?.topic ?? initialData?.topic ?? '');
   const [tone, setTone] = useState(initialData?.tone ?? 'direct');
   const [format, setFormat] = useState(initialData?.format ?? 'storytelling');
   const [output, setOutput] = useState('');

@@ -6,45 +6,7 @@ import { Glyph } from '../../components/Glyph';
 import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
-
-const SAMPLES = {
-  cordial: `Subject: Following up — Invoice #2026-038
-
-Hi Sophie,
-
-I hope you're well. I wanted to gently follow up on Invoice #2026-038 for €4,500, which was due on May 1st.
-
-I understand things get busy — if there's anything you need from my end (a new copy, different payment details, etc.) just let me know and I'll sort it straight away.
-
-If payment has already been sent, please disregard this message.
-
-Best,
-Léa`,
-  firm: `Subject: Overdue payment — Invoice #2026-038 (21 days)
-
-Hi Sophie,
-
-Invoice #2026-038 for €4,500 (due May 1st) is now 21 days overdue. I'm writing to request prompt settlement.
-
-As per our agreement, a late payment fee of 1.5% per month applies to overdue amounts. I'd prefer to resolve this without applying it.
-
-Please confirm a payment date by Friday May 16th. I'm available to discuss if there's an issue.
-
-Best regards,
-Léa Marchand`,
-  urgent: `Subject: URGENT — Invoice #2026-038 overdue 30+ days — action required
-
-Sophie,
-
-Invoice #2026-038 (€4,500, due May 1st) remains unpaid after 30 days and multiple follow-ups.
-
-I must now formally request payment within 48 hours. If I don't hear back by Thursday, I will pass this to my solicitor and register the dispute with the relevant small claims process.
-
-This is not the outcome I want — I'd prefer to resolve this directly. Please contact me immediately.
-
-Léa Marchand
-+44 7700 900000`,
-};
+import { streamGenerate } from '../../lib/streamGenerate';
 
 const TONES = [
   { id: 'cordial', labelKey: 'tool.relance.tone.cordial.label', descKey: 'tool.relance.tone.cordial.desc', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
@@ -53,7 +15,7 @@ const TONES = [
 ];
 
 export function RelanceTool({ tool }) {
-  const { credits, consumeCredits, user } = useApp();
+  const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
   const [context, setContext] = useState('');
   const [tone, setTone] = useState('cordial');
@@ -62,17 +24,23 @@ export function RelanceTool({ tool }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
 
-  const generate = () => {
+  const generate = async () => {
     if (!context.trim()) { toast(t('tool.relance.error.context')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
-    setTimeout(() => {
-      setOutput(SAMPLES[tone]);
+    try {
+      const fullText = await streamGenerate(
+        { toolId: tool.id, input: { context, tone }, session, lang },
+        (chunk) => setOutput(chunk),
+      );
+      await logGeneration(tool.id, { context, tone }, fullText, tool.credits);
+    } catch (err) {
+      toast(err.message || t('tool.error.generic'));
+    } finally {
       setLoading(false);
-      consumeCredits(tool.credits);
-    }, 1000);
+    }
   };
 
   const copy = () => {
@@ -86,7 +54,6 @@ export function RelanceTool({ tool }) {
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
-        {/* Form */}
         <div className="card card-pad">
           <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.relance.context.label')}</h3>
 
@@ -162,7 +129,6 @@ export function RelanceTool({ tool }) {
           </button>
         </div>
 
-        {/* Result */}
         <div>
           <div className="result-zone">
             <div className="result-head">
@@ -180,7 +146,7 @@ export function RelanceTool({ tool }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            {loading ? (
+            {loading && !output ? (
               <div className="result-empty">
                 <span className="row" style={{ gap: 8 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: activeTone?.color || 'var(--accent)', animation: 'pulse 1s infinite' }} />
@@ -188,7 +154,11 @@ export function RelanceTool({ tool }) {
                 </span>
               </div>
             ) : output ? (
-              <MarkdownResult>{output}</MarkdownResult>
+              loading ? (
+                <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
+              ) : (
+                <MarkdownResult>{output}</MarkdownResult>
+              )
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}

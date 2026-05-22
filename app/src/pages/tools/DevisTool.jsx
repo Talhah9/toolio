@@ -25,9 +25,23 @@ function newLine() {
   return { id: Date.now() + Math.random(), desc: '', qty: 1, price: '' };
 }
 
+function loadPrestataire() {
+  try { return JSON.parse(localStorage.getItem('savvly-prestataire') || '{}'); } catch { return {}; }
+}
+
+function savePrestataire(data) {
+  try { localStorage.setItem('savvly-prestataire', JSON.stringify(data)); } catch {}
+}
+
 export function DevisTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
+
+  const [prestataireNom, setPrestataireNom] = useState(() => loadPrestataire().nom || '');
+  const [prestataireEmail, setPrestataireEmail] = useState(() => loadPrestataire().email || '');
+  const [prestataireTel, setPrestataireTel] = useState(() => loadPrestataire().tel || '');
+  const [prestataireAdresse, setPrestataireAdresse] = useState(() => loadPrestataire().adresse || '');
+
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientCompany, setClientCompany] = useState('');
@@ -57,10 +71,19 @@ export function DevisTool({ tool, initialData }) {
     if (!clientName.trim()) { toast(t('tool.devis.error.client')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
+
+    savePrestataire({ nom: prestataireNom, email: prestataireEmail, tel: prestataireTel, adresse: prestataireAdresse });
+
     setLoading(true);
     setOutput('');
     try {
-      const input = { clientName, clientCompany, clientEmail, lines, vatRate, paymentTerms, notes };
+      const today = new Date().toLocaleDateString('fr-FR');
+      const input = {
+        prestataireNom, prestataireEmail, prestataireTel, prestataireAdresse,
+        clientName, clientCompany, clientEmail,
+        lines, vatRate, paymentTerms, notes,
+        today,
+      };
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
         (chunk) => setOutput(chunk),
@@ -84,15 +107,47 @@ export function DevisTool({ tool, initialData }) {
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
     output,
-    filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+    filename: `devis-${new Date().toISOString().slice(0, 10)}.pdf`,
   });
+
+  const sectionLabelStyle = { marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' };
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Prestataire */}
           <div className="card card-pad">
-            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>{t('tool.devis.client.section')}</h3>
+            <h3 className="h3" style={sectionLabelStyle}>
+              {t('tool.devis.prestataire.section')}
+              <span style={{ fontSize: 11, fontWeight: 400, marginLeft: 8, color: 'var(--fg-4)', textTransform: 'none', letterSpacing: 0 }}>
+                {t('tool.devis.prestataire.hint')}
+              </span>
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('tool.devis.prestataire.name')}</label>
+                <input className="input" value={prestataireNom} onChange={e => setPrestataireNom(e.target.value)} placeholder="Jean Dupont" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('tool.devis.prestataire.email')}</label>
+                <input className="input" value={prestataireEmail} onChange={e => setPrestataireEmail(e.target.value)} type="email" placeholder="jean@dupont.fr" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('tool.devis.prestataire.tel')}</label>
+                <input className="input" value={prestataireTel} onChange={e => setPrestataireTel(e.target.value)} placeholder="+33 6 00 00 00 00" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('tool.devis.prestataire.address')}</label>
+                <input className="input" value={prestataireAdresse} onChange={e => setPrestataireAdresse(e.target.value)} placeholder="12 rue de la Paix, 75001 Paris" />
+              </div>
+            </div>
+          </div>
+
+          {/* Client */}
+          <div className="card card-pad">
+            <h3 className="h3" style={sectionLabelStyle}>{t('tool.devis.client.section')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div className="field" style={{ margin: 0 }}>
                 <label className="label">{t('tool.devis.client.name')} <span style={{ color: 'var(--accent)' }}>*</span></label>
@@ -109,8 +164,9 @@ export function DevisTool({ tool, initialData }) {
             </div>
           </div>
 
+          {/* Services */}
           <div className="card card-pad">
-            <h3 className="h3" style={{ marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' }}>{t('tool.devis.services.section')}</h3>
+            <h3 className="h3" style={sectionLabelStyle}>{t('tool.devis.services.section')}</h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6 }}>
               <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.desc')}</span>

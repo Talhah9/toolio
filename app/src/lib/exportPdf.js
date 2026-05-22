@@ -19,7 +19,7 @@ function sanitize(str) {
     .replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/`(.*?)`/g, '$1')
     .replace(/\[OK\]/g, '[OK]').replace(/\[WARN\]/g, '[WARN]').replace(/\[ERR\]/g, '[ERR]')
     .replace(/  +/g, ' ')
-    .replace(/[^\x00-\x7F]/g, '')
+    .replace(/[^\x00-\xFF]/g, '')
     .trim();
 }
 
@@ -43,7 +43,10 @@ export function exportPdf({ toolName, userEmail, output, filename }) {
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...TEXT_SOFT);
-    doc.text('savvly.co', margin, fy);
+    doc.text(new Date().toLocaleDateString('fr-FR'), margin, fy);
+    if (userEmail) {
+      doc.text(sanitize(userEmail), pageW / 2, fy, { align: 'center' });
+    }
     doc.text(`Page ${p}`, pageW - margin, fy, { align: 'right' });
   }
 
@@ -59,36 +62,7 @@ export function exportPdf({ toolName, userEmail, output, filename }) {
     if (y + needed > pageH - FOOTER_H - margin) addPage();
   }
 
-  // ── Header bar ──────────────────────────────────────────────────
-  doc.setFillColor(...ACCENT);
-  doc.rect(0, 0, pageW, 13, 'F');
-
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(255, 255, 255);
-  doc.text('Savvly', margin, 9);
-
-  doc.setFontSize(8.5);
-  doc.setFont('helvetica', 'normal');
-  doc.text(new Date().toLocaleDateString('en-GB'), pageW - margin, 9, { align: 'right' });
-
-  // ── Tool name + email ───────────────────────────────────────────
-  y = 22;
-  doc.setFontSize(15);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(...TEXT_DARK);
-  doc.text(sanitize(toolName || ''), margin, y);
-  y += 7;
-
-  if (userEmail) {
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...TEXT_SOFT);
-    doc.text(userEmail, margin, y);
-    y += 6;
-  }
-
-  // Divider
+  // ── Divider at top ──────────────────────────────────────────────
   doc.setDrawColor(...GREY_2);
   doc.line(margin, y, pageW - margin, y);
   y += 8;

@@ -169,6 +169,12 @@ export const en = {
   'tool.linkedin.error.topic': 'Enter a topic or idea.',
 
   // ── Devis tool ───────────────────────────────────────────────
+  'tool.devis.prestataire.section': 'Your info',
+  'tool.devis.prestataire.name': 'Name',
+  'tool.devis.prestataire.email': 'Email',
+  'tool.devis.prestataire.tel': 'Phone',
+  'tool.devis.prestataire.address': 'Address',
+  'tool.devis.prestataire.hint': 'Auto-saved',
   'tool.devis.client.section': 'Client',
   'tool.devis.client.name': 'Name',
   'tool.devis.client.company': 'Company',
@@ -655,8 +661,9 @@ export const en = {
   'tool.linkedin-intel.tab.audit': 'Profile audit',
   'tool.linkedin-intel.tab.competitors': 'Competitors',
   'tool.linkedin-intel.tab.topics': 'Hot topics',
-  'tool.linkedin-intel.tab.plan': '30-day plan',
+  'tool.linkedin-intel.tab.ideas': 'Post ideas',
   'tool.linkedin-intel.tab.posts': 'Ready posts',
+  'tool.linkedin-intel.develop': 'Develop this idea',
 
   // ── Prospection & Outreach tool ──────────────────────────────
   'tool.prospection.niche.label': 'Your niche / service',

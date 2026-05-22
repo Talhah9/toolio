@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -22,9 +23,29 @@ const TABS = [
   { id: 'PROFILE_AUDIT',       key: 'tool.linkedin-intel.tab.audit' },
   { id: 'COMPETITOR_ANALYSIS', key: 'tool.linkedin-intel.tab.competitors' },
   { id: 'HOT_TOPICS',          key: 'tool.linkedin-intel.tab.topics' },
-  { id: 'CONTENT_PLAN',        key: 'tool.linkedin-intel.tab.plan' },
+  { id: 'CONTENT_PLAN',        key: 'tool.linkedin-intel.tab.ideas' },
   { id: 'READY_POSTS',         key: 'tool.linkedin-intel.tab.posts' },
 ];
+
+function parsePostIdeas(text) {
+  if (!text) return null;
+  const blocks = text.split(/(?=Idea\s+\d+:)/i).filter(b => b.trim());
+  if (blocks.length === 0) return null;
+  const ideas = [];
+  for (const block of blocks) {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const topicLine = lines.find(l => /^Idea\s+\d+:/i.test(l));
+    const formatLine = lines.find(l => /^Format:/i.test(l));
+    const angleLine = lines.find(l => /^Angle:/i.test(l));
+    if (!topicLine) continue;
+    ideas.push({
+      topic: topicLine.replace(/^Idea\s+\d+:\s*/i, '').trim(),
+      format: formatLine ? formatLine.replace(/^Format:\s*/i, '').trim() : '',
+      angle: angleLine ? angleLine.replace(/^Angle:\s*/i, '').trim() : '',
+    });
+  }
+  return ideas.length > 0 ? ideas : null;
+}
 
 function parseSections(output, keys) {
   // Normalize: collapse \r\n, trim surrounding whitespace
@@ -65,6 +86,7 @@ export function LinkedinIntelTool({ tool }) {
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [toast, ToastEl] = useToast();
+  const navigate = useNavigate();
 
   const hasOutput = Object.keys(sections).length > 0;
 
@@ -343,7 +365,36 @@ export function LinkedinIntelTool({ tool }) {
                 </span>
               </div>
             ) : hasOutput ? (
-              <MarkdownResult>{sections[activeTab] || ''}</MarkdownResult>
+              activeTab === 'CONTENT_PLAN' ? (() => {
+                const ideas = parsePostIdeas(sections['CONTENT_PLAN']);
+                if (!ideas) return <MarkdownResult>{sections['CONTENT_PLAN'] || ''}</MarkdownResult>;
+                return (
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {ideas.map((idea, i) => (
+                      <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{idea.topic}</div>
+                        {idea.format && (
+                          <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            {idea.format}
+                          </div>
+                        )}
+                        {idea.angle && (
+                          <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 12, lineHeight: 1.5 }}>{idea.angle}</div>
+                        )}
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          style={{ fontSize: 12 }}
+                          onClick={() => navigate('/tools/linkedin-content', { state: { topic: idea.topic + (idea.angle ? ' — ' + idea.angle : '') } })}
+                        >
+                          {t('tool.linkedin-intel.develop')}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })() : (
+                <MarkdownResult>{sections[activeTab] || ''}</MarkdownResult>
+              )
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}
