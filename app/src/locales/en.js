@@ -99,6 +99,9 @@ export const en = {
   'tool.compete.focus.keywords': 'Keywords',
   'tool.compete.focus.offer': 'Offer & pricing',
   'tool.compete.focus.content': 'Content strategy',
+  'tool.compete.context.label': 'Additional context',
+  'tool.compete.context.hint': '(optional — recommended if the site blocks analysis)',
+  'tool.compete.context.placeholder': "Paste the competitor's homepage text here for a more accurate analysis…",
   'tool.compete.error.url': 'Enter a competitor URL.',
 
   // ── Legal tool ───────────────────────────────────────────────

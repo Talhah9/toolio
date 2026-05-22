@@ -25,6 +25,7 @@ export function ConcurrentsTool({ tool }) {
   const { t, lang } = useLang();
   const [competitorUrl, setCompetitorUrl] = useState('');
   const [yourUrl, setYourUrl] = useState('');
+  const [additionalContext, setAdditionalContext] = useState('');
   const [focus, setFocus] = useState(['positioning', 'keywords', 'content']);
   const [output, setOutput] = useState('');
   const [score, setScore] = useState(null);
@@ -44,7 +45,7 @@ export function ConcurrentsTool({ tool }) {
     setScore(null);
     try {
       const fullText = await streamGenerate(
-        { toolId: tool.id, input: { competitorUrl, yourUrl, focus }, session, lang },
+        { toolId: tool.id, input: { competitorUrl, yourUrl, focus, additionalContext: additionalContext.trim() || undefined }, session, lang },
         (chunk) => setOutput(chunk),
       );
       setScore(parseScore(fullText));
@@ -83,6 +84,18 @@ export function ConcurrentsTool({ tool }) {
           <div className="field">
             <label className="label">{t('tool.compete.yours.label')} <span className="muted" style={{ fontWeight: 400 }}>{t('tool.compete.yours.hint')}</span></label>
             <input className="input" value={yourUrl} onChange={e => setYourUrl(e.target.value)} placeholder={t('tool.compete.yours.placeholder')} />
+          </div>
+
+          <div className="field">
+            <label className="label">{t('tool.compete.context.label')} <span className="muted" style={{ fontWeight: 400 }}>{t('tool.compete.context.hint')}</span></label>
+            <textarea
+              className="textarea"
+              value={additionalContext}
+              onChange={e => setAdditionalContext(e.target.value)}
+              placeholder={t('tool.compete.context.placeholder')}
+              rows={4}
+              style={{ resize: 'vertical', fontSize: 13 }}
+            />
           </div>
 
           <div className="field">

@@ -59,22 +59,20 @@ Do not add any text before [SCORE:XX] or after the last section.`,
 
   compete: `You are analyzing a specific competitor website. The website content is provided between <WEBSITE_CONTENT> tags.
 
-ANALYZE ONLY THIS CONTENT. Do not invent, assume or add information not present in these tags.
-If a piece of information is not in the content, say "Not visible on site" instead of guessing.
-Quote specific phrases from the site when possible to prove your analysis is grounded in reality.
+Analyze ONLY the content inside <WEBSITE_CONTENT>. Never invent numbers, prices, claims, features or services not explicitly present in that content.
+If specific information is not in the content, write "Not visible on site" — never guess or fabricate.
+Quote exact phrases from the content to prove each claim.
 
 STRICT RULES:
-1. ONLY analyze what is inside the <WEBSITE_CONTENT> tags — nothing else
-2. Do NOT use generic industry information, SEO trends, or assumptions about the sector
-3. Do NOT invent services, keywords, or positioning that are not explicitly found in the content
-4. If you cannot find specific information, write "Not visible on site" — never fabricate
-5. Every claim must come directly from the website content, with a quoted phrase as evidence
-6. Focus exclusively on: homepage copy, services/offer, pricing, positioning language
-7. If web search returns unrelated articles or generic results, IGNORE them — focus only on the provided content
+1. ONLY use what is inside <WEBSITE_CONTENT> — no outside knowledge, no assumptions
+2. NEVER invent numbers, prices, percentages, or statistics not found verbatim in the content
+3. NEVER add generic industry context or typical competitor behaviour
+4. Every claim requires a direct quote from the content as evidence
+5. If a section has no data, list what is "Not visible on site" rather than padding with guesses
 
 Start your response with [SCORE:XX] on its own line (0-100 threat score based ONLY on what you actually found).
 Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.
-End with a "YOUR MOVE" section with 2-3 concrete, specific tactics to differentiate from this particular competitor.`,
+End with a "YOUR MOVE" section with 2-3 concrete tactics grounded in what you actually found on the site.`,
 
   legal: `You are a legal expert specialising in French and international business law for freelancers and small businesses.
 Generate complete, ready-to-use legal documents — not templates with placeholders.
@@ -216,7 +214,7 @@ function buildBaseMessage(toolId, input) {
 ${input.yourUrl ? `My website: ${input.yourUrl}` : ''}
 Analysis focus: ${focus}
 
-Provide a complete competitive analysis.`;
+Provide a complete competitive analysis based solely on the <WEBSITE_CONTENT> provided.`;
     }
 
     case 'legal': {
@@ -491,17 +489,38 @@ export default async function handler(req, res) {
         ]
       : userMessage;
 
-    // For compete: pre-fetch the competitor page and inject its content as primary source.
-    // On failure (anti-bot, timeout, etc.) fall back to web search — do NOT hard-error here.
-    let competePageFetched = false;
+    // For compete: build WEBSITE_CONTENT from (1) user-pasted context or (2) HTML fetch.
+    // No web search for compete — it causes hallucinations with mixed external data.
     if (toolId === 'compete' && input.competitorUrl) {
-      const pageContent = await fetchPageContent(input.competitorUrl);
-      if (pageContent && pageContent.length >= 100) {
-        console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
-        userContent = `<WEBSITE_CONTENT>\n${pageContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
-        competePageFetched = true;
+      let websiteContent = null;
+
+      if (input.additionalContext && input.additionalContext.trim().length >= 50) {
+        // User pasted the site content directly — most reliable source
+        websiteContent = input.additionalContext.trim();
+        console.log('[generate] compete using user-provided context | chars:', websiteContent.length);
       } else {
-        console.log('[generate] page fetch failed or too short | url:', input.competitorUrl, '| chars:', pageContent?.length ?? 0, '— will rely on web search');
+        // Attempt server-side HTML fetch
+        const pageContent = await fetchPageContent(input.competitorUrl);
+        if (pageContent && pageContent.length >= 100) {
+          websiteContent = pageContent;
+          console.log('[generate] compete page fetch ok | url:', input.competitorUrl, '| chars:', websiteContent.length);
+        } else {
+          console.log('[generate] compete page fetch failed or too short | url:', input.competitorUrl, '| chars:', pageContent?.length ?? 0);
+        }
+      }
+
+      if (websiteContent) {
+        userContent = `<WEBSITE_CONTENT>\n${websiteContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
+      } else {
+        // No content at all — tell the user via SSE before any stream starts
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        const msg = "We couldn't access this site's content directly. Try copying and pasting the homepage text in the **Additional context** field below for a more accurate analysis.";
+        res.write(`data: ${JSON.stringify({ text: msg })}\n\n`);
+        res.write('data: [DONE]\n\n');
+        res.end();
+        return;
       }
     }
 
@@ -510,14 +529,14 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // compete, audit, and linkedin-intel: try web search first, fall back to regular stream
-    if (toolId === 'compete' || toolId === 'audit' || toolId === 'linkedin-intel') {
+    // audit and linkedin-intel: use web search for real-time data
+    if (toolId === 'audit' || toolId === 'linkedin-intel') {
       let webText = null;
       try {
         webText = await runWithWebSearch(anthropic, systemPrompt, userContent, MAX_TOKENS[toolId] ?? 2048);
         console.log('[generate] web_search success | toolId:', toolId, '| output length:', webText?.length ?? 0);
       } catch (wsErr) {
-        console.error('[generate] web_search failed | toolId:', toolId, '|', wsErr.message);
+        console.error('[generate] web_search failed, falling back to stream | toolId:', toolId, '|', wsErr.message);
       }
 
       if (webText) {
@@ -529,15 +548,7 @@ export default async function handler(req, res) {
         res.end();
         return;
       }
-
-      // Both fetch and web search failed for compete — surface an error via SSE
-      if (toolId === 'compete' && !competePageFetched) {
-        res.write(`data: ${JSON.stringify({ error: 'Unable to fetch site content. Please try again.' })}\n\n`);
-        res.write('data: [DONE]\n\n');
-        res.end();
-        return;
-      }
-      // audit / linkedin-intel (or compete with page content) — fall through to regular stream
+      // Fall through to regular streaming below
     }
 
     const stream = anthropic.messages.stream({
