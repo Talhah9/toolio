@@ -27,6 +27,8 @@ const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji or special unicode ch
 
 const CALLOUT_INSTRUCTION = '\n\nUse blockquote callouts to highlight key insights (sparingly, max 3 per response): > ✅ Good: [finding] | > ⚠️ Warning: [finding] | > 💡 Tip: [recommendation] | > 🚨 Critical: [issue].';
 
+const COMPLETION_INSTRUCTION = '\n\nAlways complete your response fully. Never truncate mid-sentence or mid-section. Output all requested sections even if they are brief.';
+
 const SYSTEM_PROMPTS = {
   audit: `You are an expert SEO & CRO auditor. Be concise — every section must fit within a tight token budget.
 Rules:
@@ -188,15 +190,15 @@ const AUDIT_CHECK_LABELS = {
 
 const MAX_TOKENS = {
   audit:              2500,
-  compete:            2000,
-  legal:              1500,
-  contract:           1500,
+  compete:            3000,
+  legal:              3500,
+  contract:           3500,
   'linkedin-content':  600,
   devis:               800,
   relance:             400,
-  'linkedin-intel':   3000,
+  'linkedin-intel':   4000,
   prospection:        1200,
-  'mission-finder':   2000,
+  'mission-finder':   3500,
 };
 
 function buildBaseMessage(toolId, input) {
@@ -463,7 +465,7 @@ export default async function handler(req, res) {
   const DETAIL_INSTRUCTION = (toolId === 'audit' || toolId === 'compete') ? '\n\nInclude specific numbers, percentages, and concrete examples wherever possible.' : '';
   const calloutInstruction = (toolId === 'audit' || toolId === 'compete' || toolId === 'linkedin-intel') ? CALLOUT_INSTRUCTION : '';
   const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
-  const systemPrompt = basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + calloutInstruction + ASCII_INSTRUCTION + langInstruction;
+  const systemPrompt = basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + calloutInstruction + ASCII_INSTRUCTION + COMPLETION_INSTRUCTION + langInstruction;
 
   let userMessage;
   try {
@@ -489,16 +491,18 @@ export default async function handler(req, res) {
         ]
       : userMessage;
 
-    // For compete: pre-fetch the competitor page and inject its content so Claude
-    // has grounded source material before the web_search tool runs.
+    // For compete: pre-fetch the competitor page and inject its content as primary source.
+    // On failure (anti-bot, timeout, etc.) fall back to web search — do NOT hard-error here.
+    let competePageFetched = false;
     if (toolId === 'compete' && input.competitorUrl) {
       const pageContent = await fetchPageContent(input.competitorUrl);
-      if (!pageContent || pageContent.length < 100) {
-        console.log('[generate] page fetch failed or too short | url:', input.competitorUrl, '| chars:', pageContent?.length ?? 0);
-        return res.status(400).json({ error: 'Unable to fetch site content. Please try again.' });
+      if (pageContent && pageContent.length >= 100) {
+        console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
+        userContent = `<WEBSITE_CONTENT>\n${pageContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
+        competePageFetched = true;
+      } else {
+        console.log('[generate] page fetch failed or too short | url:', input.competitorUrl, '| chars:', pageContent?.length ?? 0, '— will rely on web search');
       }
-      console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
-      userContent = `<WEBSITE_CONTENT>\n${pageContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
     }
 
     // Set SSE headers before starting the stream
@@ -507,13 +511,13 @@ export default async function handler(req, res) {
     res.setHeader('Connection', 'keep-alive');
 
     // compete, audit, and linkedin-intel: try web search first, fall back to regular stream
-    if (toolId === 'audit' || toolId === 'linkedin-intel') {
+    if (toolId === 'compete' || toolId === 'audit' || toolId === 'linkedin-intel') {
       let webText = null;
       try {
         webText = await runWithWebSearch(anthropic, systemPrompt, userContent, MAX_TOKENS[toolId] ?? 2048);
         console.log('[generate] web_search success | toolId:', toolId, '| output length:', webText?.length ?? 0);
       } catch (wsErr) {
-        console.error('[generate] web_search failed, falling back to stream | toolId:', toolId, '|', wsErr.message);
+        console.error('[generate] web_search failed | toolId:', toolId, '|', wsErr.message);
       }
 
       if (webText) {
@@ -525,7 +529,15 @@ export default async function handler(req, res) {
         res.end();
         return;
       }
-      // Fall through to regular streaming below
+
+      // Both fetch and web search failed for compete — surface an error via SSE
+      if (toolId === 'compete' && !competePageFetched) {
+        res.write(`data: ${JSON.stringify({ error: 'Unable to fetch site content. Please try again.' })}\n\n`);
+        res.write('data: [DONE]\n\n');
+        res.end();
+        return;
+      }
+      // audit / linkedin-intel (or compete with page content) — fall through to regular stream
     }
 
     const stream = anthropic.messages.stream({
