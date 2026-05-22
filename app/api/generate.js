@@ -167,7 +167,7 @@ const AUDIT_CHECK_LABELS = {
 
 const MAX_TOKENS = {
   audit:              2500,
-  compete:            1000,
+  compete:            2000,
   legal:              1500,
   contract:           1500,
   'linkedin-content':  600,
@@ -291,6 +291,41 @@ Generate a complete mission-finding strategy.`;
   }
 }
 
+// Agentic loop for tools that use web_search_20250305.
+// Runs up to 5 turns: if the model calls web_search, Anthropic executes the search
+// server-side and we pass the tool_result back to continue. Falls back to null on error.
+async function runWithWebSearch(anthropic, systemPrompt, userContent, maxTokens) {
+  const messages = [{ role: 'user', content: userContent }];
+  let fullText = '';
+
+  for (let turn = 0; turn < 5; turn++) {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages,
+    });
+
+    for (const block of response.content) {
+      if (block.type === 'text') fullText += block.text;
+    }
+
+    if (response.stop_reason !== 'tool_use') break;
+
+    // Continue the agentic loop: add assistant turn + empty tool results
+    // (Anthropic handles actual search execution server-side)
+    messages.push({ role: 'assistant', content: response.content });
+    const toolResults = response.content
+      .filter(b => b.type === 'tool_use')
+      .map(b => ({ type: 'tool_result', tool_use_id: b.id, content: '' }));
+    if (!toolResults.length) break;
+    messages.push({ role: 'user', content: toolResults });
+  }
+
+  return fullText.trim() || null;
+}
+
 export default async function handler(req, res) {
   applySecurityHeaders(res);
 
@@ -369,6 +404,28 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+
+    // compete and audit: try web search agentic loop first, fall back to regular stream
+    if (toolId === 'compete' || toolId === 'audit') {
+      let webText = null;
+      try {
+        webText = await runWithWebSearch(anthropic, systemPrompt, userContent, MAX_TOKENS[toolId] ?? 2048);
+        console.log('[generate] web_search success | toolId:', toolId, '| output length:', webText?.length ?? 0);
+      } catch (wsErr) {
+        console.error('[generate] web_search failed, falling back to stream | toolId:', toolId, '|', wsErr.message);
+      }
+
+      if (webText) {
+        const CHUNK = 40;
+        for (let i = 0; i < webText.length; i += CHUNK) {
+          res.write(`data: ${JSON.stringify({ text: webText.slice(i, i + CHUNK) })}\n\n`);
+        }
+        res.write('data: [DONE]\n\n');
+        res.end();
+        return;
+      }
+      // Fall through to regular streaming below
+    }
 
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
