@@ -11,7 +11,7 @@ const TOOL_CREDITS = {
   contract:           0,
   'linkedin-content': 10,
   devis:              5,
-  relance:            0,
+  relance:            5,
   statut:             0,
   urssaf:             0,
   'linkedin-intel':  35,

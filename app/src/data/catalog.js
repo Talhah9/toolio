@@ -61,7 +61,7 @@ export const TOOLS = [
     short_en: 'Follow-up',              short_fr: 'Relance',
     desc_en: 'Write the perfect follow-up for unpaid invoices or ghosted proposals.',
     desc_fr: 'Rédige la relance parfaite pour impayés ou propositions sans réponse.',
-    credits: 0, plan: 'free', glyph: 'contract',
+    credits: 5, plan: 'pro', glyph: 'contract',
   },
   {
     id: 'statut',
