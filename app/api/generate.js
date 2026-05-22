@@ -55,18 +55,22 @@ Top 5 priority fixes ranked by impact. Number each. One sentence per action.
 
 Do not add any text before [SCORE:XX] or after the last section.`,
 
-  compete: `You are analyzing a specific competitor website. Your job is to extract real intelligence from their actual website content.
+  compete: `You are analyzing a specific competitor website. The website content is provided between <WEBSITE_CONTENT> tags.
+
+ANALYZE ONLY THIS CONTENT. Do not invent, assume or add information not present in these tags.
+If a piece of information is not in the content, say "Not visible on site" instead of guessing.
+Quote specific phrases from the site when possible to prove your analysis is grounded in reality.
 
 STRICT RULES:
-1. ONLY analyze what you find on the provided URL and the fetched page content — nothing else
+1. ONLY analyze what is inside the <WEBSITE_CONTENT> tags — nothing else
 2. Do NOT use generic industry information, SEO trends, or assumptions about the sector
-3. Do NOT invent services, keywords, or positioning that are not explicitly visible on the site
-4. If you cannot find specific information, write "Not found on site" — never fabricate
-5. Every claim must come directly from the website content provided
-6. Focus exclusively on: homepage copy, about page, services/offer, pricing, positioning language
-7. If web search returns unrelated articles or generic results, IGNORE them — focus only on the target URL
+3. Do NOT invent services, keywords, or positioning that are not explicitly found in the content
+4. If you cannot find specific information, write "Not visible on site" — never fabricate
+5. Every claim must come directly from the website content, with a quoted phrase as evidence
+6. Focus exclusively on: homepage copy, services/offer, pricing, positioning language
+7. If web search returns unrelated articles or generic results, IGNORE them — focus only on the provided content
 
-Start your response with [SCORE:XX] on its own line (0-100 threat score based ONLY on what you actually found on the site).
+Start your response with [SCORE:XX] on its own line (0-100 threat score based ONLY on what you actually found).
 Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.
 End with a "YOUR MOVE" section with 2-3 concrete, specific tactics to differentiate from this particular competitor.`,
 
@@ -313,14 +317,14 @@ function buildUserMessage(toolId, input) {
 
 // Fetches a competitor URL server-side and extracts readable text from the HTML.
 // Returns null on any failure so callers can silently skip.
-async function fetchPageContent(url, maxChars = 8000) {
+async function fetchPageContent(url, maxChars = 4000) {
   try {
     const resp = await fetch(url, {
       signal: AbortSignal.timeout(6000),
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Toolio/1.0; +https://toolio.co)',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+        'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.5',
       },
     });
     if (!resp.ok) {
@@ -342,6 +346,7 @@ async function fetchPageContent(url, maxChars = 8000) {
       .replace(/\s+/g, ' ')
       .trim()
       .slice(0, maxChars);
+    console.log('[compete] fetched content length:', text.length);
     return text || null;
   } catch (err) {
     console.warn('[fetchPageContent] failed for', url, ':', err.message);
@@ -467,7 +472,7 @@ export default async function handler(req, res) {
       const pageContent = await fetchPageContent(input.competitorUrl);
       if (pageContent) {
         console.log('[generate] page fetch ok | url:', input.competitorUrl, '| chars:', pageContent.length);
-        userContent = `${userContent}\n\n---\nDIRECT PAGE CONTENT extracted from ${input.competitorUrl} (treat this as your primary source — prioritize over any web search results):\n\n${pageContent}`;
+        userContent = `<WEBSITE_CONTENT>\n${pageContent}\n</WEBSITE_CONTENT>\n\n${userContent}`;
       } else {
         console.log('[generate] page fetch failed or empty | url:', input.competitorUrl);
         userContent = `${userContent}\n\nNote: the page could not be fetched directly. Use the web search tool to access ${input.competitorUrl} and analyse only what you find there.`;
