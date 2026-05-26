@@ -2,9 +2,17 @@ import Stripe from 'stripe';
 
 export const config = { maxDuration: 10 };
 
+// Promo first-month prices → maps to the normal recurring price for phase 2 of the schedule
+const PROMO_TO_NORMAL = {
+  'price_1TbG6eAFTm9a9DATlWDutoHI': 'price_1TWwVeAFTm9a9DATGNn4FO2g', // EUR 15€ → 49€/mo
+  'price_1TbG7JAFTm9a9DATFk8BiFSv': 'price_1TYNvyAFTm9a9DATmtwE5E3a', // USD $17 → $54/mo
+};
+
 const VALID_PRICE_IDS = new Set([
   'price_1TWwVeAFTm9a9DATGNn4FO2g', // Pro EUR €49/mo
   'price_1TYNvyAFTm9a9DATmtwE5E3a', // Pro USD $54/mo
+  'price_1TbG6eAFTm9a9DATlWDutoHI', // Pro EUR €15 first month
+  'price_1TbG7JAFTm9a9DATFk8BiFSv', // Pro USD $17 first month
   'price_1TWwWxAFTm9a9DATtpAaaemv', // Small EUR €9
   'price_1TYNysAFTm9a9DATBZcZOazQ', // Small USD $10
   'price_1TWwZRAFTm9a9DATOmAb6KjN', // Medium EUR €19
@@ -31,13 +39,20 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid mode' });
   }
 
+  // If this is a promo price, pass both IDs in metadata so the webhook can
+  // attach a subscription schedule: phase 1 = promo (1 month), phase 2 = normal
+  const normalPriceId = PROMO_TO_NORMAL[priceId];
+  const scheduleMetadata = normalPriceId
+    ? { promoPriceId: priceId, normalPriceId }
+    : {};
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode,
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail || undefined,
       client_reference_id: userId,
-      metadata: { userId, credits: String(credits ?? 0) },
+      metadata: { userId, credits: String(credits ?? 0), ...scheduleMetadata },
       success_url: 'https://savvly.co/dashboard?payment=success',
       cancel_url: 'https://savvly.co/pricing',
     });

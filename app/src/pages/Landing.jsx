@@ -945,8 +945,8 @@ export function Landing() {
                   </div>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: '0 0 24px' }}>{t('landing.pricing.pro.tagline')}</p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                    <p className="plan-price" style={{ margin: 0 }}>{format(49)}<small style={{ color: 'rgba(255,255,255,0.6)' }}>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', textDecoration: 'line-through' }}>{t('landing.pricing.pro.original')}</span>
+                    <p className="plan-price" style={{ margin: 0 }}>{format(15)}<small style={{ color: 'rgba(255,255,255,0.6)' }}>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
+                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>{format(49)}</span>
                   </div>
                   <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>{t('landing.pricing.pro.note')}</p>
                 </div>

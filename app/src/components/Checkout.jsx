@@ -5,8 +5,8 @@ import { useLang } from '../context/LanguageContext';
 import { useCurrency } from '../hooks/useCurrency';
 
 const PRO_PRICE_IDS = {
-  eur: 'price_1TWwVeAFTm9a9DATGNn4FO2g',
-  usd: 'price_1TYNvyAFTm9a9DATmtwE5E3a',
+  eur: 'price_1TbG6eAFTm9a9DATlWDutoHI', // 15€ first month (schedule switches to 49€)
+  usd: 'price_1TbG7JAFTm9a9DATFk8BiFSv', // $17 first month (schedule switches to $54)
 };
 
 export function Checkout({ data, onClose }) {
@@ -19,7 +19,7 @@ export function Checkout({ data, onClose }) {
   const inFlight = useRef(false);
 
   // Keep amounts in EUR — format() converts to USD for lang=en via USD_MAP
-  const totalEur = data.type === 'pro' ? 49 : data.pack.price;
+  const totalEur = data.type === 'pro' ? 15 : data.pack.price;
   const label = data.type === 'pro'
     ? t('checkout.label.pro')
     : `Pack ${data.pack.label} — ${data.pack.credits} ${t('checkout.label.pack')}`;

@@ -106,6 +106,38 @@ export default async function handler(req, res) {
         } else {
           console.log('[stripe-webhook] plan set to pro, balance set to 500 for user', userId);
         }
+
+        // If this was a promo checkout, create a subscription schedule so that
+        // after 1 billing cycle (phase 1 at promo price) it switches to the normal price (phase 2).
+        const { promoPriceId, normalPriceId } = session.metadata || {};
+        if (session.subscription && promoPriceId && normalPriceId) {
+          try {
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+            const schedule = await stripe.subscriptionSchedules.create({
+              from_subscription: session.subscription,
+            });
+            // Phase 1 spans the current billing period (already paid promo price).
+            // Phase 2 switches to normal price and continues indefinitely.
+            await stripe.subscriptionSchedules.update(schedule.id, {
+              end_behavior: 'release',
+              phases: [
+                {
+                  start_date: schedule.phases[0].start_date,
+                  end_date:   schedule.phases[0].end_date,
+                  items: [{ price: promoPriceId, quantity: 1 }],
+                },
+                {
+                  items: [{ price: normalPriceId, quantity: 1 }],
+                },
+              ],
+            });
+            console.log('[stripe-webhook] subscription schedule created | schedule:', schedule.id,
+              '| promo:', promoPriceId, '→ normal:', normalPriceId);
+          } catch (schedErr) {
+            // Non-fatal: user already has Pro — schedule failure just means no auto price-switch
+            console.error('[stripe-webhook] schedule creation failed (non-fatal):', schedErr.message);
+          }
+        }
       }
     }
 

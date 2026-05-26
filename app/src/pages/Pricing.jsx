@@ -72,7 +72,11 @@ export function Pricing() {
                 <span className="badge" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff' }}>{t('pricing.pro.recommended')}</span>
               </div>
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: '0 0 24px' }}>{t('pricing.pro.tagline')}</p>
-              <p className="plan-price">{t('pricing.pro.price')}<small style={{ color: 'rgba(255,255,255,0.6)' }}>{t('pricing.pro.period')}</small></p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                <p className="plan-price" style={{ margin: 0 }}>{format(15)}<small style={{ color: 'rgba(255,255,255,0.6)' }}>{t('pricing.pro.period')}</small></p>
+                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>{format(49)}</span>
+              </div>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4 }}>{t('pricing.pro.promo-note')}</p>
             </div>
             <ul className="plan-features" style={{ color: 'rgba(255,255,255,0.85)' }}>
               <li><Glyph name="check" size={14} /><span>{t('pricing.pro.f1')}</span></li>
