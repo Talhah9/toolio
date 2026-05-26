@@ -18,6 +18,10 @@ import { CommunityHome } from './pages/community/CommunityHome';
 import { PostMission } from './pages/community/PostMission';
 import { FindMission } from './pages/community/FindMission';
 import { MissionDetail } from './pages/community/MissionDetail';
+import { Feed } from './pages/community/Feed';
+import { Channels } from './pages/community/Channels';
+import { PostDetail } from './pages/community/PostDetail';
+import { CreatePost } from './pages/community/CreatePost';
 import { useApp } from './context/AppContext';
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
@@ -53,6 +57,10 @@ export function App() {
               <Route path="/community/post" element={<PostMission />} />
               <Route path="/community/find" element={<FindMission />} />
               <Route path="/community/mission/:id" element={<MissionDetail />} />
+              <Route path="/community/feed" element={<Feed />} />
+              <Route path="/community/feed/:postId" element={<PostDetail />} />
+              <Route path="/community/channels" element={<Channels />} />
+              <Route path="/community/create" element={<CreatePost />} />
             </Route>
             <Route element={<AdminGuard />}>
               <Route path="/admin" element={<Admin />} />

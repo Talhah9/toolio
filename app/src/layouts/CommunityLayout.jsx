@@ -4,11 +4,11 @@ import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
 const NAV_ITEMS = [
-  { label: 'Accueil',            path: '/community',       icon: '🏠', exact: true },
-  { label: 'Poster une mission', path: '/community/post',  icon: '📢' },
-  { label: 'Trouver une mission',path: '/community/find',  icon: '🔍' },
-  { label: 'Feed',               path: null,               icon: '💬', soon: true },
-  { label: 'Channels',           path: null,               icon: '📺', soon: true },
+  { label: 'Accueil',            path: '/community',          icon: '🏠', exact: true },
+  { label: 'Feed',               path: '/community/feed',     icon: '💬' },
+  { label: 'Channels',           path: '/community/channels', icon: '📺' },
+  { label: 'Poster une mission', path: '/community/post',     icon: '📢' },
+  { label: 'Trouver une mission',path: '/community/find',     icon: '🔍' },
 ];
 
 function XPBadge({ xp = 0 }) {
@@ -75,6 +75,30 @@ export function CommunityLayout() {
             <span style={{ color: '#818CF8' }}>Community</span>
           </div>
         </div>
+
+        {/* Create post CTA */}
+        <button
+          onClick={() => navigate('/community/create')}
+          style={{
+            background: 'linear-gradient(135deg, #4F46E5, #6D28D9)',
+            border: 'none',
+            borderRadius: 10,
+            color: '#fff',
+            fontSize: 13,
+            fontWeight: 800,
+            padding: '10px 14px',
+            cursor: 'pointer',
+            marginBottom: 16,
+            width: '100%',
+            textAlign: 'center',
+            letterSpacing: '0.02em',
+            transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+        >
+          + Créer un post
+        </button>
 
         {/* Nav */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
