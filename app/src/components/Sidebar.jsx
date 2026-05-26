@@ -54,20 +54,15 @@ export function Sidebar() {
 
       <div style={{ flex: 1 }} />
 
-      <div className="sidebar-section" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        {t('nav.section.community')}
-        <span style={{ fontSize: 9, fontWeight: 800, background: '#4F46E5', color: '#fff', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>NEW</span>
-      </div>
+      {/* Community entry point — navigates into standalone CommunityLayout */}
       <div
-        className={`sidebar-item ${location.pathname.startsWith('/community') ? 'active' : ''}`}
+        className="sidebar-item"
         onClick={() => navigate('/community')}
-        style={location.pathname.startsWith('/community') ? {} : { color: 'var(--fg-2)' }}
+        style={{ color: 'var(--fg-2)', borderTop: '1px solid var(--border)', paddingTop: 12, marginTop: 4 }}
       >
         <Glyph name="community" />
         <span>{t('nav.community')}</span>
-        {!location.pathname.startsWith('/community') && (
-          <span style={{ marginLeft: 'auto', fontSize: 10, color: '#4F46E5', fontWeight: 700 }}>✦</span>
-        )}
+        <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, background: '#4F46E5', color: '#fff', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>NEW</span>
       </div>
 
       <div className="sidebar-section">{t('nav.section.account')}</div>

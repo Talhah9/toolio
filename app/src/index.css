@@ -2157,3 +2157,26 @@ a {
   background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
   background-size: 28px 28px;
 }
+
+/* Community layout sidebar — hidden on mobile */
+.comm-sidebar { display: flex; }
+.comm-mobile-bar { display: none; }
+
+@media (max-width: 768px) {
+  .comm-sidebar { display: none !important; }
+  .comm-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    background: #111111;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 12px 16px;
+    height: 52px;
+  }
+  /* Push community main content below the fixed top bar */
+  .comm-mobile-bar + main,
+  .comm-mobile-bar ~ main { padding-top: 52px; }
+}

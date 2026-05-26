@@ -3,6 +3,7 @@ import { AppProvider } from './context/AppContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppShell } from './layouts/AppShell';
+import { CommunityLayout } from './layouts/CommunityLayout';
 import { Landing } from './pages/Landing';
 import { Auth } from './pages/Auth';
 import { Dashboard } from './pages/Dashboard';
@@ -38,12 +39,16 @@ export function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/legal" element={<Legal />} />
           <Route element={<ProtectedRoute />}>
+            {/* Main app — with Savvly sidebar */}
             <Route element={<AppShell />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tools/:toolId" element={<ToolPage />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/account" element={<Account />} />
               <Route path="/history" element={<History />} />
+            </Route>
+            {/* Community — standalone layout, no Savvly sidebar */}
+            <Route element={<CommunityLayout />}>
               <Route path="/community" element={<CommunityHome />} />
               <Route path="/community/post" element={<PostMission />} />
               <Route path="/community/find" element={<FindMission />} />
