@@ -1,17 +1,19 @@
 import { useNavigate } from 'react-router-dom';
+import { useLang } from '../../context/LanguageContext';
 import { CHANNELS } from '../../lib/communityUtils';
 
 export function Channels() {
   const navigate = useNavigate();
+  const { t } = useLang();
 
   return (
     <div style={{ maxWidth: 820, margin: '0 auto', padding: '40px 24px' }}>
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 26, fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>
-          Channels
+          {t('community.channels.title')}
         </h1>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', margin: '6px 0 0' }}>
-          Rejoins la conversation dans le bon canal
+          {t('community.channels.sub')}
         </p>
       </div>
 
@@ -43,10 +45,10 @@ export function Channels() {
           >
             <div style={{ fontSize: 32, marginBottom: 12, lineHeight: 1 }}>{ch.icon}</div>
             <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 6, letterSpacing: '-0.01em' }}>
-              {ch.label}
+              {t(`community.channel.${ch.id}.label`)}
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
-              {ch.desc}
+              {t(`community.channel.${ch.id}.desc`)}
             </div>
           </button>
         ))}

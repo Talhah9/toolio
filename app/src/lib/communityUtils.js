@@ -1,11 +1,12 @@
+// Labels and descriptions are in i18n: community.channel.{id}.label / .desc
 export const CHANNELS = [
-  { id: 'lancements', label: 'Lancements',        icon: '🚀', desc: 'Partage tes lancements et actualités.' },
-  { id: 'tips',       label: 'Tips & Ressources',  icon: '💡', desc: 'Astuces, outils et ressources utiles.' },
-  { id: 'questions',  label: 'Questions',          icon: '❓', desc: 'Pose tes questions à la communauté.' },
-  { id: 'revenus',    label: 'Revenus & Tarifs',   icon: '💰', desc: 'Partage tes tarifs et revenus.' },
-  { id: 'collabs',    label: 'Collaborations',     icon: '🤝', desc: 'Trouve des partenaires.' },
-  { id: 'rants',      label: 'Rants',              icon: '😤', desc: 'Exprime-toi librement.' },
-  { id: 'remote',     label: 'Remote & Lifestyle', icon: '🌍', desc: 'Vie nomade et remote.' },
+  { id: 'lancements', icon: '🚀' },
+  { id: 'tips',       icon: '💡' },
+  { id: 'questions',  icon: '❓' },
+  { id: 'revenus',    icon: '💰' },
+  { id: 'collabs',    icon: '🤝' },
+  { id: 'rants',      icon: '😤' },
+  { id: 'remote',     icon: '🌍' },
 ];
 
 export function timeAgo(dateStr) {

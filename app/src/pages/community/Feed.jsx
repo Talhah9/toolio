@@ -2,19 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
+import { useLang } from '../../context/LanguageContext';
 import { PostCard } from './PostCard';
 import { CHANNELS, getChannel, applyVoteToPost } from '../../lib/communityUtils';
-
-const FILTERS = [
-  { id: 'latest',    label: 'Récents' },
-  { id: 'top',       label: 'Top' },
-  { id: 'questions', label: 'Questions' },
-];
 
 export function Feed() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useApp();
+  const { t } = useLang();
 
   const channelParam = searchParams.get('channel') ?? '';
   const [filter, setFilter] = useState('latest');
@@ -99,10 +95,10 @@ export function Feed() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>
-            {activeCh ? `${activeCh.icon} ${activeCh.label}` : 'Feed'}
+            {activeCh ? `${activeCh.icon} ${t(`community.channel.${activeCh.id}.label`)}` : t('community.feed.title')}
           </h1>
           {activeCh && (
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: '4px 0 0' }}>{activeCh.desc}</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: '4px 0 0' }}>{t(`community.channel.${activeCh.id}.desc`)}</p>
           )}
         </div>
         {channelParam && (
@@ -110,7 +106,7 @@ export function Feed() {
             onClick={() => setSearchParams({})}
             style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', padding: '6px 12px' }}
           >
-            Tous les channels
+            {t('community.feed.all-channels')}
           </button>
         )}
       </div>
@@ -136,7 +132,7 @@ export function Feed() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(129,140,248,0.4)'; e.currentTarget.style.color = '#818CF8'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'rgba(255,255,255,0.45)'; }}
             >
-              {ch.icon} {ch.label}
+              {ch.icon} {t(`community.channel.${ch.id}.label`)}
             </button>
           ))}
         </div>
@@ -164,16 +160,20 @@ export function Feed() {
           {user?.email?.[0]?.toUpperCase() ?? '?'}
         </div>
         <div style={{ flex: 1, fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>
-          Qu'est-ce qui se passe dans ta vie de freelance ?
+          {t('community.feed.composer.placeholder')}
         </div>
         <div style={{ fontSize: 11, fontWeight: 700, background: 'rgba(79,70,229,0.15)', color: '#818CF8', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '4px 12px', flexShrink: 0 }}>
-          + Post
+          {t('community.feed.composer.btn')}
         </div>
       </div>
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: 2, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: 0 }}>
-        {FILTERS.map(f => (
+        {[
+          { id: 'latest',    labelKey: 'community.feed.filter.latest' },
+          { id: 'top',       labelKey: 'community.feed.filter.top' },
+          { id: 'questions', labelKey: 'community.feed.filter.questions' },
+        ].map(f => (
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
@@ -190,7 +190,7 @@ export function Feed() {
               transition: 'color 0.15s',
             }}
           >
-            {f.label}
+            {t(f.labelKey)}
           </button>
         ))}
       </div>
@@ -205,13 +205,13 @@ export function Feed() {
       ) : posts.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '64px 24px', color: 'rgba(255,255,255,0.25)' }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>🌐</div>
-          <div style={{ fontSize: 15, fontWeight: 700 }}>Aucun post pour l'instant</div>
-          <div style={{ fontSize: 13, marginTop: 6 }}>Sois le premier à lancer la discussion !</div>
+          <div style={{ fontSize: 15, fontWeight: 700 }}>{t('community.feed.empty.title')}</div>
+          <div style={{ fontSize: 13, marginTop: 6 }}>{t('community.feed.empty.sub')}</div>
           <button
             onClick={() => navigate('/community/create')}
             style={{ marginTop: 20, background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 800, padding: '10px 22px', cursor: 'pointer' }}
           >
-            Créer un post
+            {t('community.feed.empty.cta')}
           </button>
         </div>
       ) : (

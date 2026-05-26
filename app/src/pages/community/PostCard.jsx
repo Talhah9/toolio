@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { timeAgo, getChannel } from '../../lib/communityUtils';
+import { useLang } from '../../context/LanguageContext';
 
 export function PostCard({ post, userVote, onVote }) {
   const navigate = useNavigate();
+  const { t } = useLang();
   const ch = getChannel(post.channel);
 
   const handleVote = (e, v) => {
@@ -80,7 +82,7 @@ export function PostCard({ post, userVote, onVote }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
           {ch && (
             <span style={{ fontSize: 10, fontWeight: 700, background: 'rgba(79,70,229,0.18)', color: '#818CF8', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '2px 8px', letterSpacing: '0.03em' }}>
-              {ch.icon} {ch.label}
+              {ch.icon} {t(`community.channel.${ch.id}.label`)}
             </span>
           )}
           {post.type && post.type !== 'discussion' && (
@@ -116,10 +118,10 @@ export function PostCard({ post, userVote, onVote }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            {post.comments_count ?? 0} commentaires
+            {post.comments_count ?? 0} {t('community.card.comments')}
           </span>
           <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
-            par {post.profiles?.first_name || post.profiles?.email?.split('@')[0] || 'anonyme'}
+            {t('community.card.by')} {post.profiles?.first_name || post.profiles?.email?.split('@')[0] || t('community.card.anonymous')}
           </span>
         </div>
       </div>

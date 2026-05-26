@@ -23,10 +23,10 @@ function MissionCard({ mission, index, t }) {
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <span style={{ display: 'inline-block', background: mission.type === 'offer' ? 'rgba(79,70,229,0.15)' : 'rgba(250,208,44,0.12)', border: `1px solid ${mission.type === 'offer' ? 'rgba(79,70,229,0.35)' : 'rgba(250,208,44,0.3)'}`, borderRadius: 100, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: mission.type === 'offer' ? '#818CF8' : '#fad02c', whiteSpace: 'nowrap' }}>
-          {mission.type === 'offer' ? '📢 Mission' : '🔍 Disponible'}
+          {mission.type === 'offer' ? t('community.find.type.offer.badge') : t('community.find.type.search.badge')}
         </span>
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-          {daysAgo === 0 ? "Aujourd'hui" : `il y a ${daysAgo}j`}
+          {daysAgo === 0 ? t('community.find.today') : `il y a ${daysAgo}j`}
         </span>
       </div>
 
@@ -50,7 +50,7 @@ function MissionCard({ mission, index, t }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 4 }}>
         {mission.budget && <span style={{ fontSize: 13, fontWeight: 700, color: '#4ADE80' }}>{mission.budget}</span>}
         {mission.duration && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>⏱ {mission.duration}</span>}
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginLeft: 'auto' }}>{REMOTE_ICONS[mission.remote]} {mission.remote === 'remote' ? 'Remote' : mission.remote === 'hybrid' ? 'Hybride' : mission.location || 'Sur site'}</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginLeft: 'auto' }}>{REMOTE_ICONS[mission.remote]} {mission.remote === 'remote' ? t('community.find.remote.remote') : mission.remote === 'hybrid' ? t('community.find.remote.hybrid') : mission.location || t('community.find.remote.onsite')}</span>
       </div>
 
       <button onClick={e => { e.stopPropagation(); navigate(`/community/mission/${mission.id}`); }}
@@ -126,7 +126,7 @@ export function FindMission() {
         {loading ? (
           <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: 80 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4F46E5', margin: '0 auto 12px', animation: 'pulse 1s infinite' }} />
-            Chargement...
+            {t('community.find.loading')}
           </div>
         ) : filtered.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: 80 }}>

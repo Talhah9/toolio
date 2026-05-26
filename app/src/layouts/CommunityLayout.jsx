@@ -4,11 +4,11 @@ import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
 const NAV_ITEMS = [
-  { label: 'Accueil',            path: '/community',          icon: '🏠', exact: true },
-  { label: 'Feed',               path: '/community/feed',     icon: '💬' },
-  { label: 'Channels',           path: '/community/channels', icon: '📺' },
-  { label: 'Poster une mission', path: '/community/post',     icon: '📢' },
-  { label: 'Trouver une mission',path: '/community/find',     icon: '🔍' },
+  { labelKey: 'community.layout.nav.home',         path: '/community',          icon: '🏠', exact: true },
+  { labelKey: 'community.layout.nav.feed',         path: '/community/feed',     icon: '💬' },
+  { labelKey: 'community.layout.nav.channels',     path: '/community/channels', icon: '📺' },
+  { labelKey: 'community.layout.nav.post-mission', path: '/community/post',     icon: '📢' },
+  { labelKey: 'community.layout.nav.find-mission', path: '/community/find',     icon: '🔍' },
 ];
 
 function XPBadge({ xp = 0 }) {
@@ -28,7 +28,7 @@ export function CommunityLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useApp();
-  const { t } = useLang();
+  const { lang, toggleLang, t } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isActive = (item) => item.exact
@@ -63,7 +63,7 @@ export function CommunityLayout() {
           onMouseEnter={e => e.currentTarget.style.color = 'rgba(255,255,255,0.65)'}
           onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
         >
-          ← Savvly
+          {t('community.layout.back')}
         </button>
 
         {/* Community logo */}
@@ -72,7 +72,7 @@ export function CommunityLayout() {
             Savvly
           </div>
           <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.02em' }}>
-            <span style={{ color: '#818CF8' }}>Community</span>
+            <span style={{ color: '#818CF8' }}>{t('community.layout.title')}</span>
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export function CommunityLayout() {
           onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}
         >
-          + Créer un post
+          {t('community.layout.create-btn')}
         </button>
 
         {/* Nav */}
@@ -131,7 +131,7 @@ export function CommunityLayout() {
                 onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ fontSize: 15, lineHeight: 1 }}>{item.icon}</span>
-                <span style={{ flex: 1 }}>{item.label}</span>
+                <span style={{ flex: 1 }}>{t(item.labelKey)}</span>
                 {item.soon && (
                   <span style={{ fontSize: 9, fontWeight: 800, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', borderRadius: 4, padding: '2px 5px', letterSpacing: '0.04em' }}>
                     SOON
@@ -141,6 +141,16 @@ export function CommunityLayout() {
             );
           })}
         </nav>
+
+        {/* Lang toggle */}
+        <button
+          onClick={toggleLang}
+          style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 20, color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: '4px 12px', marginBottom: 8, letterSpacing: '0.06em', transition: 'all 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+        >
+          {lang === 'en' ? 'FR' : 'EN'}
+        </button>
 
         {/* User info */}
         {user && (
@@ -161,9 +171,9 @@ export function CommunityLayout() {
       {/* ── MOBILE TOP BAR ───────────────────────────────────────── */}
       <div className="comm-mobile-bar">
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: 0 }}>
-          ← Savvly
+          {t('community.layout.back')}
         </button>
-        <span style={{ fontWeight: 900, fontSize: 16, color: '#818CF8' }}>Community</span>
+        <span style={{ fontWeight: 900, fontSize: 16, color: '#818CF8' }}>{t('community.layout.title')}</span>
         <button onClick={() => setMobileOpen(o => !o)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 4, fontSize: 18, lineHeight: 1 }}>
           {mobileOpen ? '✕' : '☰'}
         </button>
@@ -174,7 +184,7 @@ export function CommunityLayout() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.7)' }} onClick={() => setMobileOpen(false)}>
           <div style={{ position: 'absolute', top: 0, left: 0, width: 260, height: '100%', background: '#111', padding: '20px 12px', display: 'flex', flexDirection: 'column', gap: 4 }} onClick={e => e.stopPropagation()}>
             <button onClick={() => { navigate('/dashboard'); setMobileOpen(false); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', padding: '6px 8px', marginBottom: 16 }}>
-              ← Retour Savvly
+              {t('community.layout.back.mobile')}
             </button>
             {NAV_ITEMS.map(item => {
               const active = !item.soon && item.path && isActive(item);
@@ -182,7 +192,7 @@ export function CommunityLayout() {
                 <button key={item.label} onClick={() => { if (item.path && !item.soon) { navigate(item.path); setMobileOpen(false); } }}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 12px', borderRadius: 8, border: 'none', borderLeft: active ? '2px solid #4F46E5' : '2px solid transparent', background: active ? 'rgba(79,70,229,0.12)' : 'transparent', color: active ? '#818CF8' : item.soon ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)', fontWeight: active ? 700 : 500, fontSize: 14, cursor: item.soon ? 'default' : 'pointer', textAlign: 'left', width: '100%' }}>
                   <span>{item.icon}</span>
-                  <span style={{ flex: 1 }}>{item.label}</span>
+                  <span style={{ flex: 1 }}>{t(item.labelKey)}</span>
                   {item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)', borderRadius: 4, padding: '2px 5px' }}>SOON</span>}
                 </button>
               );

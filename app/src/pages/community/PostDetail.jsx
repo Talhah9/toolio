@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
+import { useLang } from '../../context/LanguageContext';
 import { timeAgo, getChannel } from '../../lib/communityUtils';
 
 export function PostDetail() {
   const { postId } = useParams();
   const navigate = useNavigate();
   const { user } = useApp();
+  const { t } = useLang();
 
   const [post, setPost] = useState(null);
   const [userVote, setUserVote] = useState(null);
@@ -115,16 +117,16 @@ export function PostDetail() {
 
   if (loading) return (
     <div style={{ maxWidth: 740, margin: '0 auto', padding: '60px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>
-      Chargement...
+      {t('community.detail.loading')}
     </div>
   );
 
   if (!post) return (
     <div style={{ maxWidth: 740, margin: '0 auto', padding: '60px 24px', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>
-      Post introuvable.
+      {t('community.detail.not-found')}
       <br />
       <button onClick={() => navigate('/community/feed')} style={{ marginTop: 16, background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '8px 16px', fontSize: 13 }}>
-        Retour au feed
+        {t('community.detail.back-feed')}
       </button>
     </div>
   );
@@ -136,7 +138,7 @@ export function PostDetail() {
         onClick={() => navigate(-1)}
         style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: 13, cursor: 'pointer', padding: 0, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6 }}
       >
-        ← Feed
+        {t('community.detail.back')}
       </button>
 
       {/* Post */}
@@ -145,7 +147,7 @@ export function PostDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
           {ch && (
             <span style={{ fontSize: 11, fontWeight: 700, background: 'rgba(79,70,229,0.18)', color: '#818CF8', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '2px 10px' }}>
-              {ch.icon} {ch.label}
+              {ch.icon} {t(`community.channel.${ch.id}.label`)}
             </span>
           )}
           {post.type && post.type !== 'discussion' && (
@@ -154,7 +156,7 @@ export function PostDetail() {
             </span>
           )}
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginLeft: 'auto' }}>
-            {post.profiles?.first_name || post.profiles?.email?.split('@')[0] || 'anonyme'} · {timeAgo(post.created_at)}
+            {post.profiles?.first_name || post.profiles?.email?.split('@')[0] || t('community.detail.anonymous')} · {timeAgo(post.created_at)}
           </span>
         </div>
 
@@ -197,7 +199,7 @@ export function PostDetail() {
 
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            {comments.length} commentaires
+            {comments.length} {t('community.detail.comments')}
           </span>
 
           <button
@@ -206,7 +208,7 @@ export function PostDetail() {
             onMouseEnter={e => { if (!reported) e.currentTarget.style.color = '#F87171'; }}
             onMouseLeave={e => { if (!reported) e.currentTarget.style.color = 'rgba(255,255,255,0.2)'; }}
           >
-            {reported ? '✓ Signalé' : 'Signaler'}
+            {reported ? t('community.detail.reported') : t('community.detail.report')}
           </button>
         </div>
       </div>
@@ -216,7 +218,7 @@ export function PostDetail() {
         <textarea
           value={newComment}
           onChange={e => setNewComment(e.target.value)}
-          placeholder="Ajoute un commentaire..."
+          placeholder={t('community.detail.comment.placeholder')}
           style={{
             width: '100%',
             background: 'rgba(255,255,255,0.04)',
@@ -250,7 +252,7 @@ export function PostDetail() {
               cursor: !newComment.trim() || submitting ? 'default' : 'pointer',
             }}
           >
-            {submitting ? 'Envoi...' : 'Commenter +5 XP'}
+            {submitting ? t('community.detail.comment.submitting') : t('community.detail.comment.submit')}
           </button>
         </div>
       </div>
@@ -264,7 +266,7 @@ export function PostDetail() {
                 {(c.profiles?.first_name || c.profiles?.email)?.[0]?.toUpperCase() ?? '?'}
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>
-                {c.profiles?.first_name || c.profiles?.email?.split('@')[0] || 'anonyme'}
+                {c.profiles?.first_name || c.profiles?.email?.split('@')[0] || t('community.detail.anonymous')}
               </span>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginLeft: 'auto' }}>
                 {timeAgo(c.created_at)}
@@ -294,7 +296,7 @@ export function PostDetail() {
 
         {comments.length === 0 && (
           <div style={{ textAlign: 'center', padding: '32px', color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>
-            Sois le premier à commenter
+            {t('community.detail.comment.first')}
           </div>
         )}
       </div>
