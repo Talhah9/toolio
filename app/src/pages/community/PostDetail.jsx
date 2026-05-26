@@ -21,9 +21,9 @@ export function PostDetail() {
   useEffect(() => {
     const load = async () => {
       const [{ data: p }, { data: v }, { data: cs }] = await Promise.all([
-        supabase.from('community_posts').select('*').eq('id', postId).single(),
+        supabase.from('community_posts').select('*, profiles(first_name, last_name, email)').eq('id', postId).single(),
         user ? supabase.from('community_votes').select('vote').eq('user_id', user.id).eq('post_id', postId).maybeSingle() : { data: null },
-        supabase.from('community_comments').select('*').eq('post_id', postId).order('created_at'),
+        supabase.from('community_comments').select('*, profiles(first_name, email)').eq('post_id', postId).order('created_at'),
       ]);
       setPost(p);
       setUserVote(v?.vote ?? null);
@@ -92,7 +92,7 @@ export function PostDetail() {
     setSubmitting(true);
     const { data } = await supabase
       .from('community_comments')
-      .insert({ post_id: postId, author_id: user.id, author_email: user.email, content: newComment.trim() })
+      .insert({ post_id: postId, author_id: user.id, content: newComment.trim() })
       .select('*')
       .single();
 
@@ -154,7 +154,7 @@ export function PostDetail() {
             </span>
           )}
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginLeft: 'auto' }}>
-            {post.author_email?.split('@')[0]} · {timeAgo(post.created_at)}
+            {post.profiles?.first_name || post.profiles?.email?.split('@')[0] || 'anonyme'} · {timeAgo(post.created_at)}
           </span>
         </div>
 
@@ -261,10 +261,10 @@ export function PostDetail() {
           <div key={c.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #818CF8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
-                {c.author_email?.[0]?.toUpperCase() ?? '?'}
+                {(c.profiles?.first_name || c.profiles?.email)?.[0]?.toUpperCase() ?? '?'}
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>
-                {c.author_email?.split('@')[0]}
+                {c.profiles?.first_name || c.profiles?.email?.split('@')[0] || 'anonyme'}
               </span>
               <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginLeft: 'auto' }}>
                 {timeAgo(c.created_at)}

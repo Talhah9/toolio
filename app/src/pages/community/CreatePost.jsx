@@ -45,7 +45,6 @@ export function CreatePost() {
       .from('community_posts')
       .insert({
         author_id: user.id,
-        author_email: user.email,
         channel,
         type,
         title: title.trim(),

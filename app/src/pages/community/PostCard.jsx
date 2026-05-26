@@ -119,7 +119,7 @@ export function PostCard({ post, userVote, onVote }) {
             {post.comments_count ?? 0} commentaires
           </span>
           <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
-            par {post.author_email?.split('@')[0] ?? 'anonyme'}
+            par {post.profiles?.first_name || post.profiles?.email?.split('@')[0] || 'anonyme'}
           </span>
         </div>
       </div>

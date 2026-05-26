@@ -29,7 +29,7 @@ export function Feed() {
     setLoading(true);
     let q = supabase
       .from('community_posts')
-      .select('id, author_id, author_email, channel, type, title, content, tags, upvotes, comments_count, created_at');
+      .select('id, author_id, channel, type, title, content, tags, upvotes, comments_count, created_at, profiles(first_name, last_name, email)');
 
     if (channelParam) q = q.eq('channel', channelParam);
     if (filter === 'questions') q = q.eq('type', 'question');
