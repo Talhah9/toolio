@@ -22,6 +22,15 @@ export function BottomNav() {
         <span>{t('mobile.tools')}</span>
       </button>
       <button
+        className={`mobile-nav-item ${location.pathname.startsWith('/community') ? 'active' : ''}`}
+        onClick={() => navigate('/community')}
+        style={{ position: 'relative' }}
+      >
+        <Glyph name="community" size={20} />
+        <span style={{ fontSize: 10 }}>{t('mobile.community')}</span>
+        <span style={{ position: 'absolute', top: 6, right: 'calc(50% - 16px)', width: 6, height: 6, borderRadius: '50%', background: '#4F46E5' }} />
+      </button>
+      <button
         className={`mobile-nav-item ${isActive('/pricing') ? 'active' : ''}`}
         onClick={() => navigate('/pricing')}
       >

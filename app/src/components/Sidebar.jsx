@@ -54,6 +54,22 @@ export function Sidebar() {
 
       <div style={{ flex: 1 }} />
 
+      <div className="sidebar-section" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        {t('nav.section.community')}
+        <span style={{ fontSize: 9, fontWeight: 800, background: '#4F46E5', color: '#fff', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>NEW</span>
+      </div>
+      <div
+        className={`sidebar-item ${location.pathname.startsWith('/community') ? 'active' : ''}`}
+        onClick={() => navigate('/community')}
+        style={location.pathname.startsWith('/community') ? {} : { color: 'var(--fg-2)' }}
+      >
+        <Glyph name="community" />
+        <span>{t('nav.community')}</span>
+        {!location.pathname.startsWith('/community') && (
+          <span style={{ marginLeft: 'auto', fontSize: 10, color: '#4F46E5', fontWeight: 700 }}>✦</span>
+        )}
+      </div>
+
       <div className="sidebar-section">{t('nav.section.account')}</div>
       <div
         className={`sidebar-item ${isActive('/history') ? 'active' : ''}`}

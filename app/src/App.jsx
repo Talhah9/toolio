@@ -13,6 +13,10 @@ import { History } from './pages/History';
 import { Legal } from './pages/Legal';
 import { Admin } from './pages/Admin';
 import { ShareResult } from './pages/ShareResult';
+import { CommunityHome } from './pages/community/CommunityHome';
+import { PostMission } from './pages/community/PostMission';
+import { FindMission } from './pages/community/FindMission';
+import { MissionDetail } from './pages/community/MissionDetail';
 import { useApp } from './context/AppContext';
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
@@ -40,6 +44,10 @@ export function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/account" element={<Account />} />
               <Route path="/history" element={<History />} />
+              <Route path="/community" element={<CommunityHome />} />
+              <Route path="/community/post" element={<PostMission />} />
+              <Route path="/community/find" element={<FindMission />} />
+              <Route path="/community/mission/:id" element={<MissionDetail />} />
             </Route>
             <Route element={<AdminGuard />}>
               <Route path="/admin" element={<Admin />} />

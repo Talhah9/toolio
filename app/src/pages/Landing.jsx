@@ -972,7 +972,48 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── 8. FAQ ────────────────────────────────────────────── */}
+      {/* ── 8. COMMUNITY TEASER ──────────────────────────────── */}
+      <FadeUp>
+        <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div className="container" style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 640, margin: '0 auto' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.15)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#818CF8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 24 }}>
+                🚀 {t('landing.community.badge')}
+              </span>
+              <h2 style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 900, color: '#fff', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                {t('landing.community.title')}
+              </h2>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.45)', margin: '0 0 40px', lineHeight: 1.6 }}>
+                {t('landing.community.sub')}
+              </p>
+              <div style={{ display: 'flex', gap: 40, marginBottom: 40, justifyContent: 'center', flexWrap: 'wrap' }}>
+                {[
+                  { v: t('landing.community.stat1.value'), l: t('landing.community.stat1.label') },
+                  { v: t('landing.community.stat2.value'), l: t('landing.community.stat2.label') },
+                  { v: t('landing.community.stat3.value'), l: t('landing.community.stat3.label') },
+                ].map(s => (
+                  <div key={s.l} style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 32, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{s.v}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+              <motion.button
+                onClick={() => navigate('/auth?mode=register')}
+                style={{ background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 28px', fontWeight: 800, fontSize: 15, cursor: 'pointer' }}
+                whileHover={reduce ? {} : { scale: 1.03 }}
+                whileTap={reduce ? {} : { scale: 0.97 }}
+              >
+                {t('landing.community.cta')}
+              </motion.button>
+            </div>
+          </div>
+        </section>
+      </FadeUp>
+
+      {/* ── 9. FAQ ────────────────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>
