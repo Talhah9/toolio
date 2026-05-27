@@ -143,7 +143,7 @@ export function Coaching() {
               <label className="label">
                 {t('coaching.form.theme.label')} <span style={{ color: 'var(--error, #EF4444)', fontWeight: 700 }}>*</span>
               </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', overflowX: 'hidden' }}>
                 {THEME_IDS.map(id => (
                   <label
                     key={id}
@@ -200,7 +200,7 @@ export function Coaching() {
               </label>
               <div
                 onClick={() => fileRef.current?.click()}
-                style={{ border: '1px dashed var(--border)', borderRadius: 8, padding: '14px 18px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s' }}
+                style={{ border: '1px dashed var(--border)', borderRadius: 8, padding: '14px 18px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s', width: '100%', boxSizing: 'border-box' }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(79,70,229,0.4)'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
               >

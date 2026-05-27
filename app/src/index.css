@@ -394,6 +394,11 @@ a {
   grid-template-columns: 240px 1fr;
   min-height: 100vh;
 }
+/* Grid item min-width fix: prevent main from expanding past its 1fr track */
+.app-shell > main {
+  min-width: 0;
+  overflow-x: hidden;
+}
 .sidebar {
   border-right: 1px solid var(--border);
   background: linear-gradient(180deg, #FAFAFA 0%, #F7F7F9 100%);
@@ -840,6 +845,8 @@ a {
   gap: 32px;
   align-items: start;
 }
+/* Prevent grid items from overflowing their columns */
+.tool-page > * { min-width: 0; }
 .breadcrumb {
   display: flex;
   align-items: center;

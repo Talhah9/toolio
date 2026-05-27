@@ -20,7 +20,7 @@ export function ToolShell({ tool, children }) {
         .tool-shell-body { animation: shellIn 0.25s ease-out both; }
       `}</style>
       <AppHeader />
-      <div className="page-pad tool-shell-body">
+      <div className="page-pad tool-shell-body" style={{ overflowX: 'hidden', maxWidth: '100%', width: '100%' }}>
         <div className="breadcrumb">
           <a onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Dashboard</a>
           <Glyph name="chevron-right" size={12} />

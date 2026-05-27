@@ -10,7 +10,7 @@ export function AppShell() {
   return (
     <div className="app-shell">
       <Sidebar />
-      <main>
+      <main style={{ minWidth: 0, overflowX: 'hidden', width: '100%' }}>
         <Outlet />
       </main>
       <BottomNav />

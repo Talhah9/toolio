@@ -193,7 +193,7 @@ export function URSSAFTool({ tool }) {
           </div>
         </div>
 
-        <div style={{ maxWidth: 780 }}>
+        <div style={{ maxWidth: 780, width: '100%' }}>
           {/* ── Inputs ──────────────────────────────────────────── */}
           <div className="card card-pad" style={{ marginBottom: 20 }}>
             <div className="urssaf-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 20 }}>
