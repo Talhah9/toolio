@@ -33,9 +33,10 @@ export function Coaching() {
 
     try {
       // 1. Upload PDF if present
+      const uid = session.user.id;
       let pdfUrl = null;
       if (pdfFile) {
-        const fileName = `${user.id}/${Date.now()}-${pdfFile.name}`;
+        const fileName = `${uid}/${Date.now()}-${pdfFile.name}`;
         const { error: uploadErr } = await supabase.storage
           .from('coaching-pdfs')
           .upload(fileName, pdfFile, { upsert: false });
@@ -51,7 +52,7 @@ export function Coaching() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ userId: user.id, theme, description: description.trim(), phone: phone.trim(), pdfUrl }),
+        body: JSON.stringify({ userId: uid, theme, description: description.trim(), phone: phone.trim(), pdfUrl }),
       });
       const bookingJson = await bookingRes.json();
       if (bookingJson.error) throw new Error(bookingJson.error);
@@ -63,7 +64,7 @@ export function Coaching() {
         body: JSON.stringify({
           priceId: COACHING_PRICE_ID,
           mode: 'payment',
-          userId: user.id,
+          userId: uid,
           userEmail: user.email,
           credits: 0,
           coachingData: { bookingId: bookingJson.id, theme, phone: phone.trim() },

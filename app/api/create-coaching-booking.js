@@ -9,7 +9,10 @@ export default async function handler(req, res) {
 
   const { userId, theme, description, phone, pdfUrl } = req.body ?? {};
 
+  console.log('[create-coaching-booking] body:', { userId, theme, phone, descriptionLen: description?.length, pdfUrl: !!pdfUrl });
+
   if (!userId || !theme || !description || !phone) {
+    console.error('[create-coaching-booking] missing fields:', { userId: !!userId, theme: !!theme, description: !!description, phone: !!phone });
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
