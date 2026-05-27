@@ -1120,7 +1120,7 @@ export function Landing() {
                   Coach Business ✦
                 </span>
                 <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-                  Travaillez directement<br />avec Talhah
+                  Travaillez avec notre<br />coach business
                 </h2>
                 <p style={{ fontSize: 16, color: '#4B4B6A', margin: '0 0 28px', lineHeight: 1.7 }}>
                   1h de consultation pour structurer votre activité, débloquer vos points de friction et repartir avec un plan d'action concret.
