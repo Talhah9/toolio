@@ -1408,6 +1408,12 @@ a {
   .result-body { padding: 16px; }
   .result-head { padding: 12px 16px; }
 
+  /* Prevent inputs from overflowing viewport */
+  input, textarea, select { max-width: 100%; }
+
+  /* Tools grid — single column on small phones */
+  .tools-grid { grid-template-columns: 1fr; }
+
   /* App header — hide greeting on small screens */
   .app-header-greeting { display: none; }
 

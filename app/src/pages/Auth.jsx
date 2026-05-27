@@ -32,15 +32,19 @@ export function Auth() {
   const [forgotSent, setForgotSent] = useState(false);
 
   // Fallback: catch PASSWORD_RECOVERY if it fires after mount
+  // Also handles SIGNED_IN (covers OAuth redirect back to /auth instead of /dashboard)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setMode('reset');
         setError('');
       }
+      if (event === 'SIGNED_IN') {
+        navigate('/dashboard');
+      }
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const submit = async (e) => {
     e.preventDefault();

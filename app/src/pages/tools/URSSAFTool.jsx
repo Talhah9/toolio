@@ -159,6 +159,14 @@ export function URSSAFTool({ tool }) {
 
   return (
     <>
+      <style>{`
+        @media (max-width: 768px) {
+          .urssaf-grid-2 { grid-template-columns: 1fr !important; }
+          .urssaf-grid-3 { grid-template-columns: 1fr !important; }
+          .urssaf-sim-grid { grid-template-columns: 1fr !important; }
+          .urssaf-sim-cell + .urssaf-sim-cell { border-left: none !important; border-top: 1px solid var(--border) !important; }
+        }
+      `}</style>
       <AppHeader />
       <div className="page-pad">
         <div className="breadcrumb">
@@ -185,7 +193,7 @@ export function URSSAFTool({ tool }) {
         <div style={{ maxWidth: 780 }}>
           {/* ── Inputs ──────────────────────────────────────────── */}
           <div className="card card-pad" style={{ marginBottom: 20 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 20 }}>
+            <div className="urssaf-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 20 }}>
               {/* CA slider */}
               <div>
                 <label className="label">CA annuel prévisionnel</label>
@@ -262,7 +270,7 @@ export function URSSAFTool({ tool }) {
             )}
 
             {/* Options row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+            <div className="urssaf-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
               <div>
                 <label className="label" style={{ marginBottom: 8 }}>ACRE</label>
                 <Toggle value={acre} onChange={setAcre} />
@@ -295,7 +303,7 @@ export function URSSAFTool({ tool }) {
           </div>
 
           {/* ── Summary cards ───────────────────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
+          <div className="urssaf-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
             {[
               { label: 'CA annuel', value: fmtEur(ca), color: 'var(--fg)' },
               { label: `Cotisations (${fmtPct(acre ? taux * 0.5 : taux)})`, value: fmtEurDec(acre ? ca * taux * 0.5 : calc.cot), color: '#EF4444' },
@@ -366,11 +374,12 @@ export function URSSAFTool({ tool }) {
           {acre && calc.acreRows && (
             <div className="card" style={{ overflow: 'hidden', marginBottom: 20 }}>
               {sectionHead('Impact ACRE — Taux progressifs sur 3 ans', null)}
+              <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
                 <thead>
                   <tr style={{ background: 'var(--bg-2)' }}>
                     {['Période', 'Taux ACRE', 'Cotisations', 'Net estimé', 'Économie vs normal'].map(h => (
-                      <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, fontSize: 12, color: 'var(--fg-4)' }}>{h}</th>
+                      <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, fontSize: 12, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -388,6 +397,7 @@ export function URSSAFTool({ tool }) {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
 
@@ -406,13 +416,13 @@ export function URSSAFTool({ tool }) {
           {/* ── Simulation +20% ─────────────────────────────────── */}
           <div className="card" style={{ overflow: 'hidden', marginBottom: 20 }}>
             {sectionHead('Simulation — si votre CA augmente de 20%', null)}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
+            <div className="urssaf-sim-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
               {[
                 { label: 'CA +20%', value: fmtEur(calc.caPlus20), sub: `vs ${fmtEur(ca)} actuel`, color: 'var(--fg)' },
                 { label: 'Cotisations', value: fmtEurDec(calc.cotPlus20), sub: `+${fmtEurDec(calc.cotDelta)} supplémentaires`, color: '#EF4444' },
                 { label: 'Net estimé', value: fmtEurDec(calc.netPlus20), sub: `vs ${fmtEurDec(calc.net)} actuel`, color: '#10B981' },
               ].map((item, i) => (
-                <div key={item.label} style={{ padding: '16px 20px', borderLeft: i > 0 ? '1px solid var(--border)' : 'none' }}>
+                <div key={item.label} className="urssaf-sim-cell" style={{ padding: '16px 20px', borderLeft: i > 0 ? '1px solid var(--border)' : 'none' }}>
                   <div style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{item.label}</div>
                   <div style={{ fontSize: 18, fontWeight: 800, color: item.color, marginBottom: 2 }}>{item.value}</div>
                   <div style={{ fontSize: 11, color: 'var(--fg-4)' }}>{item.sub}</div>

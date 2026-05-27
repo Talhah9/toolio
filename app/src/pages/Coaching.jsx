@@ -77,12 +77,21 @@ export function Coaching() {
 
   return (
     <>
+      <style>{`
+        @media (max-width: 600px) {
+          .coaching-header-row { flex-direction: column; align-items: flex-start; overflow: hidden; }
+          .coaching-header-row h1 { word-break: break-word; max-width: 100%; overflow: hidden; }
+          .coaching-header-row p { max-width: 100%; }
+          .coaching-benefits { padding: 14px 16px !important; }
+          .coaching-form-card { padding: 16px !important; }
+        }
+      `}</style>
       <AppHeader />
       <div className="page-pad">
         <div style={{ maxWidth: 660, margin: '0 auto' }}>
 
           {/* ── Header ── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28 }}>
+          <div className="coaching-header-row" style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28 }}>
             <a href="https://talhahally.com/" target="_blank" rel="noreferrer" style={{ flexShrink: 0 }}>
               <div
                 style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #818CF8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900, color: '#fff', cursor: 'pointer', transition: 'opacity 0.15s' }}
@@ -111,7 +120,7 @@ export function Coaching() {
           </p>
 
           {/* ── Benefits ── */}
-          <div style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 12, padding: '20px 24px', marginBottom: 32 }}>
+          <div className="coaching-benefits" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 12, padding: '20px 24px', marginBottom: 32 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 16px' }}>
               {t('coaching.benefits.title')}
             </p>
@@ -124,7 +133,7 @@ export function Coaching() {
           </div>
 
           {/* ── Form ── */}
-          <div style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 14, padding: '28px' }}>
+          <div className="coaching-form-card" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 14, padding: '28px' }}>
             <h2 style={{ fontSize: 16, fontWeight: 800, margin: '0 0 24px', letterSpacing: '-0.01em' }}>
               {t('coaching.form.title')}
             </h2>
