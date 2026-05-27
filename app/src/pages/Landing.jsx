@@ -347,6 +347,109 @@ function TestimonialCarousel({ t }) {
   );
 }
 
+// ── Coaching testimonials ─────────────────────────────────────
+
+const TESTIMONIALS = [
+  {
+    name: 'Josi GAUDENS',
+    role: 'Experte Shopify, Fondatrice @JOSIFY',
+    quote: "J'ai eu la chance de me former auprès de Talhah, et je recommande son coaching sans hésitation. Ses explications sont claires, accessibles et vraiment adaptées au niveau de la personne qu'il accompagne. Une communication fluide, une bonne ambiance et une vraie bienveillance.",
+  },
+  {
+    name: 'Romain Sansiquet',
+    role: 'Web design | UX/UI | Growth',
+    quote: "Avant mon profil manquait de clarté. Grâce à son accompagnement, j'ai pu structurer mes idées, améliorer ma page et créer un profil plus lisible. Clair, efficace et concret. Je recommande.",
+  },
+  {
+    name: 'Mireille Randriamalisoa',
+    role: 'Assistante Virtuelle | PME & indépendants',
+    quote: "Un accompagnement qui fait vraiment la différence. Grâce à toi, je ne suis plus restée bloquée à réfléchir — je me suis lancée, avec une vraie direction et des actions concrètes. Clair et efficace, c'est exactement ce qu'il faut pour passer au niveau supérieur.",
+  },
+  {
+    name: 'Intissar Ben Yahia',
+    role: 'Consultante Sourcing IT | Fondatrice INBY Recrutement',
+    quote: "Efficacité, expertise et surtout beaucoup d'humanité. Tu as su mettre le doigt sur les points clés pour ma visibilité avec une justesse impressionnante. Une aide précieuse qui donne une vraie impulsion !",
+  },
+  {
+    name: 'Princia Rajoelisoa',
+    role: 'Stratège médias sociaux',
+    quote: 'Franchement, très sympa et pro comme accompagnement. Je recommande.',
+  },
+];
+
+function CoachingTestimonials() {
+  const reduce = useReducedMotion();
+  const [current, setCurrent] = useState(0);
+  const [dir, setDir] = useState(1);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setDir(1);
+      setCurrent(c => (c + 1) % TESTIMONIALS.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const go = (idx) => {
+    setDir(idx > current ? 1 : -1);
+    setCurrent(idx);
+  };
+
+  const variants = {
+    enter:  d => ({ x: d > 0 ? 48 : -48, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit:   d => ({ x: d > 0 ? -48 : 48, opacity: 0 }),
+  };
+
+  const item = TESTIMONIALS[current];
+
+  return (
+    <div>
+      <div style={{ overflow: 'hidden', borderRadius: 20 }}>
+        <AnimatePresence initial={false} custom={dir} mode="wait">
+          <motion.div
+            key={current}
+            custom={dir}
+            variants={reduce ? {} : variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
+            style={{ background: '#fff', borderRadius: 20, padding: '36px 40px', boxShadow: '0 8px 40px rgba(15,15,60,0.08)', minHeight: 260 }}
+          >
+            <div style={{ display: 'flex', gap: 3, marginBottom: 20 }}>
+              {[1,2,3,4,5].map(s => (
+                <svg key={s} width="17" height="17" viewBox="0 0 16 16" fill="#fad02c"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4-2.9-2.8 4-.6z" /></svg>
+              ))}
+            </div>
+            <p style={{ fontSize: 15, color: '#1E1E3A', lineHeight: 1.75, margin: '0 0 28px', fontStyle: 'italic' }}>
+              "{item.quote}"
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 42, height: 42, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #818CF8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 900, color: '#fff', flexShrink: 0 }}>
+                {item.name[0]}
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#0F0F1A' }}>{item.name}</div>
+                <div style={{ fontSize: 12, color: '#7B7B9A', marginTop: 2 }}>{item.role}</div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 20 }}>
+        {TESTIMONIALS.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => go(i)}
+            style={{ width: i === current ? 22 : 8, height: 8, borderRadius: 4, border: 'none', background: i === current ? '#4F46E5' : '#D1D5DB', cursor: 'pointer', transition: 'all 0.3s ease', padding: 0 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── FAQ accordion item ────────────────────────────────────────
 
 function FAQItem({ q, a }) {
@@ -1007,28 +1110,54 @@ export function Landing() {
 
       {/* ── 9. COACHING ──────────────────────────────────────── */}
       <FadeUp>
-        <section style={{ background: '#0F0F0F', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '96px 24px' }}>
-          <div className="container" style={{ maxWidth: 740, textAlign: 'center' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.1)', border: '1px solid rgba(250,208,44,0.25)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#fad02c', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
-              🎯 {t('landing.coaching.eyebrow')}
-            </span>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 900, color: '#fff', margin: '0 0 18px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-              {t('landing.coaching.title')}
-            </h2>
-            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.55)', margin: '0 0 12px', lineHeight: 1.65, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
-              {t('landing.coaching.sub')}
-            </p>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', margin: '0 0 40px', lineHeight: 1.6 }}>
-              {t('landing.coaching.detail')}
-            </p>
-            <motion.button
-              onClick={() => navigate('/coaching')}
-              style={{ background: 'linear-gradient(135deg, #fad02c, #F97316)', color: '#0A0A0A', border: 'none', borderRadius: 12, padding: '15px 32px', fontWeight: 900, fontSize: 15, cursor: 'pointer', letterSpacing: '0.01em' }}
-              whileHover={reduce ? {} : { scale: 1.03 }}
-              whileTap={reduce ? {} : { scale: 0.97 }}
-            >
-              {t('landing.coaching.cta')}
-            </motion.button>
+        <section style={{ background: '#F7F7FF', borderTop: '1px solid #E4E4F0', padding: '96px 24px' }}>
+          <div className="container">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 64, alignItems: 'center', maxWidth: 1060, margin: '0 auto' }}>
+
+              {/* LEFT — coach presentation */}
+              <div>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.18)', borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 24 }}>
+                  Coach Business ✦
+                </span>
+                <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+                  Travaillez directement<br />avec Talhah
+                </h2>
+                <p style={{ fontSize: 16, color: '#4B4B6A', margin: '0 0 28px', lineHeight: 1.7 }}>
+                  1h de consultation pour structurer votre activité, débloquer vos points de friction et repartir avec un plan d'action concret.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36 }}>
+                  {[
+                    'Analyse de votre situation actuelle',
+                    'Stratégie claire et adaptée à votre contexte',
+                    "Plan d'action concret à mettre en place dès le lendemain",
+                  ].map((benefit, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(79,70,229,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </span>
+                      <span style={{ fontSize: 14, color: '#2D2D4A', lineHeight: 1.6 }}>{benefit}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+                  <motion.button
+                    onClick={() => navigate('/coaching')}
+                    style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 28px', fontWeight: 800, fontSize: 15, cursor: 'pointer', letterSpacing: '0.01em' }}
+                    whileHover={reduce ? {} : { scale: 1.03 }}
+                    whileTap={reduce ? {} : { scale: 0.97 }}
+                  >
+                    Réserver — 80€
+                  </motion.button>
+                  <a href="https://talhahally.com/" target="_blank" rel="noreferrer" style={{ fontSize: 13, color: '#4F46E5', textDecoration: 'none', fontWeight: 600 }}>
+                    En savoir plus →
+                  </a>
+                </div>
+              </div>
+
+              {/* RIGHT — testimonials carousel */}
+              <CoachingTestimonials />
+
+            </div>
           </div>
         </section>
       </FadeUp>
