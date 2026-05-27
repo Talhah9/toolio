@@ -847,6 +847,11 @@ a {
 }
 /* Prevent grid items from overflowing their columns */
 .tool-page > * { min-width: 0; }
+/* Left panel stays in view while result scrolls */
+.tool-page > *:first-child {
+  position: sticky;
+  top: 76px;
+}
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -865,8 +870,10 @@ a {
   background: var(--bg);
   box-shadow: var(--shadow-sm);
   min-height: 400px;
+  max-height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .result-head {
   padding: 14px 18px;
@@ -884,6 +891,8 @@ a {
   font-size: var(--t-md);
   line-height: 1.65;
   color: var(--fg);
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 /* ── Markdown output styles ─────────────────────────────── */
@@ -1278,6 +1287,9 @@ a {
   .sidebar { padding: 12px 8px; }
   .mk-footer-grid { grid-template-columns: 1fr 1fr; }
   .card-pad { padding: 20px; }
+  /* Stacked layout — no sticky, adjust result height */
+  .tool-page > *:first-child { position: static; }
+  .result-zone { max-height: calc(100vh - 160px); }
 }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }

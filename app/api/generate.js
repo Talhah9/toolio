@@ -76,6 +76,7 @@ End with a "YOUR MOVE" section with 2-3 concrete tactics grounded in what you ac
 
   legal: `You are a legal expert specialising in French and international business law for freelancers and small businesses.
 Generate complete, ready-to-use legal documents — not templates with placeholders.
+Generate the COMPLETE document. Never truncate. If generating all three documents, be concise but complete for each.
 Include all legally required clauses for the jurisdiction specified.
 Structure each document with numbered sections and a clear title.
 Write in professional but accessible language.`,
@@ -189,7 +190,7 @@ const AUDIT_CHECK_LABELS = {
 const MAX_TOKENS = {
   audit:              2500,
   compete:            3000,
-  legal:              3500,
+  legal:              4000,
   contract:           3500,
   'linkedin-content':  600,
   devis:               800,
