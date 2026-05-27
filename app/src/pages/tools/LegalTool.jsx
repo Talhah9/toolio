@@ -10,6 +10,7 @@ import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const DOCTYPE_OPTIONS = [
   { id: 'tos',     key: 'tool.legal.doctype.tos' },
@@ -31,6 +32,7 @@ export function LegalTool({ tool, initialData }) {
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const generate = async () => {
@@ -47,6 +49,7 @@ export function LegalTool({ tool, initialData }) {
       );
       const id = await logGeneration(tool.id, input, fullText, tool.credits);
       setGenId(id);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -153,6 +156,14 @@ export function LegalTool({ tool, initialData }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onPdf={downloadPdf}
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

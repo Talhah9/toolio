@@ -11,6 +11,7 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const GOALS = [
   { id: 'visibility', key: 'tool.linkedin-intel.goal.visibility' },
@@ -85,6 +86,7 @@ export function LinkedinIntelTool({ tool }) {
   const [regenLoading, setRegenLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
   const navigate = useNavigate();
 
@@ -150,6 +152,7 @@ export function LinkedinIntelTool({ tool }) {
       setActiveTab('PROFILE_AUDIT');
       const id = await logGeneration(tool.id, { profileUrl, niche, goal }, fullText, tool.credits);
       setGenId(id);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -402,6 +405,13 @@ export function LinkedinIntelTool({ tool }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

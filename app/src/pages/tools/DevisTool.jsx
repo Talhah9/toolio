@@ -11,6 +11,7 @@ import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const VAT_RATES = ['0%', '5%', '10%', '20%'];
 const PAYMENT_TERMS = [
@@ -53,6 +54,7 @@ export function DevisTool({ tool, initialData }) {
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const updateLine = (id, field, value) =>
@@ -90,6 +92,7 @@ export function DevisTool({ tool, initialData }) {
       );
       const id = await logGeneration(tool.id, input, fullText, tool.credits);
       setGenId(id);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -270,6 +273,14 @@ export function DevisTool({ tool, initialData }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onPdf={downloadPdf}
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

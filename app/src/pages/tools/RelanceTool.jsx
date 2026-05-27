@@ -7,6 +7,7 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const TONES = [
   { id: 'cordial', labelKey: 'tool.relance.tone.cordial.label', descKey: 'tool.relance.tone.cordial.desc', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
@@ -22,6 +23,7 @@ export function RelanceTool({ tool }) {
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const generate = async () => {
@@ -36,6 +38,7 @@ export function RelanceTool({ tool }) {
         (chunk) => setOutput(chunk),
       );
       await logGeneration(tool.id, { context, tone }, fullText, tool.credits);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -166,6 +169,13 @@ export function RelanceTool({ tool }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

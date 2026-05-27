@@ -10,6 +10,7 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const CHANNELS = [
   { id: 'LinkedIn DM', key: 'tool.prospection.channel.linkedin' },
@@ -61,6 +62,7 @@ export function ProspectionTool({ tool, initialData }) {
   const [regenLoading, setRegenLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -84,6 +86,7 @@ export function ProspectionTool({ tool, initialData }) {
       setActiveTab('VERSION_A');
       const id = await logGeneration(tool.id, { niche, target, channel, tone }, fullText, tool.credits);
       setGenId(id);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -306,6 +309,13 @@ export function ProspectionTool({ tool, initialData }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

@@ -10,6 +10,7 @@ import { useToast } from '../../components/Toast';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const EXPERIENCE_LEVELS = [
   { id: 'Junior',    key: 'tool.mission-finder.experience.junior' },
@@ -71,6 +72,7 @@ export function MissionFinderTool({ tool, initialData }) {
   const [regenLoading, setRegenLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const hasOutput = Object.keys(sections).length > 0;
@@ -94,6 +96,7 @@ export function MissionFinderTool({ tool, initialData }) {
       setActiveTab('PLATFORMS');
       const id = await logGeneration(tool.id, { expertise, tjm, experience, workPreference, location, goal }, fullText, tool.credits);
       setGenId(id);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -333,6 +336,13 @@ export function MissionFinderTool({ tool, initialData }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

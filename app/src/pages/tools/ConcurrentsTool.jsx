@@ -12,6 +12,7 @@ import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
+import { CompletionCelebration } from '../../components/CompletionCelebration';
 
 const FOCUS_OPTIONS = [
   { id: 'positioning', key: 'tool.compete.focus.positioning' },
@@ -32,6 +33,7 @@ export function ConcurrentsTool({ tool }) {
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
   const toggleFocus = (id) => setFocus(f => f.includes(id) ? f.filter(x => x !== id) : [...f, id]);
@@ -51,6 +53,7 @@ export function ConcurrentsTool({ tool }) {
       setScore(parseScore(fullText));
       const id = await logGeneration(tool.id, { competitorUrl, yourUrl, focus }, fullText, tool.credits);
       setGenId(id);
+      setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
@@ -147,6 +150,14 @@ export function ConcurrentsTool({ tool }) {
         </div>
       </div>
       {ToastEl}
+      {showCelebration && (
+        <CompletionCelebration
+          onPdf={downloadPdf}
+          onFullscreen={() => setViewerOpen(true)}
+          onClose={() => setShowCelebration(false)}
+          t={t}
+        />
+      )}
     </ToolShell>
   );
 }

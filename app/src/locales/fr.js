@@ -933,6 +933,13 @@ export const fr = {
   'coaching.card.desc':                    '1h avec notre coach business pour structurer votre activité et définir votre stratégie.',
   'coaching.card.foot':                    'Paiement unique',
 
+  // ── Completion celebration ────────────────────────────────────
+  'celebration.title':      "C'est prêt !",
+  'celebration.subtitle':   'La génération est terminée. Téléchargez-la ou affichez-la en plein écran.',
+  'celebration.pdf':        'Télécharger PDF',
+  'celebration.fullscreen': 'Voir en plein écran',
+  'celebration.dismiss':    'Se ferme dans 4 secondes',
+
   // ── Footer ───────────────────────────────────────────────────
   'footer.tagline': 'La boîte à outils IA des freelances et indépendants.',
   'footer.col.product': 'Produit',

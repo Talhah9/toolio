@@ -933,6 +933,13 @@ export const en = {
   'coaching.card.desc':                    '1h with our business coach to structure your business and define your strategy.',
   'coaching.card.foot':                    'One-time payment',
 
+  // ── Completion celebration ────────────────────────────────────
+  'celebration.title':    'Your result is ready!',
+  'celebration.subtitle': 'Your generation is complete. Download it or view it in fullscreen.',
+  'celebration.pdf':       'Download PDF',
+  'celebration.fullscreen': 'View fullscreen',
+  'celebration.dismiss':  'Closes automatically in 4 seconds',
+
   // ── Footer ───────────────────────────────────────────────────
   'footer.tagline': 'The AI toolkit for freelancers and independent businesses.',
   'footer.col.product': 'Product',
