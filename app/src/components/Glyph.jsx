@@ -175,6 +175,17 @@ export function Glyph({ name, size = 16 }) {
           <path d="M6 7h3a1 1 0 0 1 0 2H6" />
         </svg>
       );
+    case 'calendar':
+      return (
+        <svg {...props}>
+          <rect x="2" y="3.5" width="12" height="10" rx="1.5" />
+          <path d="M2 7h12" />
+          <path d="M5 2v3M11 2v3" />
+          <circle cx="6" cy="10" r="0.7" fill="currentColor" stroke="none" />
+          <circle cx="8" cy="10" r="0.7" fill="currentColor" stroke="none" />
+          <circle cx="10" cy="10" r="0.7" fill="currentColor" stroke="none" />
+        </svg>
+      );
     case 'community':
       return (
         <svg {...props}>

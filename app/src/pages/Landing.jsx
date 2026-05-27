@@ -1005,7 +1005,35 @@ export function Landing() {
         </section>
       </FadeUp>
 
-      {/* ── 9. FAQ ────────────────────────────────────────────── */}
+      {/* ── 9. COACHING ──────────────────────────────────────── */}
+      <FadeUp>
+        <section style={{ background: '#0F0F0F', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '96px 24px' }}>
+          <div className="container" style={{ maxWidth: 740, textAlign: 'center' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.1)', border: '1px solid rgba(250,208,44,0.25)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#fad02c', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
+              🎯 {t('landing.coaching.eyebrow')}
+            </span>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: 900, color: '#fff', margin: '0 0 18px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+              {t('landing.coaching.title')}
+            </h2>
+            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.55)', margin: '0 0 12px', lineHeight: 1.65, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
+              {t('landing.coaching.sub')}
+            </p>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', margin: '0 0 40px', lineHeight: 1.6 }}>
+              {t('landing.coaching.detail')}
+            </p>
+            <motion.button
+              onClick={() => navigate('/coaching')}
+              style={{ background: 'linear-gradient(135deg, #fad02c, #F97316)', color: '#0A0A0A', border: 'none', borderRadius: 12, padding: '15px 32px', fontWeight: 900, fontSize: 15, cursor: 'pointer', letterSpacing: '0.01em' }}
+              whileHover={reduce ? {} : { scale: 1.03 }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+            >
+              {t('landing.coaching.cta')}
+            </motion.button>
+          </div>
+        </section>
+      </FadeUp>
+
+      {/* ── 10. FAQ ───────────────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>

@@ -892,6 +892,14 @@ export const en = {
   'community.find.remote.hybrid':       'Hybrid',
   'community.find.remote.onsite':       'On-site',
 
+  // ── Coaching ─────────────────────────────────────────────────
+  'nav.coaching': 'Consultation',
+  'landing.coaching.eyebrow': 'Coaching',
+  'landing.coaching.title': 'Need a push?',
+  'landing.coaching.sub': '1-hour individual video consultation with Talhah Ally, business coach for freelancers and entrepreneurs.',
+  'landing.coaching.detail': 'Strategy, positioning, pricing, client acquisition. A concrete action plan at the end of the session.',
+  'landing.coaching.cta': 'Book a consultation →',
+
   // ── Footer ───────────────────────────────────────────────────
   'footer.tagline': 'The AI toolkit for freelancers and independent businesses.',
   'footer.col.product': 'Product',

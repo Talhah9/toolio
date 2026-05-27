@@ -141,6 +141,86 @@ export default async function handler(req, res) {
       }
     }
 
+    // ── Coaching booking handling ──────────────────────────────
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const coachingBookingId = session.metadata?.coachingBookingId;
+
+      if (coachingBookingId) {
+        console.log('[stripe-webhook] Coaching booking:', coachingBookingId);
+
+        const THEME_LABELS = {
+          strategie:    'Stratégie & positionnement',
+          tarification: 'Tarification & offres',
+          acquisition:  'Acquisition clients',
+          probleme:     'Problème spécifique',
+          lancement:    "Lancement d'activité",
+        };
+
+        // 1. Update booking status
+        const { data: booking } = await supabase
+          .from('coaching_bookings')
+          .update({ status: 'paid', stripe_session_id: session.id })
+          .eq('id', coachingBookingId)
+          .select('*, profiles:user_id(first_name, last_name, email)')
+          .maybeSingle();
+
+        if (booking) {
+          const clientEmail = session.customer_email || booking.profiles?.email || '';
+          const clientName  = booking.profiles?.first_name || clientEmail.split('@')[0] || 'Client';
+          const themeLabel  = THEME_LABELS[booking.theme] || booking.theme || '';
+          const RESEND_API  = 'https://api.resend.com/emails';
+          const headers     = { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESEND_API_KEY}` };
+
+          // 2. Notify Talhah
+          await fetch(RESEND_API, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              from: 'Savvly <onboarding@resend.dev>',
+              to: ['talhahally974@gmail.com'],
+              subject: `🎯 Nouvelle consultation réservée — ${themeLabel}`,
+              html: `
+                <h2>Nouvelle consultation réservée sur Savvly</h2>
+                <p><strong>Client :</strong> ${clientName} (${clientEmail})</p>
+                <p><strong>Téléphone :</strong> ${booking.phone}</p>
+                <p><strong>Thématique :</strong> ${themeLabel}</p>
+                <p><strong>Situation :</strong></p>
+                <blockquote style="border-left:3px solid #4F46E5;padding-left:12px;color:#555">${booking.description?.replace(/\n/g, '<br>') || ''}</blockquote>
+                ${booking.pdf_url ? `<p><strong>Document :</strong> <a href="${booking.pdf_url}">Télécharger le PDF</a></p>` : '<p><strong>Document :</strong> Aucun</p>'}
+                <p style="color:#888;font-size:12px">Session Stripe : ${session.id}</p>
+              `,
+            }),
+          }).catch(e => console.error('[stripe-webhook] coaching notify email error:', e.message));
+
+          // 3. Confirm to client
+          if (clientEmail) {
+            await fetch(RESEND_API, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                from: 'Savvly <onboarding@resend.dev>',
+                to: [clientEmail],
+                subject: '✅ Votre consultation avec Talhah Ally est confirmée',
+                html: `
+                  <h2>Votre consultation est confirmée !</h2>
+                  <p>Bonjour ${clientName},</p>
+                  <p>Votre consultation d'1 heure avec Talhah Ally est bien réservée.</p>
+                  <p>Talhah vous contactera <strong>sous 24h</strong> à l'adresse <strong>${clientEmail}</strong>${booking.phone ? ` ou au <strong>${booking.phone}</strong>` : ''}.</p>
+                  <hr style="border:none;border-top:1px solid #eee;margin:20px 0"/>
+                  <p><strong>Thématique :</strong> ${themeLabel}</p>
+                  <p><strong>Durée :</strong> 1 heure — appel vidéo</p>
+                  <p><strong>Suivi :</strong> Email pendant 7 jours post-séance</p>
+                  <hr style="border:none;border-top:1px solid #eee;margin:20px 0"/>
+                  <p style="color:#888;font-size:13px">L'équipe Savvly</p>
+                `,
+              }),
+            }).catch(e => console.error('[stripe-webhook] coaching confirm email error:', e.message));
+          }
+        }
+      }
+    }
+
     res.json({ received: true });
   } catch (err) {
     console.error('[stripe-webhook] Unhandled error:', err.message);

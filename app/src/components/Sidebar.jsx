@@ -81,6 +81,14 @@ export function Sidebar() {
         <span>{t('nav.plan')}</span>
       </div>
       <div
+        className={`sidebar-item ${isActive('/coaching') ? 'active' : ''}`}
+        onClick={() => navigate('/coaching')}
+      >
+        <Glyph name="calendar" />
+        <span>{t('nav.coaching')}</span>
+        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, background: 'rgba(250,208,44,0.14)', color: '#fad02c', border: '1px solid rgba(250,208,44,0.3)', borderRadius: 4, padding: '1px 6px', letterSpacing: '0.02em' }}>80€</span>
+      </div>
+      <div
         className={`sidebar-item ${isActive('/account') ? 'active' : ''}`}
         onClick={() => navigate('/account')}
       >

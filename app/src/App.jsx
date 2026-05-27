@@ -14,6 +14,8 @@ import { History } from './pages/History';
 import { Legal } from './pages/Legal';
 import { Admin } from './pages/Admin';
 import { ShareResult } from './pages/ShareResult';
+import { Coaching } from './pages/Coaching';
+import { CoachingSuccess } from './pages/CoachingSuccess';
 import { CommunityHome } from './pages/community/CommunityHome';
 import { PostMission } from './pages/community/PostMission';
 import { FindMission } from './pages/community/FindMission';
@@ -50,6 +52,8 @@ export function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/account" element={<Account />} />
               <Route path="/history" element={<History />} />
+              <Route path="/coaching" element={<Coaching />} />
+              <Route path="/coaching/success" element={<CoachingSuccess />} />
             </Route>
             {/* Community — standalone layout, no Savvly sidebar */}
             <Route element={<CommunityLayout />}>

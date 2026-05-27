@@ -19,6 +19,7 @@ const VALID_PRICE_IDS = new Set([
   'price_1TYNzlAFTm9a9DATXgRbnCBd', // Medium USD $21
   'price_1TWwa2AFTm9a9DATrycG9Lqj', // Large EUR €39
   'price_1TYO08AFTm9a9DATfAi1nkTO', // Large USD $42
+  'price_1TbdLgAFTm9a9DAT4JM34CQP', // Coaching consultation €80 one-time
 ]);
 
 const VALID_MODES = new Set(['subscription', 'payment']);
@@ -27,7 +28,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const { priceId, mode, userId, userEmail, credits } = req.body;
+  const { priceId, mode, userId, userEmail, credits, coachingData } = req.body;
 
   if (!priceId || !mode || !userId) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -46,15 +47,22 @@ export default async function handler(req, res) {
     ? { promoPriceId: priceId, normalPriceId }
     : {};
 
+  const isCoaching = !!(coachingData?.bookingId);
+  const successUrl = isCoaching ? 'https://savvly.co/coaching/success' : 'https://savvly.co/dashboard?payment=success';
+  const cancelUrl  = isCoaching ? 'https://savvly.co/coaching' : 'https://savvly.co/pricing';
+  const coachingMeta = isCoaching
+    ? { coachingBookingId: coachingData.bookingId, coachingTheme: coachingData.theme, coachingPhone: coachingData.phone }
+    : {};
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode,
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail || undefined,
       client_reference_id: userId,
-      metadata: { userId, credits: String(credits ?? 0), ...scheduleMetadata },
-      success_url: 'https://savvly.co/dashboard?payment=success',
-      cancel_url: 'https://savvly.co/pricing',
+      metadata: { userId, credits: String(credits ?? 0), ...scheduleMetadata, ...coachingMeta },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
     });
 
     res.json({ url: session.url });
