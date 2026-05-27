@@ -61,11 +61,11 @@ export function Dashboard() {
         )}
 
         <div className="tools-grid">
-          {TOOLS.map(tool => {
+          {TOOLS.flatMap(tool => {
             const { name, desc } = getToolText(tool, lang);
             const locked = tool.plan === 'pro' && plan !== 'pro';
 
-            return (
+            const toolCard = (
               <div
                 key={tool.id}
                 className="tool-card"
@@ -106,25 +106,30 @@ export function Dashboard() {
                 </div>
               </div>
             );
-          })}
 
-          {/* Coaching consultation card */}
-          <div className="tool-card" onClick={() => navigate('/coaching')}>
-            <div className="tool-card-head">
-              <span className="glyph glyph-lg">
-                <Glyph name="calendar" size={20} />
-              </span>
-              <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20, background: 'rgba(250,208,44,0.14)', border: '1px solid rgba(250,208,44,0.3)', color: '#b45309', whiteSpace: 'nowrap' }}>
-                80€
-              </span>
-            </div>
-            <h3 className="tool-card-title">Consultation 1:1</h3>
-            <p className="tool-card-desc">1h avec Talhah Ally pour structurer votre activité et définir votre stratégie.</p>
-            <div className="tool-card-foot">
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#d97706' }}>Paiement unique</span>
-              <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
-            </div>
-          </div>
+            if (tool.id === 'mission-finder') {
+              return [toolCard, (
+                <div key="coaching-card" className="tool-card" onClick={() => navigate('/coaching')}>
+                  <div className="tool-card-head">
+                    <span className="glyph glyph-lg">
+                      <Glyph name="calendar" size={20} />
+                    </span>
+                    <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20, background: 'rgba(250,208,44,0.14)', border: '1px solid rgba(250,208,44,0.3)', color: '#b45309', whiteSpace: 'nowrap' }}>
+                      80€
+                    </span>
+                  </div>
+                  <h3 className="tool-card-title">{t('coaching.card.title')}</h3>
+                  <p className="tool-card-desc">{t('coaching.card.desc')}</p>
+                  <div className="tool-card-foot">
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#d97706' }}>{t('coaching.card.foot')}</span>
+                    <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
+                  </div>
+                </div>
+              )];
+            }
+
+            return [toolCard];
+          })}
         </div>
       </div>
       {ToastEl}
