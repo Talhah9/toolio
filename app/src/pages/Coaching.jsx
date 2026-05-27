@@ -11,7 +11,7 @@ const THEME_IDS = ['strategie', 'tarification', 'acquisition', 'probleme', 'lanc
 
 export function Coaching() {
   const navigate = useNavigate();
-  const { user } = useApp();
+  const { user, session } = useApp();
   const { t } = useLang();
   const [theme, setTheme] = useState('');
   const [description, setDescription] = useState('');
@@ -44,16 +44,20 @@ export function Coaching() {
         pdfUrl = publicUrl;
       }
 
-      // 2. Insert booking
-      const { data: booking, error: bookingErr } = await supabase
-        .from('coaching_bookings')
-        .insert({ user_id: user.id, theme, description: description.trim(), phone: phone.trim(), pdf_url: pdfUrl, status: 'pending' })
-        .select('id')
-        .single();
-      if (bookingErr) throw new Error(bookingErr.message);
+      // 2. Create booking via backend API (service role bypasses RLS)
+      const bookingRes = await fetch('/api/create-coaching-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ userId: user.id, theme, description: description.trim(), phone: phone.trim(), pdfUrl }),
+      });
+      const bookingJson = await bookingRes.json();
+      if (bookingJson.error) throw new Error(bookingJson.error);
 
       // 3. Stripe checkout
-      const res = await fetch('/api/create-checkout-session', {
+      const checkoutRes = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,12 +66,12 @@ export function Coaching() {
           userId: user.id,
           userEmail: user.email,
           credits: 0,
-          coachingData: { bookingId: booking.id, theme, phone: phone.trim() },
+          coachingData: { bookingId: bookingJson.id, theme, phone: phone.trim() },
         }),
       });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      window.location.href = json.url;
+      const checkoutJson = await checkoutRes.json();
+      if (checkoutJson.error) throw new Error(checkoutJson.error);
+      window.location.href = checkoutJson.url;
     } catch (err) {
       setError(err.message);
       setLoading(false);
