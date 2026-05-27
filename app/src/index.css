@@ -1414,6 +1414,19 @@ a {
   /* Tools grid — single column on small phones */
   .tools-grid { grid-template-columns: 1fr; }
 
+  /* Force all direct children of cards to respect width */
+  .card-pad > * { max-width: 100%; box-sizing: border-box; }
+
+  /* Radio option rows full width */
+  .radio-option { width: 100% !important; box-sizing: border-box !important; }
+
+  /* Result head wraps on narrow screens */
+  .result-head { flex-wrap: wrap; gap: 8px; }
+  .result-head .btn-group { flex-wrap: wrap; }
+
+  /* Tool form containers must not overflow */
+  .tool-page > .card { overflow-x: hidden; }
+
   /* App header — hide greeting on small screens */
   .app-header-greeting { display: none; }
 

@@ -165,6 +165,9 @@ export function URSSAFTool({ tool }) {
           .urssaf-grid-3 { grid-template-columns: 1fr !important; }
           .urssaf-sim-grid { grid-template-columns: 1fr !important; }
           .urssaf-sim-cell + .urssaf-sim-cell { border-left: none !important; border-top: 1px solid var(--border) !important; }
+          .urssaf-slider-labels span { flex-shrink: 0; font-size: 11px; }
+          .urssaf-slider-wrap { overflow: hidden; width: 100%; }
+          .urssaf-slider-wrap input[type="range"] { max-width: 100%; width: 100%; }
         }
       `}</style>
       <AppHeader />
@@ -200,10 +203,12 @@ export function URSSAFTool({ tool }) {
                 <div style={{ textAlign: 'center', margin: '12px 0 8px' }}>
                   <span style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em' }}>{fmtEur(ca)}</span>
                 </div>
-                <input type="range" min={5000} max={200000} step={1000} value={ca}
-                  onChange={e => setCa(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: 'var(--accent)' }} />
-                <div className="row" style={{ justifyContent: 'space-between', fontSize: 11, color: 'var(--fg-4)', marginTop: 4 }}>
+                <div className="urssaf-slider-wrap">
+                  <input type="range" min={5000} max={200000} step={1000} value={ca}
+                    onChange={e => setCa(Number(e.target.value))}
+                    style={{ width: '100%', maxWidth: '100%', accentColor: 'var(--accent)' }} />
+                </div>
+                <div className="row urssaf-slider-labels" style={{ justifyContent: 'space-between', fontSize: 11, color: 'var(--fg-4)', marginTop: 4 }}>
                   <span>5 k€</span><span>200 k€</span>
                 </div>
                 <div style={{ marginTop: 10 }}>

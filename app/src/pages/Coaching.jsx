@@ -83,7 +83,7 @@ export function Coaching() {
           .coaching-header-row h1 { word-break: break-word; max-width: 100%; overflow: hidden; }
           .coaching-header-row p { max-width: 100%; }
           .coaching-benefits { padding: 14px 16px !important; }
-          .coaching-form-card { padding: 16px !important; }
+          .coaching-form-card { padding: 16px !important; overflow: hidden; }
         }
       `}</style>
       <AppHeader />
@@ -147,7 +147,7 @@ export function Coaching() {
                 {THEME_IDS.map(id => (
                   <label
                     key={id}
-                    style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '10px 14px', borderRadius: 8, border: `1px solid ${theme === id ? 'rgba(79,70,229,0.5)' : 'var(--border)'}`, background: theme === id ? 'rgba(79,70,229,0.06)' : 'transparent', transition: 'all 0.15s' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '10px 14px', borderRadius: 8, border: `1px solid ${theme === id ? 'rgba(79,70,229,0.5)' : 'var(--border)'}`, background: theme === id ? 'rgba(79,70,229,0.06)' : 'transparent', transition: 'all 0.15s', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}
                   >
                     <input
                       type="radio"
@@ -170,7 +170,7 @@ export function Coaching() {
               </label>
               <textarea
                 className="input"
-                style={{ minHeight: 110, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6 }}
+                style={{ minHeight: 110, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, width: '100%', maxWidth: '100%' }}
                 placeholder={t('coaching.form.description.placeholder')}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
@@ -188,6 +188,7 @@ export function Coaching() {
                 placeholder="+33 6 12 34 56 78"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
+                style={{ width: '100%', maxWidth: '100%' }}
               />
             </div>
 
