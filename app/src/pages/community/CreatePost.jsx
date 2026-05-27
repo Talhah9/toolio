@@ -108,18 +108,24 @@ export function CreatePost() {
                 key={ch.id}
                 onClick={() => setChannel(ch.id)}
                 style={{
-                  padding: '7px 14px',
-                  borderRadius: 100,
+                  padding: '10px 14px',
+                  borderRadius: 10,
                   border: `1px solid ${channel === ch.id ? 'rgba(79,70,229,0.6)' : 'rgba(255,255,255,0.1)'}`,
                   background: channel === ch.id ? 'rgba(79,70,229,0.15)' : 'rgba(255,255,255,0.03)',
                   color: channel === ch.id ? '#818CF8' : 'rgba(255,255,255,0.5)',
-                  fontSize: 12,
-                  fontWeight: channel === ch.id ? 700 : 500,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 4,
+                  minWidth: 64,
                 }}
               >
-                {ch.icon} {ch.label}
+                <span style={{ fontSize: 20, lineHeight: 1 }}>{ch.icon}</span>
+                <span style={{ fontSize: 10, fontWeight: channel === ch.id ? 700 : 500, letterSpacing: '0.01em', lineHeight: 1.2 }}>
+                  {t(`community.channel.${ch.id}.label`)}
+                </span>
               </button>
             ))}
           </div>
