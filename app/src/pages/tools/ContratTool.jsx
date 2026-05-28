@@ -42,7 +42,7 @@ export function ContratTool({ tool, initialData }) {
     setLoading(true);
     setOutput('');
     try {
-      const input = { client, clientCompany, mission, rate, rateType, duration, durationUnit, deliverables, paymentTerms };
+      const input = { client, clientCompany, mission, rate, rateType, duration, durationUnit, deliverables, paymentTerms, today: new Date().toLocaleDateString('fr-FR') };
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
         (chunk) => setOutput(chunk),

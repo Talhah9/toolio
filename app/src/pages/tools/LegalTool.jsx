@@ -49,7 +49,7 @@ export function LegalTool({ tool, initialData }) {
     setLoading(true);
     setOutput('');
     try {
-      const input = { company, type, country, address, activity, docType };
+      const input = { company, type, country, address, activity, docType, today: new Date().toLocaleDateString('fr-FR') };
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
         (chunk) => setOutput(chunk),

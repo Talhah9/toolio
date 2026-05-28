@@ -79,12 +79,14 @@ Generate complete, ready-to-use legal documents — not templates with placehold
 Generate the COMPLETE document. Never truncate. If generating all three documents, be concise but complete for each.
 Include all legally required clauses for the jurisdiction specified.
 Structure each document with numbered sections and a clear title.
-Write in professional but accessible language.`,
+Write in professional but accessible language.
+Use EXACTLY the date provided in the user message for all date references. Never invent or assume dates.`,
 
   contract: `You are a freelance contract specialist. Generate complete, professional service agreements.
 Include all standard clauses: parties, scope of work, deliverables, timeline, compensation, payment schedule, revisions policy, intellectual property, confidentiality, termination, governing law, and signature blocks.
 Use the specific details provided — do not leave placeholder text.
-Format clearly with numbered sections.`,
+Format clearly with numbered sections.
+Use EXACTLY the date provided in the user message for all date references. Never invent or assume dates.`,
 
   'linkedin-content': `You are a LinkedIn content expert for freelancers and independent consultants.
 Write engaging LinkedIn posts optimised for reach and engagement.
@@ -233,7 +235,8 @@ Generate all three documents in one response. Each document must be complete wit
         : `Document needed: ${DOC_LABELS[docType] || 'Terms of Service'}
 
 Generate ONLY this document. Make it detailed, comprehensive, and complete. Include every legally required clause for the jurisdiction. Do not summarise — write the full document as it would appear on a website.`;
-      return `Company name: ${input.company}
+      return `Today's date: ${input.today || new Date().toLocaleDateString('fr-FR')}
+Company name: ${input.company}
 Business type: ${input.type || 'not specified'}
 Country/jurisdiction: ${input.country || 'not specified'}
 Address: ${input.address || 'not specified'}
@@ -243,7 +246,8 @@ ${docInstruction}`;
     }
 
     case 'contract':
-      return `Client name: ${input.client}
+      return `Today's date: ${input.today || new Date().toLocaleDateString('fr-FR')}
+Client name: ${input.client}
 Client company: ${input.clientCompany || 'N/A'}
 Mission: ${input.mission}
 Rate: ${input.rate ? `€${input.rate} ${input.rateType}` : 'not specified'}
