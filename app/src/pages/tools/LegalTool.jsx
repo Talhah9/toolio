@@ -19,6 +19,36 @@ const DOCTYPE_OPTIONS = [
   { id: 'all',     key: 'tool.legal.doctype.all' },
 ];
 
+// Tab definitions per docType — null means no tabs (single streaming output)
+const TABS_BY_DOCTYPE = {
+  tos: [
+    { id: 'IDENTITY',  labelKey: 'tool.legal.tab.identity' },
+    { id: 'SERVICES',  labelKey: 'tool.legal.tab.services' },
+    { id: 'PAYMENT',   labelKey: 'tool.legal.tab.payment' },
+    { id: 'EXECUTION', labelKey: 'tool.legal.tab.execution' },
+    { id: 'LIABILITY', labelKey: 'tool.legal.tab.liability' },
+    { id: 'LEGAL',     labelKey: 'tool.legal.tab.legal' },
+  ],
+  all: [
+    { id: 'TERMS',   labelKey: 'tool.legal.tab.terms' },
+    { id: 'PRIVACY', labelKey: 'tool.legal.tab.privacy_doc' },
+    { id: 'NOTICE',  labelKey: 'tool.legal.tab.notice_doc' },
+  ],
+};
+
+function parseSections(output, keys) {
+  const sections = {};
+  for (let i = 0; i < keys.length; i++) {
+    const marker = `[SECTION:${keys[i]}]`;
+    const start = output.indexOf(marker);
+    if (start === -1) continue;
+    const contentStart = start + marker.length;
+    const nextMarker = i < keys.length - 1 ? output.indexOf(`[SECTION:${keys[i + 1]}]`) : -1;
+    sections[keys[i]] = output.slice(contentStart, nextMarker !== -1 ? nextMarker : output.length).trim();
+  }
+  return sections;
+}
+
 export function LegalTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
@@ -28,7 +58,10 @@ export function LegalTool({ tool, initialData }) {
   const [address, setAddress] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
   const [docType, setDocType] = useState(initialData?.docType ?? 'tos');
-  const [output, setOutput] = useState('');
+  const [output, setOutput] = useState('');       // non-tabbed streaming
+  const [sections, setSections] = useState({});   // tabbed output
+  const [rawOutput, setRawOutput] = useState('');
+  const [activeTab, setActiveTab] = useState('IDENTITY');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -36,11 +69,25 @@ export function LegalTool({ tool, initialData }) {
   const [toast, ToastEl] = useToast();
   const resultRef = useRef(null);
 
+  const tabs = TABS_BY_DOCTYPE[docType] ?? null;
+  const hasTabOutput = tabs !== null && Object.keys(sections).length > 0;
+  const hasOutput = hasTabOutput || !!output;
+
+  // Auto-scroll result body during non-tabbed streaming
   useEffect(() => {
     if (resultRef.current) {
       resultRef.current.scrollTop = resultRef.current.scrollHeight;
     }
   }, [output]);
+
+  // Reset state when docType changes
+  useEffect(() => {
+    const firstTab = TABS_BY_DOCTYPE[docType]?.[0]?.id ?? 'IDENTITY';
+    setActiveTab(firstTab);
+    setSections({});
+    setOutput('');
+    setRawOutput('');
+  }, [docType]);
 
   const generate = async () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
@@ -48,12 +95,22 @@ export function LegalTool({ tool, initialData }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
+    setSections({});
+    setRawOutput('');
     try {
       const input = { company, type, country, address, activity, docType, today: new Date().toLocaleDateString('fr-FR') };
+      const isTabbed = !!TABS_BY_DOCTYPE[docType];
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
-        (chunk) => setOutput(chunk),
+        isTabbed ? () => {} : (chunk) => setOutput(chunk),
       );
+      if (isTabbed) {
+        const sectionKeys = TABS_BY_DOCTYPE[docType].map(tab => tab.id);
+        const parsed = parseSections(fullText, sectionKeys);
+        setSections(parsed);
+        setActiveTab(sectionKeys[0]);
+      }
+      setRawOutput(fullText);
       const id = await logGeneration(tool.id, input, fullText, tool.credits);
       setGenId(id);
       setShowCelebration(true);
@@ -64,14 +121,24 @@ export function LegalTool({ tool, initialData }) {
     }
   };
 
-  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
+  const copy = () => {
+    const text = tabs ? (sections[activeTab] || '') : output;
+    if (!text) return;
+    navigator.clipboard?.writeText(text);
+    toast(t('tool.copied'));
+  };
 
-  const downloadPdf = () => exportPdf({
-    toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
-    userEmail: user?.email,
-    output,
-    filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
-  });
+  const downloadPdf = () => {
+    const pdfContent = tabs
+      ? tabs.map(tab => sections[tab.id] ? `## ${t(tab.labelKey)}\n\n${sections[tab.id]}` : '').filter(Boolean).join('\n\n---\n\n')
+      : (rawOutput || output);
+    exportPdf({
+      toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
+      userEmail: user?.email,
+      output: pdfContent,
+      filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
+    });
+  };
 
   const TYPE_KEYS = ['sole', 'ltd', 'llc', 'partnership', 'other'];
 
@@ -143,29 +210,70 @@ export function LegalTool({ tool, initialData }) {
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <ShareButton generationId={genId} />
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
-                {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
-                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!output}><Glyph name="expand" size={12} /> Fullscreen</button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                {hasOutput && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!hasOutput || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!hasOutput}><Glyph name="expand" size={12} /> Fullscreen</button>
               </div>
             </div>
-            {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            {loading && !output ? (
-              <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
+
+            {viewerOpen && <ResultViewer output={rawOutput || output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
+
+            {/* Tab navigation — shown when tabbed output is ready */}
+            {hasTabOutput && (
+              <div style={{ borderBottom: '1px solid var(--border)', display: 'flex', overflowX: 'auto' }}>
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    style={{
+                      padding: '10px 14px',
+                      fontSize: 12,
+                      fontWeight: activeTab === tab.id ? 600 : 400,
+                      color: activeTab === tab.id ? 'var(--accent)' : 'var(--fg-3)',
+                      border: 'none',
+                      borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                      background: 'none',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'color 0.15s',
+                    }}
+                  >
+                    {t(tab.labelKey)}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Content area */}
+            {loading ? (
+              <div className="result-empty">
+                <span className="row" style={{ gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
+                  {t('tool.legal.streaming')}
+                </span>
+              </div>
+            ) : hasTabOutput ? (
+              sections[activeTab]
+                ? <MarkdownResult key={activeTab}>{sections[activeTab]}</MarkdownResult>
+                : <div className="result-empty">{t('tool.audit.section.empty') || 'Section not generated.'}</div>
+            ) : output && !loading ? (
+              <MarkdownResult>{output}</MarkdownResult>
             ) : output && loading ? (
               <div className="result-body" ref={resultRef}>
+                <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
                 <pre className="stream-text" style={{ margin: 0 }}>{output}<span className="stream-cursor" /></pre>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0 4px', color: 'var(--accent)', fontSize: 13 }}>
-                  <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
                   {[0, 1, 2].map(i => (
                     <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
                   ))}
                   <span>{t('tool.legal.streaming')}</span>
                 </div>
               </div>
-            ) : output ? (
-              <MarkdownResult>{output}</MarkdownResult>
-            ) : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            ) : (
+              <div className="result-empty">{t('tool.result.placeholder')}</div>
+            )}
           </div>
         </div>
       </div>

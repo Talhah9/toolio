@@ -76,11 +76,12 @@ End with a "YOUR MOVE" section with 2-3 concrete tactics grounded in what you ac
 
   legal: `You are a legal expert specialising in French and international business law for freelancers and small businesses.
 Generate complete, ready-to-use legal documents — not templates with placeholders.
-Generate the COMPLETE document. Never truncate. If generating all three documents, be concise but complete for each.
+You MUST complete the entire document. Do not stop mid-sentence or mid-article. If generating CGV only, include all articles from 1 to at least 15. Never truncate.
 Include all legally required clauses for the jurisdiction specified.
-Structure each document with numbered sections and a clear title.
+Structure each document with numbered articles and a clear title.
 Write in professional but accessible language.
-Use EXACTLY the date provided in the user message for all date references. Never invent or assume dates.`,
+Use EXACTLY the date provided in the user message for all date references. Never invent or assume dates.
+When section markers are provided, output content for EVERY marker — never skip a section.`,
 
   contract: `You are a freelance contract specialist. Generate complete, professional service agreements.
 Include all standard clauses: parties, scope of work, deliverables, timeline, compensation, payment schedule, revisions policy, intellectual property, confidentiality, termination, governing law, and signature blocks.
@@ -192,7 +193,7 @@ const AUDIT_CHECK_LABELS = {
 const MAX_TOKENS = {
   audit:              2500,
   compete:            3000,
-  legal:              6000,
+  legal:              8000,
   contract:           3500,
   'linkedin-content':  600,
   devis:               800,
@@ -221,20 +222,47 @@ Provide a complete competitive analysis based solely on the <WEBSITE_CONTENT> pr
     }
 
     case 'legal': {
-      const DOC_LABELS = {
-        tos:     'Terms of Service',
-        privacy: 'Privacy Policy',
-        notice:  'Legal Notice',
-      };
       const docType = input.docType || 'all';
-      const isAll = docType === 'all';
-      const docInstruction = isAll
-        ? `Documents needed: Terms of Service, Privacy Policy, Legal Notice
+      let docInstruction;
 
-Generate all three documents in one response. Each document must be complete with all legally required clauses. Keep each document focused and well-structured — aim for conciseness without omitting required content.`
-        : `Document needed: ${DOC_LABELS[docType] || 'Terms of Service'}
+      if (docType === 'tos') {
+        docInstruction = `Document: Terms of Service / CGV (Conditions Générales de Vente)
 
-Generate ONLY this document. Make it detailed, comprehensive, and complete. Include every legally required clause for the jurisdiction. Do not summarise — write the full document as it would appear on a website.`;
+Generate the COMPLETE CGV using EXACTLY these section markers in order.
+Output content immediately after each marker — no preamble before [SECTION:IDENTITY]:
+
+[SECTION:IDENTITY] — Articles 1-2: identification de l'entreprise et champ d'application
+[SECTION:SERVICES] — Articles 3-4: description des services et formation du contrat
+[SECTION:PAYMENT] — Articles 5-6: tarifs et conditions de paiement
+[SECTION:EXECUTION] — Articles 7-9: délais de livraison, exécution et obligations des parties
+[SECTION:LIABILITY] — Articles 10-12: responsabilité, garanties et propriété intellectuelle
+[SECTION:LEGAL] — Articles 13-15: données personnelles (RGPD), résiliation et droit applicable
+
+Every section is mandatory. Complete all articles in each section before moving to the next.`;
+
+      } else if (docType === 'all') {
+        docInstruction = `Documents needed: CGV, Politique de Confidentialité, Mentions Légales
+
+Generate all three complete documents using EXACTLY these section markers in order.
+Output content immediately after each marker — no preamble before [SECTION:TERMS]:
+
+[SECTION:TERMS] — CGV complètes (au moins 12 articles)
+[SECTION:PRIVACY] — Politique de confidentialité complète (RGPD)
+[SECTION:NOTICE] — Mentions légales complètes
+
+Every section is mandatory. Complete each document fully before starting the next.`;
+
+      } else if (docType === 'privacy') {
+        docInstruction = `Document: Privacy Policy / Politique de Confidentialité
+
+Generate a complete, GDPR-compliant privacy policy. Cover: data controller identity, data collected, purposes and legal bases, retention periods, user rights, cookies, third parties, and contact details.`;
+
+      } else {
+        docInstruction = `Document: Legal Notice / Mentions Légales
+
+Generate complete legal notices as required by French law. Include: publisher identity, hosting provider, intellectual property, liability, and applicable law.`;
+      }
+
       return `Today's date: ${input.today || new Date().toLocaleDateString('fr-FR')}
 Company name: ${input.company}
 Business type: ${input.type || 'not specified'}
