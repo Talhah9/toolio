@@ -74,14 +74,12 @@ Start your response with [SCORE:XX] on its own line (0-100 threat score based ON
 Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.
 End with a "YOUR MOVE" section with 2-3 concrete tactics grounded in what you actually found on the site.`,
 
-  legal: `You are a legal expert specialising in French and international business law for freelancers and small businesses.
-Generate complete, ready-to-use legal documents — not templates with placeholders.
-You MUST complete the entire document. Do not stop mid-sentence or mid-article. If generating CGV only, include all articles from 1 to at least 15. Never truncate.
-Include all legally required clauses for the jurisdiction specified.
-Structure each document with numbered articles and a clear title.
-Write in professional but accessible language.
-Use EXACTLY the date provided in the user message for all date references. Never invent or assume dates.
-When section markers are provided, output content for EVERY marker — never skip a section.`,
+  legal: `Generate a COMPLETE, detailed French legal document based on the selected type.
+The document must include ALL standard articles — minimum 12-15 articles for CGV.
+Never truncate. Never summarize. Write each article in full.
+Use the exact date provided in the user message for all date references. Never invent or assume dates.
+Output plain markdown: ## for article titles, ### for sub-sections.
+For "All three documents": generate CGV, then Privacy Policy, then Legal Notice, separated by ---. Each document must be complete.`,
 
   contract: `You are a freelance contract specialist. Generate complete, professional service agreements.
 Include all standard clauses: parties, scope of work, deliverables, timeline, compensation, payment schedule, revisions policy, intellectual property, confidentiality, termination, governing law, and signature blocks.
@@ -222,47 +220,13 @@ Provide a complete competitive analysis based solely on the <WEBSITE_CONTENT> pr
     }
 
     case 'legal': {
-      const docType = input.docType || 'all';
-      let docInstruction;
-
-      if (docType === 'tos') {
-        docInstruction = `Document: Terms of Service / CGV (Conditions Générales de Vente)
-
-Generate the COMPLETE CGV using EXACTLY these section markers in order.
-Output content immediately after each marker — no preamble before [SECTION:IDENTITY]:
-
-[SECTION:IDENTITY] — Articles 1-2: identification de l'entreprise et champ d'application
-[SECTION:SERVICES] — Articles 3-4: description des services et formation du contrat
-[SECTION:PAYMENT] — Articles 5-6: tarifs et conditions de paiement
-[SECTION:EXECUTION] — Articles 7-9: délais de livraison, exécution et obligations des parties
-[SECTION:LIABILITY] — Articles 10-12: responsabilité, garanties et propriété intellectuelle
-[SECTION:LEGAL] — Articles 13-15: données personnelles (RGPD), résiliation et droit applicable
-
-Every section is mandatory. Complete all articles in each section before moving to the next.`;
-
-      } else if (docType === 'all') {
-        docInstruction = `Documents needed: CGV, Politique de Confidentialité, Mentions Légales
-
-Generate all three complete documents using EXACTLY these section markers in order.
-Output content immediately after each marker — no preamble before [SECTION:TERMS]:
-
-[SECTION:TERMS] — CGV complètes (au moins 12 articles)
-[SECTION:PRIVACY] — Politique de confidentialité complète (RGPD)
-[SECTION:NOTICE] — Mentions légales complètes
-
-Every section is mandatory. Complete each document fully before starting the next.`;
-
-      } else if (docType === 'privacy') {
-        docInstruction = `Document: Privacy Policy / Politique de Confidentialité
-
-Generate a complete, GDPR-compliant privacy policy. Cover: data controller identity, data collected, purposes and legal bases, retention periods, user rights, cookies, third parties, and contact details.`;
-
-      } else {
-        docInstruction = `Document: Legal Notice / Mentions Légales
-
-Generate complete legal notices as required by French law. Include: publisher identity, hosting provider, intellectual property, liability, and applicable law.`;
-      }
-
+      const DOC_LABELS = {
+        tos:     'CGV — Conditions Générales de Vente (minimum 12-15 articles)',
+        privacy: 'Politique de Confidentialité (RGPD — couvrir: responsable du traitement, données collectées, finalités, durées de conservation, droits des utilisateurs, cookies, tiers)',
+        notice:  'Mentions Légales (conformément au droit français — éditeur, hébergeur, propriété intellectuelle, responsabilité, loi applicable)',
+        all:     'Les trois documents complets dans cet ordre: 1) CGV complètes (min. 12 articles), puis ---, 2) Politique de Confidentialité complète, puis ---, 3) Mentions Légales complètes',
+      };
+      const docType = input.docType || 'tos';
       return `Today's date: ${input.today || new Date().toLocaleDateString('fr-FR')}
 Company name: ${input.company}
 Business type: ${input.type || 'not specified'}
@@ -270,7 +234,7 @@ Country/jurisdiction: ${input.country || 'not specified'}
 Address: ${input.address || 'not specified'}
 Business activity: ${input.activity || 'not specified'}
 
-${docInstruction}`;
+Document to generate: ${DOC_LABELS[docType] || DOC_LABELS.tos}`;
     }
 
     case 'contract':
