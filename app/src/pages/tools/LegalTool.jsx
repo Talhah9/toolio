@@ -160,7 +160,7 @@ export function LegalTool({ tool, initialData }) {
   };
 
   const activeContent = activeTab ? sections[activeTab] : null;
-  const isActiveStreaming = activeTab === currentGenerating;
+  const isActiveStreaming = currentGenerating !== null && activeTab === currentGenerating;
   const progressPct = sectionList.length > 0 ? (completedSections.length / sectionList.length) * 100 : 0;
 
   return (
@@ -274,49 +274,40 @@ export function LegalTool({ tool, initialData }) {
                   })}
                 </div>
 
-                {/* Progress indicator */}
-                <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 12, marginBottom: 4 }}>
-                    {isGenerating ? (
-                      <span style={{ color: 'var(--accent)' }}>
-                        ⚡ {lang === 'fr' ? 'Section' : 'Section'} {completedSections.length + 1}/{sectionList.length} {lang === 'fr' ? 'en cours…' : 'in progress…'}
-                      </span>
-                    ) : isComplete ? (
-                      <span style={{ color: '#10B981' }}>
-                        ✅ {lang === 'fr' ? `Document complet — ${sectionList.length} sections` : `Complete — ${sectionList.length} sections`}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', background: 'var(--accent)', borderRadius: 2, width: `${progressPct}%`, transition: 'width 0.4s ease' }} />
-                  </div>
+                {/* Thin progress bar */}
+                <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', marginBottom: 12 }}>
+                  <div style={{ height: '100%', background: 'var(--accent)', borderRadius: 2, width: `${progressPct}%`, transition: 'width 0.4s ease' }} />
                 </div>
 
-                {/* Active tab content */}
+                {/* Active tab content — scrollable */}
                 <div className="result-body" ref={resultRef}>
                   {activeTab && (
-                    <>
-                      {isActiveStreaming ? (
-                        <>
-                          <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
-                          <pre className="stream-text" style={{ margin: 0 }}>{activeContent}<span className="stream-cursor" /></pre>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0 4px', color: 'var(--accent)', fontSize: 13 }}>
-                            {[0, 1, 2].map(i => (
-                              <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
-                            ))}
-                            <span>{t('tool.legal.streaming')}</span>
-                          </div>
-                        </>
-                      ) : activeContent ? (
-                        <MarkdownResult>{activeContent}</MarkdownResult>
-                      ) : (
-                        <div className="result-empty" style={{ fontSize: 13, padding: '24px 0' }}>
-                          {lang === 'fr' ? 'Sera généré automatiquement…' : 'Will be generated automatically…'}
-                        </div>
-                      )}
-                    </>
+                    isActiveStreaming ? (
+                      <pre className="stream-text" style={{ margin: 0 }}>{activeContent}<span className="stream-cursor" /></pre>
+                    ) : activeContent ? (
+                      <MarkdownResult>{activeContent}</MarkdownResult>
+                    ) : (
+                      <div className="result-empty" style={{ fontSize: 13, padding: '24px 0' }}>
+                        {lang === 'fr' ? 'Sera généré automatiquement…' : 'Will be generated automatically…'}
+                      </div>
+                    )
                   )}
                 </div>
+
+                {/* Status indicator — outside scroll area, always visible */}
+                <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
+                {isGenerating ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 0 6px', color: 'var(--accent)', fontSize: 13, borderTop: '1px solid var(--border)', marginTop: 8 }}>
+                    {[0, 1, 2].map(i => (
+                      <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                    ))}
+                    <span>⚡ Section {completedSections.length + 1}/{sectionList.length} {lang === 'fr' ? 'en cours de création…' : 'in progress…'}</span>
+                  </div>
+                ) : isComplete ? (
+                  <div style={{ padding: '10px 0 6px', fontSize: 13, color: '#10B981', borderTop: '1px solid var(--border)', marginTop: 8 }}>
+                    ✅ {lang === 'fr' ? `Document complet — ${sectionList.length}/${sectionList.length} sections` : `Complete — ${sectionList.length}/${sectionList.length} sections`}
+                  </div>
+                ) : null}
               </div>
             )}
           </div>
