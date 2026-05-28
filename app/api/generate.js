@@ -190,7 +190,7 @@ const AUDIT_CHECK_LABELS = {
 const MAX_TOKENS = {
   audit:              2500,
   compete:            3000,
-  legal:              4000,
+  legal:              6000,
   contract:           3500,
   'linkedin-content':  600,
   devis:               800,

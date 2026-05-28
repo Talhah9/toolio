@@ -124,6 +124,7 @@ export const en = {
   'tool.legal.doctype.notice': 'Legal Notice / Mentions légales',
   'tool.legal.doctype.all': 'All three documents',
   'tool.legal.btn': 'Generate document',
+  'tool.legal.streaming': 'Generating document…',
   'tool.legal.error.name': 'Enter your company name.',
   'tool.legal.type.sole': 'Sole trader',
   'tool.legal.type.ltd': 'Limited company (Ltd)',

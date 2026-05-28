@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -34,6 +34,13 @@ export function LegalTool({ tool, initialData }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
+  const resultRef = useRef(null);
+
+  useEffect(() => {
+    if (resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [output]);
 
   const generate = async () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
@@ -145,12 +152,19 @@ export function LegalTool({ tool, initialData }) {
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {loading && !output ? (
               <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
+            ) : output && loading ? (
+              <div className="result-body" ref={resultRef}>
+                <pre className="stream-text" style={{ margin: 0 }}>{output}<span className="stream-cursor" /></pre>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0 4px', color: 'var(--accent)', fontSize: 13 }}>
+                  <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
+                  {[0, 1, 2].map(i => (
+                    <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                  ))}
+                  <span>{t('tool.legal.streaming')}</span>
+                </div>
+              </div>
             ) : output ? (
-              loading ? (
-                <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
-              ) : (
-                <MarkdownResult>{output}</MarkdownResult>
-              )
+              <MarkdownResult>{output}</MarkdownResult>
             ) : <div className="result-empty">{t('tool.result.placeholder')}</div>}
           </div>
         </div>
