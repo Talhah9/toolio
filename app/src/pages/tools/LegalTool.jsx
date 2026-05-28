@@ -27,7 +27,8 @@ const SECTION_DEFS = {
     { key: 'SECTION_2', label: 'Art. 3-4' },
     { key: 'SECTION_3', label: 'Art. 5-6' },
     { key: 'SECTION_4', label: 'Art. 7-9' },
-    { key: 'SECTION_5', label: 'Art. 10-12' },
+    { key: 'SECTION_5', label: 'Art. 10-11' },
+    { key: 'SECTION_6', label: 'Art. 12-14' },
   ],
   privacy: [
     { key: 'SECTION_1', label: 'Collecte' },

@@ -75,10 +75,10 @@ Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRA
 End with a "YOUR MOVE" section with 2-3 concrete tactics grounded in what you actually found on the site.`,
 
   legal: `You are an expert French legal document writer specializing in CGV, Privacy Policies, and Mentions Légales.
-Write EXACTLY and ONLY the section requested — complete, detailed, and legally precise for French law.
-Include all mandatory clauses and sub-points for the section. Never truncate. Never add preamble or conclusion.
-Use ## for article/section headings, ### for sub-points if needed.
-Use the exact date, company name, address, and details provided. Output only the section content — start directly with the first ## heading.
+Generate ONLY the articles indicated in the user message. Be concise but legally complete.
+Maximum 3 paragraphs per article. Never truncate mid-sentence. Always finish the last article completely before stopping.
+Never add preamble or conclusion outside the article headings.
+Use ## for article headings, ### for sub-points if needed. Start directly with the first ## heading.
 CRITICAL: Always write in French. This is a French legal document.`,
 
   contract: `You are a freelance contract specialist. Generate complete, professional service agreements.
@@ -191,7 +191,7 @@ const AUDIT_CHECK_LABELS = {
 const MAX_TOKENS = {
   audit:              2500,
   compete:            3000,
-  legal:              2000,
+  legal:              1500,
   contract:           3500,
   'linkedin-content':  600,
   devis:               800,
@@ -220,8 +220,12 @@ const LEGAL_SECTION_SPECS = {
       instruction: "Write ARTICLE 7 (Exécution des prestations : délais, conditions d'exécution, obligations mutuelles du prestataire et du client, force majeure, sous-traitance éventuelle), ARTICLE 8 (Propriété intellectuelle : droits d'auteur sur les livrables, conditions de cession complète à réception du paiement intégral, droits d'utilisation accordés, garantie d'éviction, interdiction de revente) and ARTICLE 9 (Responsabilité : plafonnement au montant de la commande, exclusion des dommages indirects, force majeure, garantie de conformité légale). Write each article in full. Start each with ## Article N — [title].",
     },
     SECTION_5: {
-      title: 'Articles 10-12 — Données personnelles & Résiliation & Droit applicable',
-      instruction: "Write ARTICLE 10 (Données personnelles : responsable du traitement, finalités, base légale RGPD, droits des personnes — accès, rectification, effacement, portabilité, opposition — délai de réponse 30 jours, droit de saisir la CNIL), ARTICLE 11 (Résiliation : conditions, préavis, conséquences — facturation du travail réalisé, remboursements éventuels, résiliation anticipée pour faute après mise en demeure restée sans effet) and ARTICLE 12 (Droit applicable et litiges : droit français, tentative de règlement amiable préalable obligatoire, médiation de la consommation si applicable, tribunal de commerce compétent). Write each article in full. Start each with ## Article N — [title].",
+      title: 'Articles 10-11 — Données personnelles & Protection des données',
+      instruction: "Generate ONLY Articles 10 to 11. Be concise but legally complete. Maximum 3 paragraphs per article. Never truncate mid-sentence. Always finish the last article completely before stopping.\n\nARTICLE 10 (Données personnelles : responsable du traitement, catégories de données collectées, finalités de traitement, base légale RGPD pour chaque finalité, durées de conservation).\nARTICLE 11 (Protection des données et droits : droits des personnes — accès, rectification, effacement, portabilité, opposition — modalités d'exercice par email, délai de réponse 30 jours, droit de saisir la CNIL à www.cnil.fr, mesures de sécurité techniques et organisationnelles). Start each with ## Article N — [title].",
+    },
+    SECTION_6: {
+      title: 'Articles 12-14 — Résiliation & Droit applicable & Litiges',
+      instruction: "Generate ONLY Articles 12 to 14. Be concise but legally complete. Maximum 3 paragraphs per article. Never truncate mid-sentence. Always finish the last article completely before stopping.\n\nARTICLE 12 (Résiliation : conditions et modalités, préavis requis, conséquences de la résiliation — facturation prorata temporis du travail réalisé, restitution des éléments, résiliation anticipée pour faute après mise en demeure restée sans effet sous 15 jours).\nARTICLE 13 (Droit applicable : les présentes CGV sont soumises au droit français, langue française fait foi, hiérarchie des normes).\nARTICLE 14 (Règlement des litiges : tentative de règlement amiable préalable obligatoire dans un délai de 30 jours, médiation de la consommation conformément aux articles L.616-1 et R.616-1 du Code de la consommation si applicable, à défaut attribution de compétence au tribunal de commerce du siège du prestataire). Start each with ## Article N — [title].",
     },
   },
   privacy: {
