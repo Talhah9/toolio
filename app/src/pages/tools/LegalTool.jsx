@@ -281,7 +281,7 @@ export function LegalTool({ tool, initialData }) {
                 </div>
 
                 {/* Active tab content — scrollable */}
-                <div className="result-body" ref={resultRef}>
+                <div className="result-body" ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 280px)', scrollBehavior: 'smooth', height: '100%' }}>
                   {activeTab && (
                     isActiveStreaming ? (
                       <pre className="stream-text" style={{ margin: 0 }}>{activeContent}<span className="stream-cursor" /></pre>
