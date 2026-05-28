@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -11,222 +11,263 @@ import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
+import { fillTemplate, CGV_TEMPLATE, PRIVACY_TEMPLATE, MENTIONS_TEMPLATE } from '../../lib/legalTemplates';
 
-const DOCTYPE_OPTIONS = [
-  { id: 'tos',     key: 'tool.legal.doctype.tos' },
-  { id: 'privacy', key: 'tool.legal.doctype.privacy' },
-  { id: 'notice',  key: 'tool.legal.doctype.notice' },
-  { id: 'all',     key: 'tool.legal.doctype.all' },
-];
-
-const TYPE_KEYS = ['sole', 'ltd', 'llc', 'partnership', 'other'];
-
-const SECTION_DEFS = {
-  tos: [
-    { key: 'SECTION_1', label: 'Art. 1-2' },
-    { key: 'SECTION_2', label: 'Art. 3-4' },
-    { key: 'SECTION_3', label: 'Art. 5-6' },
-    { key: 'SECTION_4', label: 'Art. 7-9' },
-    { key: 'SECTION_5', label: 'Art. 10-11' },
-    { key: 'SECTION_6', label: 'Art. 12-14' },
-  ],
-  privacy: [
-    { key: 'SECTION_1', label: 'Collecte' },
-    { key: 'SECTION_2', label: 'Droits' },
-    { key: 'SECTION_3', label: 'Sécurité' },
-  ],
-  notice: [
-    { key: 'SECTION_1', label: 'Éditeur' },
-    { key: 'SECTION_2', label: 'PI & Resp.' },
-  ],
-};
-
-function buildSectionList(docType) {
-  if (docType === 'all') {
-    return [
-      ...SECTION_DEFS.tos.map(s => ({ ...s, compositeKey: `tos_${s.key}`, docType: 'tos', tabLabel: `CGV ${s.label}` })),
-      ...SECTION_DEFS.privacy.map(s => ({ ...s, compositeKey: `privacy_${s.key}`, docType: 'privacy', tabLabel: `Conf. ${s.label}` })),
-      ...SECTION_DEFS.notice.map(s => ({ ...s, compositeKey: `notice_${s.key}`, docType: 'notice', tabLabel: `ML ${s.label}` })),
-    ];
-  }
-  return SECTION_DEFS[docType].map(s => ({ ...s, compositeKey: s.key, docType, tabLabel: s.label }));
-}
-
-function buildFullDocument(sectionList, sectionsData, docType) {
-  if (docType !== 'all') {
-    return sectionList.map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
-  }
-  const tos = sectionList.filter(s => s.docType === 'tos').map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
-  const privacy = sectionList.filter(s => s.docType === 'privacy').map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
-  const notice = sectionList.filter(s => s.docType === 'notice').map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
-  return [tos, privacy, notice].filter(Boolean).join('\n\n---\n\n');
-}
+const LEGAL_TYPES = ['EI', 'Micro-entreprise', 'EURL', 'SASU', 'SARL', 'SAS', 'SA', 'Autre'];
+const DEPOSIT_OPTIONS = ['30', '40', '50'];
+const PAYMENT_OPTIONS = ['30', '45', '60'];
 
 export function LegalTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
+
   const [company, setCompany] = useState('');
-  const [type, setType] = useState(initialData?.type ?? 'sole');
-  const [country, setCountry] = useState('');
+  const [legalType, setLegalType] = useState('Micro-entreprise');
+  const [siret, setSiret] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+  const [website, setWebsite] = useState('');
+  const [directorName, setDirectorName] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
+  const [vatSubject, setVatSubject] = useState(false);
+
+  const [clientType, setClientType] = useState('B2B');
+  const [depositPercent, setDepositPercent] = useState('40');
+  const [paymentDelay, setPaymentDelay] = useState('30');
+
+  const [hostingProvider, setHostingProvider] = useState('');
+  const [hostingAddress, setHostingAddress] = useState('');
+
   const [docType, setDocType] = useState(initialData?.docType ?? 'tos');
 
-  const [sections, setSections] = useState({});
-  const [currentGenerating, setCurrentGenerating] = useState(null);
-  const [completedSections, setCompletedSections] = useState([]);
-  const [activeTab, setActiveTab] = useState(null);
-  const [sectionList, setSectionList] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(false);
-
+  const [output, setOutput] = useState('');
+  const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
-  const resultRef = useRef(null);
 
-  useEffect(() => {
-    if (currentGenerating && resultRef.current) {
-      resultRef.current.scrollTop = resultRef.current.scrollHeight;
-    }
-  }, [sections, currentGenerating]);
-
-  const hasOutput = completedSections.length > 0 || currentGenerating !== null;
-  const isComplete = sectionList.length > 0 && completedSections.length === sectionList.length;
-
-  const getFullDoc = () => buildFullDocument(sectionList, sections, docType);
+  const buildBaseVars = () => {
+    const today = new Date().toLocaleDateString('fr-FR');
+    return {
+      COMPANY_NAME: company.trim(),
+      LEGAL_TYPE: legalType,
+      SIRET_LINE: siret.trim() ? `, SIRET ${siret.trim()}` : '',
+      SIRET_BLOCK: siret.trim() ? `SIRET : ${siret.trim()}\n` : '',
+      ADDRESS: address.trim(),
+      EMAIL: email.trim(),
+      WEBSITE: website.trim() || 'votre site internet',
+      WEBSITE_LINE: website.trim() ? `, site internet : ${website.trim()}` : '',
+      WEBSITE_DESC: website.trim() ? ` ou sur ${website.trim()}` : '',
+      WEBSITE_BLOCK: website.trim() ? `Site web : ${website.trim()}\n` : '',
+      VAT_LINE: vatSubject
+        ? 'Numéro de TVA intracommunautaire : à compléter.'
+        : 'TVA non applicable — article 293 B du CGI.',
+      VAT_MENTION: vatSubject
+        ? 'Les prix sont indiqués hors taxes (HT). La TVA sera facturée au taux en vigueur à la date de facturation.'
+        : `${company.trim()} bénéficie du régime de franchise en base de TVA (article 293 B du CGI). Aucune TVA ne sera facturée.`,
+      DEPOSIT_PERCENT: depositPercent,
+      PAYMENT_DELAY: paymentDelay,
+      DATE: today,
+      DIRECTOR_NAME: directorName.trim() || company.trim(),
+      HOSTING_PROVIDER: hostingProvider.trim() || 'Hébergeur à préciser',
+      HOSTING_ADDRESS: hostingAddress.trim() || 'Adresse à compléter',
+      ACTIVITY_DESC: activity.trim(),
+      RETRACTATION: clientType === 'B2C' ? 'true' : '',
+      MEDIATION_CLAUSE: clientType === 'B2C'
+        ? 'Le client consommateur peut recourir à un médiateur de la consommation conformément aux articles L.616-1 et R.616-1 du Code de la consommation. La liste des médiateurs agréés est disponible sur www.economie.gouv.fr.'
+        : '',
+      CUSTOM_CLAUSE_TITLE: 'Dispositions spécifiques',
+      CUSTOM_CLAUSE_CONTENT: 'Les présentes conditions spécifiques complètent les dispositions générales ci-dessus. Pour toute question ou demande particulière, les parties conviennent de se contacter préalablement afin de trouver une solution adaptée dans le respect des intérêts mutuels.',
+    };
+  };
 
   const generate = async () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
+    if (!email.trim()) { toast(t('tool.legal.error.email')); return; }
+    if (!address.trim()) { toast(t('tool.legal.error.address')); return; }
+    if (!activity.trim()) { toast(t('tool.legal.error.activity')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
 
-    const currentSectionList = buildSectionList(docType);
-    setSectionList(currentSectionList);
-    setSections({});
-    setCompletedSections([]);
-    setActiveTab(currentSectionList[0]?.compositeKey ?? null);
-    setIsGenerating(true);
-    setGenId(null);
-
-    const baseInput = {
-      company, type, country, address, activity,
-      today: new Date().toLocaleDateString('fr-FR'),
-    };
-
-    const allResults = {};
+    setLoading(true);
+    setOutput('');
 
     try {
-      for (const sec of currentSectionList) {
-        const cKey = sec.compositeKey;
-        setCurrentGenerating(cKey);
-        setActiveTab(cKey);
-        setSections(prev => ({ ...prev, [cKey]: '' }));
+      const baseVars = buildBaseVars();
 
-        const input = { ...baseInput, docType: sec.docType, sectionKey: sec.key };
-        const fullText = await streamGenerate(
-          { toolId: tool.id, input, session, lang },
-          (chunk) => setSections(prev => ({ ...prev, [cKey]: chunk })),
-        );
+      const aiResponse = await streamGenerate(
+        { toolId: tool.id, input: { mode: 'template', activity: activity.trim(), legalType, docType }, session, lang },
+        () => {},
+      );
 
-        allResults[cKey] = fullText;
-        setCompletedSections(prev => [...prev, cKey]);
+      const activityMatch = aiResponse.match(/\[ACTIVITY\]([\s\S]*?)\[\/ACTIVITY\]/);
+      const titleMatch = aiResponse.match(/\[TITLE\]([\s\S]*?)\[\/TITLE\]/);
+      const clauseMatch = aiResponse.match(/\[CLAUSE\]([\s\S]*?)\[\/CLAUSE\]/);
+
+      const vars = {
+        ...baseVars,
+        ACTIVITY_DESC: activityMatch ? activityMatch[1].trim() : activity.trim(),
+        CUSTOM_CLAUSE_TITLE: titleMatch ? titleMatch[1].trim() : 'Dispositions spécifiques',
+        CUSTOM_CLAUSE_CONTENT: clauseMatch ? clauseMatch[1].trim() : baseVars.CUSTOM_CLAUSE_CONTENT,
+      };
+
+      let finalDoc;
+      if (docType === 'tos') {
+        finalDoc = fillTemplate(CGV_TEMPLATE, vars);
+      } else if (docType === 'privacy') {
+        finalDoc = fillTemplate(PRIVACY_TEMPLATE, vars);
+      } else if (docType === 'notice') {
+        finalDoc = fillTemplate(MENTIONS_TEMPLATE, vars);
+      } else {
+        const cgv = fillTemplate(CGV_TEMPLATE, vars);
+        const privacy = fillTemplate(PRIVACY_TEMPLATE, vars);
+        const notice = fillTemplate(MENTIONS_TEMPLATE, vars);
+        finalDoc = cgv + '\n\n---\n\n' + privacy + '\n\n---\n\n' + notice;
       }
 
-      setCurrentGenerating(null);
-      const fullDoc = buildFullDocument(currentSectionList, allResults, docType);
-      const id = await logGeneration(tool.id, { ...baseInput, docType }, fullDoc, tool.credits);
+      setOutput(finalDoc);
+      const id = await logGeneration(tool.id, { company: company.trim(), docType, activity: activity.trim() }, finalDoc, tool.credits);
       setGenId(id);
       setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
-      setIsGenerating(false);
-      setCurrentGenerating(null);
+      setLoading(false);
     }
   };
+
+  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
 
   const downloadPdf = () => exportPdf({
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
-    output: getFullDoc(),
+    output,
     filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
   });
 
-  const copy = () => {
-    const doc = getFullDoc();
-    if (!doc.trim()) return;
-    navigator.clipboard?.writeText(doc);
-    toast(t('tool.copied'));
-  };
-
-  const activeContent = activeTab ? sections[activeTab] : null;
-  const isActiveStreaming = currentGenerating !== null && activeTab === currentGenerating;
-  const progressPct = sectionList.length > 0 ? (completedSections.length / sectionList.length) * 100 : 0;
+  const showCgvOptions = docType === 'tos' || docType === 'all';
+  const showHosting = docType === 'notice' || docType === 'all';
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
-        {/* LEFT: Form */}
         <div className="card card-pad">
           <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.legal.section.title')}</h3>
 
-          <div className="field">
-            <label className="label">{t('tool.legal.company.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
-            <input className="input" value={company} onChange={e => setCompany(e.target.value)} placeholder={t('tool.legal.company.placeholder')} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">{t('tool.legal.company.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
+              <input className="input" value={company} onChange={e => setCompany(e.target.value)} placeholder={t('tool.legal.company.placeholder')} />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">{t('tool.legal.type.label')}</label>
+              <select className="select" value={legalType} onChange={e => setLegalType(e.target.value)}>
+                {LEGAL_TYPES.map(lt => <option key={lt} value={lt}>{lt}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">{t('tool.legal.siret.label')}</label>
+              <input className="input" value={siret} onChange={e => setSiret(e.target.value)} placeholder="123 456 789 00012" />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">{t('tool.legal.email.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
+              <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="hello@monsite.fr" />
+            </div>
           </div>
 
           <div className="field">
-            <label className="label">{t('tool.legal.type.label')}</label>
-            <select className="select" value={type} onChange={e => setType(e.target.value)}>
-              {TYPE_KEYS.map(k => <option key={k} value={k}>{t(`tool.legal.type.${k}`)}</option>)}
-            </select>
-          </div>
-
-          <div className="field">
-            <label className="label">{t('tool.legal.country.label')}</label>
-            <input className="input" value={country} onChange={e => setCountry(e.target.value)} placeholder={t('tool.legal.country.placeholder')} />
-          </div>
-
-          <div className="field">
-            <label className="label">{t('tool.legal.address.label')}</label>
+            <label className="label">{t('tool.legal.address.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
             <input className="input" value={address} onChange={e => setAddress(e.target.value)} placeholder={t('tool.legal.address.placeholder')} />
           </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">{t('tool.legal.website.label')}</label>
+              <input className="input" value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://monsite.fr" />
+            </div>
+            <div className="field" style={{ margin: 0 }}>
+              <label className="label">{t('tool.legal.director.label')}</label>
+              <input className="input" value={directorName} onChange={e => setDirectorName(e.target.value)} placeholder={t('tool.legal.director.placeholder')} />
+            </div>
+          </div>
+
           <div className="field">
-            <label className="label">{t('tool.legal.activity.label')}</label>
+            <label className="label">{t('tool.legal.activity.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
             <textarea className="textarea" value={activity} onChange={e => setActivity(e.target.value)} placeholder={t('tool.legal.activity.placeholder')} rows={3} />
           </div>
 
           <div className="field">
             <label className="label">{t('tool.legal.doctype.label')}</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {DOCTYPE_OPTIONS.map(opt => {
-                const active = docType === opt.id;
-                return (
-                  <button key={opt.id} type="button" onClick={() => setDocType(opt.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 13, textAlign: 'left', border: '1px solid ' + (active ? 'var(--accent)' : 'var(--border)'), background: active ? 'color-mix(in srgb, var(--accent) 10%, var(--bg))' : 'var(--bg)', color: active ? 'var(--accent)' : 'var(--fg-2)', fontWeight: active ? 600 : 400, transition: 'all 0.15s' }}>
-                    <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid ' + (active ? 'var(--accent)' : 'var(--border)'), flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {active && <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', display: 'block' }} />}
-                    </span>
-                    {t(opt.key)}
-                  </button>
-                );
-              })}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[['tos', 'tool.legal.doctype.tos'], ['privacy', 'tool.legal.doctype.privacy'], ['notice', 'tool.legal.doctype.notice'], ['all', 'tool.legal.doctype.all']].map(([val, key]) => (
+                <button key={val} type="button" onClick={() => setDocType(val)} className="btn btn-sm"
+                  style={{ border: '1px solid ' + (docType === val ? 'var(--fg)' : 'var(--border)'), background: docType === val ? 'var(--fg)' : 'var(--bg)', color: docType === val ? '#fff' : 'var(--fg-2)' }}>
+                  {t(key)}
+                </button>
+              ))}
             </div>
           </div>
+
+          {showCgvOptions && (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">{t('tool.legal.clienttype.label')}</label>
+                  <select className="select" value={clientType} onChange={e => setClientType(e.target.value)}>
+                    <option value="B2B">{t('tool.legal.clienttype.b2b')}</option>
+                    <option value="B2C">{t('tool.legal.clienttype.b2c')}</option>
+                  </select>
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">{t('tool.legal.deposit.label')}</label>
+                  <select className="select" value={depositPercent} onChange={e => setDepositPercent(e.target.value)}>
+                    {DEPOSIT_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
+                  </select>
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">{t('tool.legal.payment.label')}</label>
+                  <select className="select" value={paymentDelay} onChange={e => setPaymentDelay(e.target.value)}>
+                    {PAYMENT_OPTIONS.map(v => <option key={v} value={v}>{v} {lang === 'fr' ? 'jours' : 'days'}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="field">
+                <label className="label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <input type="checkbox" checked={vatSubject} onChange={e => setVatSubject(e.target.checked)} />
+                  {t('tool.legal.vat.label')}
+                </label>
+              </div>
+            </>
+          )}
+
+          {showHosting && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('tool.legal.hosting.label')}</label>
+                <input className="input" value={hostingProvider} onChange={e => setHostingProvider(e.target.value)} placeholder={t('tool.legal.hosting.placeholder')} />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('tool.legal.hosting.address.label')}</label>
+                <input className="input" value={hostingAddress} onChange={e => setHostingAddress(e.target.value)} placeholder={t('tool.legal.hosting.address.placeholder')} />
+              </div>
+            </div>
+          )}
 
           <div className="hr" style={{ margin: '20px 0' }} />
           <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
             <span className="muted">{t('tool.cost')}</span>
             <span style={{ color: '#10B981', fontWeight: 600 }}>{t('tool.free')}</span>
           </div>
-          <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={isGenerating}>
-            {isGenerating ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.legal.btn')}</>}
+          <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
+            {loading ? t('tool.legal.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.legal.btn')}</>}
           </button>
         </div>
 
-        {/* RIGHT: Result */}
         <div>
           <div className="result-zone">
             <div className="result-head">
@@ -234,83 +275,29 @@ export function LegalTool({ tool, initialData }) {
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <ShareButton generationId={genId} />
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
-                {hasOutput && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!isComplete || isGenerating}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
-                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!isComplete}><Glyph name="expand" size={12} /> Fullscreen</button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!output}><Glyph name="expand" size={12} /> Fullscreen</button>
               </div>
             </div>
-
-            {viewerOpen && (
-              <ResultViewer output={getFullDoc()} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />
-            )}
-
-            {!hasOutput ? (
-              <div className="result-empty">{t('tool.result.placeholder')}</div>
-            ) : (
-              <div style={{ padding: '12px 16px 0' }}>
-                {/* Tab bar */}
-                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
-                  {sectionList.map(sec => {
-                    const cKey = sec.compositeKey;
-                    const isDone = completedSections.includes(cKey);
-                    const isCurrent = currentGenerating === cKey;
-                    const isActive = activeTab === cKey;
-                    return (
-                      <button key={cKey} type="button" onClick={() => setActiveTab(cKey)}
-                        style={{
-                          padding: '5px 10px', borderRadius: 6, fontSize: 12,
-                          fontWeight: isActive ? 600 : 400, cursor: 'pointer',
-                          border: '1px solid ' + (isActive ? 'var(--accent)' : 'var(--border)'),
-                          background: isActive ? 'color-mix(in srgb, var(--accent) 12%, var(--bg))' : 'var(--bg)',
-                          color: isActive ? 'var(--accent)' : isDone ? 'var(--fg)' : 'var(--fg-3)',
-                          display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.15s',
-                          opacity: !isDone && !isCurrent ? 0.45 : 1,
-                        }}>
-                        {isCurrent && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite', flexShrink: 0 }} />}
-                        {isDone && !isCurrent && <span style={{ color: '#10B981', fontSize: 10, lineHeight: 1 }}>✓</span>}
-                        {sec.tabLabel}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Thin progress bar */}
-                <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', marginBottom: 12 }}>
-                  <div style={{ height: '100%', background: 'var(--accent)', borderRadius: 2, width: `${progressPct}%`, transition: 'width 0.4s ease' }} />
-                </div>
-
-                {/* Active tab content — scrollable */}
-                <div className="result-body" ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 280px)', scrollBehavior: 'smooth', height: '100%' }}>
-                  {activeTab && (
-                    isActiveStreaming ? (
-                      <pre className="stream-text" style={{ margin: 0 }}>{activeContent}<span className="stream-cursor" /></pre>
-                    ) : activeContent ? (
-                      <MarkdownResult>{activeContent}</MarkdownResult>
-                    ) : (
-                      <div className="result-empty" style={{ fontSize: 13, padding: '24px 0' }}>
-                        {lang === 'fr' ? 'Sera généré automatiquement…' : 'Will be generated automatically…'}
-                      </div>
-                    )
-                  )}
-                </div>
-
-                {/* Status indicator — outside scroll area, always visible */}
-                <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
-                {isGenerating ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 0 6px', color: 'var(--accent)', fontSize: 13, borderTop: '1px solid var(--border)', marginTop: 8 }}>
+            {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
+            <div className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+              {loading ? (
+                <div className="result-empty">
+                  <span className="row" style={{ gap: 10 }}>
                     {[0, 1, 2].map(i => (
-                      <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                      <span key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
                     ))}
-                    <span>⚡ Section {completedSections.length + 1}/{sectionList.length} {lang === 'fr' ? 'en cours de création…' : 'in progress…'}</span>
-                  </div>
-                ) : isComplete ? (
-                  <div style={{ padding: '10px 0 6px', fontSize: 13, color: '#10B981', borderTop: '1px solid var(--border)', marginTop: 8 }}>
-                    ✅ {lang === 'fr' ? `Document complet — ${sectionList.length}/${sectionList.length} sections` : `Complete — ${sectionList.length}/${sectionList.length} sections`}
-                  </div>
-                ) : null}
-              </div>
-            )}
+                    <span style={{ color: 'var(--accent)', fontSize: 13 }}>{t('tool.legal.generating')}</span>
+                  </span>
+                </div>
+              ) : output ? (
+                <MarkdownResult>{output}</MarkdownResult>
+              ) : (
+                <div className="result-empty">{t('tool.result.placeholder')}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

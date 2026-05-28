@@ -81,11 +81,15 @@ Never add preamble or conclusion outside the article headings.
 Use ## for article headings, ### for sub-points if needed. Start directly with the first ## heading.
 CRITICAL: Always write in French. This is a French legal document.`,
 
+  'legal-template': `Tu es un juriste spécialisé en droit français pour indépendants et freelances. Ta tâche est de reformuler une description d'activité en termes professionnels adaptés à un document juridique, et si demandé, de rédiger une clause spécifique. Réponds UNIQUEMENT dans le format exact demandé. Toujours en français. Sois précis et adapté au type d'entreprise.`,
+
   contract: `You are a freelance contract specialist. Generate complete, professional service agreements.
 Include all standard clauses: parties, scope of work, deliverables, timeline, compensation, payment schedule, revisions policy, intellectual property, confidentiality, termination, governing law, and signature blocks.
 Use the specific details provided — do not leave placeholder text.
 Format clearly with numbered sections.
 Use EXACTLY the date provided in the user message for all date references. Never invent or assume dates.`,
+
+  'contract-template': `Tu es un expert en rédaction de contrats de prestation pour freelances français. Reformule les descriptions de mission de manière professionnelle et juridiquement précise. Réponds UNIQUEMENT dans le format exact demandé. Toujours en français.`,
 
   'linkedin-content': `You are a LinkedIn content expert for freelancers and independent consultants.
 Write engaging LinkedIn posts optimised for reach and engagement.
@@ -273,6 +277,20 @@ Provide a complete competitive analysis based solely on the <WEBSITE_CONTENT> pr
     }
 
     case 'legal': {
+      if (input.mode === 'template') {
+        const needsClause = input.docType === 'tos' || input.docType === 'all';
+        const clauseLines = needsClause
+          ? '\n[TITLE]titre de la clause Article 11 (5 mots max)[/TITLE]\n[CLAUSE]2-3 phrases de contenu juridique spécifique à cette activité[/CLAUSE]'
+          : '';
+        return `Activité du prestataire : ${input.activity || 'non précisée'}
+Type d'entreprise : ${input.legalType || 'non précisé'}
+Document à générer : ${input.docType || 'tos'}
+
+Reformulez l'activité en 2 phrases professionnelles adaptées à un document juridique français.
+Répondez EXACTEMENT dans ce format :
+[ACTIVITY]description reformulée[/ACTIVITY]${clauseLines}`;
+      }
+
       const baseCtx = `Date : ${input.today || new Date().toLocaleDateString('fr-FR')}
 Entreprise : ${input.company}
 Forme juridique : ${input.type || 'non précisé'}
@@ -308,7 +326,13 @@ ${spec.instruction}`;
       return `${baseCtx}\n\nDocument à générer : ${DOC_LABELS[docType] || DOC_LABELS.tos}`;
     }
 
-    case 'contract':
+    case 'contract': {
+      if (input.mode === 'template') {
+        return `Mission décrite par le prestataire : ${input.mission || 'non précisée'}
+
+Reformulez cette description en 2-3 phrases professionnelles adaptées à un contrat de prestation de services français.
+Répondez EXACTEMENT dans ce format : [MISSION]mission reformulée[/MISSION]`;
+      }
       return `Today's date: ${input.today || new Date().toLocaleDateString('fr-FR')}
 Client name: ${input.client}
 Client company: ${input.clientCompany || 'N/A'}
@@ -319,6 +343,7 @@ Deliverables: ${input.deliverables || 'as described in mission'}
 Payment terms: ${input.paymentTerms || '30 days'}
 
 Generate a complete freelance service agreement.`;
+    }
 
     case 'linkedin-content':
       return `Topic: ${input.topic}
@@ -529,20 +554,27 @@ export default async function handler(req, res) {
   const cost = TOOL_CREDITS[toolId];
   if (!(await checkCredits(res, verifiedId, cost))) return;
 
-  const basePrompt = SYSTEM_PROMPTS[toolId];
+  const templateMode = input.mode === 'template';
+  const effectivePromptKey = templateMode ? `${toolId}-template` : toolId;
+  const basePrompt = SYSTEM_PROMPTS[effectivePromptKey] || SYSTEM_PROMPTS[toolId];
+  const maxTokens = templateMode
+    ? (toolId === 'legal' ? 400 : toolId === 'contract' ? 200 : MAX_TOKENS[toolId] ?? 2048)
+    : (MAX_TOKENS[toolId] ?? 2048);
 
   const FORMAT_INSTRUCTION = '\n\nFormatting rules: Use ## headings to separate major sections. Use bullet points for lists. Use markdown tables where data has multiple dimensions. Be specific and actionable — include real names, numbers, percentages, and concrete examples. Avoid generic advice.';
   const DETAIL_INSTRUCTION = (toolId === 'audit' || toolId === 'compete') ? '\n\nInclude specific numbers, percentages, and concrete examples wherever possible.' : '';
   const calloutInstruction = (toolId === 'audit' || toolId === 'compete' || toolId === 'linkedin-intel') ? CALLOUT_INSTRUCTION : '';
   const langInstruction = lang === 'fr' ? '\n\nAlways respond in French.' : '\n\nAlways respond in English.';
-  const systemPrompt = basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + calloutInstruction + ASCII_INSTRUCTION + COMPLETION_INSTRUCTION + langInstruction;
+  const systemPrompt = templateMode
+    ? basePrompt
+    : basePrompt + FORMAT_INSTRUCTION + DETAIL_INSTRUCTION + calloutInstruction + ASCII_INSTRUCTION + COMPLETION_INSTRUCTION + langInstruction;
 
   let userMessage;
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     userMessage = buildUserMessage(toolId, input);
 
-    console.log('[generate] toolId:', toolId, '| userId:', userId, '| max_tokens:', MAX_TOKENS[toolId] ?? 2048, '| prompt length:', userMessage.length);
+    console.log('[generate] toolId:', toolId, '| userId:', userId, '| max_tokens:', maxTokens, '| templateMode:', templateMode, '| prompt length:', userMessage.length);
 
     // Extra diagnostic logging for the legal tool
     if (toolId === 'legal') {
@@ -605,7 +637,7 @@ export default async function handler(req, res) {
     if (toolId === 'audit' || toolId === 'linkedin-intel') {
       let webText = null;
       try {
-        webText = await runWithWebSearch(anthropic, systemPrompt, userContent, MAX_TOKENS[toolId] ?? 2048);
+        webText = await runWithWebSearch(anthropic, systemPrompt, userContent, maxTokens);
         console.log('[generate] web_search success | toolId:', toolId, '| output length:', webText?.length ?? 0);
       } catch (wsErr) {
         console.error('[generate] web_search failed, falling back to stream | toolId:', toolId, '|', wsErr.message);
@@ -625,7 +657,7 @@ export default async function handler(req, res) {
 
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: MAX_TOKENS[toolId] ?? 2048,
+      max_tokens: maxTokens,
       system: systemPrompt,
       messages: [{ role: 'user', content: userContent }],
     });
