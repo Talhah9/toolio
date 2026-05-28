@@ -74,12 +74,12 @@ Start your response with [SCORE:XX] on its own line (0-100 threat score based ON
 Format with clear sections: POSITIONING, OFFER STRUCTURE, KEYWORDS, CONTENT STRATEGY, WEAKNESSES TO EXPLOIT, YOUR MOVE.
 End with a "YOUR MOVE" section with 2-3 concrete tactics grounded in what you actually found on the site.`,
 
-  legal: `Generate a COMPLETE, detailed French legal document based on the selected type.
-The document must include ALL standard articles — minimum 12-15 articles for CGV.
-Never truncate. Never summarize. Write each article in full.
-Use the exact date provided in the user message for all date references. Never invent or assume dates.
-Output plain markdown: ## for article titles, ### for sub-sections.
-For "All three documents": generate CGV, then Privacy Policy, then Legal Notice, separated by ---. Each document must be complete.`,
+  legal: `You are an expert French legal document writer specializing in CGV, Privacy Policies, and Mentions Légales.
+Write EXACTLY and ONLY the section requested — complete, detailed, and legally precise for French law.
+Include all mandatory clauses and sub-points for the section. Never truncate. Never add preamble or conclusion.
+Use ## for article/section headings, ### for sub-points if needed.
+Use the exact date, company name, address, and details provided. Output only the section content — start directly with the first ## heading.
+CRITICAL: Always write in French. This is a French legal document.`,
 
   contract: `You are a freelance contract specialist. Generate complete, professional service agreements.
 Include all standard clauses: parties, scope of work, deliverables, timeline, compensation, payment schedule, revisions policy, intellectual property, confidentiality, termination, governing law, and signature blocks.
@@ -191,7 +191,7 @@ const AUDIT_CHECK_LABELS = {
 const MAX_TOKENS = {
   audit:              2500,
   compete:            3000,
-  legal:              8000,
+  legal:              2000,
   contract:           3500,
   'linkedin-content':  600,
   devis:               800,
@@ -199,6 +199,55 @@ const MAX_TOKENS = {
   'linkedin-intel':   4000,
   prospection:        1200,
   'mission-finder':   3500,
+};
+
+const LEGAL_SECTION_SPECS = {
+  tos: {
+    SECTION_1: {
+      title: "Articles 1-2 — Identification & Champ d'application",
+      instruction: "Write ARTICLE 1 (Identification du vendeur : dénomination sociale, forme juridique, adresse complète, SIRET si applicable, email de contact, numéro de TVA si applicable) and ARTICLE 2 (Champ d'application : objet des présentes CGV, acceptation par le client lors de toute commande, applicabilité exclusive). Write each article in full. Start each with ## Article N — [title].",
+    },
+    SECTION_2: {
+      title: 'Articles 3-4 — Services & Formation du contrat',
+      instruction: "Write ARTICLE 3 (Services proposés : description détaillée des prestations, catalogue de services, caractéristiques essentielles, délais d'exécution habituels) and ARTICLE 4 (Formation du contrat : processus de commande étape par étape, devis et bon de commande, date de formation du contrat, droit de rétractation 14 jours pour les consommateurs conformément à l'article L.221-18 du Code de la consommation). Write each article in full. Start each with ## Article N — [title].",
+    },
+    SECTION_3: {
+      title: 'Articles 5-6 — Tarifs & Paiement',
+      instruction: "Write ARTICLE 5 (Tarifs : prix HT et TTC, taux de TVA applicable, grille tarifaire, modalités de révision des prix, nécessité d'un devis préalable) and ARTICLE 6 (Paiement : modalités acceptées, délais, acompte éventuel, pénalités de retard conformément aux articles L.441-10 et L.441-11 du Code de commerce — taux légal + 10 points, indemnité forfaitaire de 40€ pour frais de recouvrement, clause de réserve de propriété). Write each article in full. Start each with ## Article N — [title].",
+    },
+    SECTION_4: {
+      title: 'Articles 7-9 — Exécution & Propriété intellectuelle & Responsabilité',
+      instruction: "Write ARTICLE 7 (Exécution des prestations : délais, conditions d'exécution, obligations mutuelles du prestataire et du client, force majeure, sous-traitance éventuelle), ARTICLE 8 (Propriété intellectuelle : droits d'auteur sur les livrables, conditions de cession complète à réception du paiement intégral, droits d'utilisation accordés, garantie d'éviction, interdiction de revente) and ARTICLE 9 (Responsabilité : plafonnement au montant de la commande, exclusion des dommages indirects, force majeure, garantie de conformité légale). Write each article in full. Start each with ## Article N — [title].",
+    },
+    SECTION_5: {
+      title: 'Articles 10-12 — Données personnelles & Résiliation & Droit applicable',
+      instruction: "Write ARTICLE 10 (Données personnelles : responsable du traitement, finalités, base légale RGPD, droits des personnes — accès, rectification, effacement, portabilité, opposition — délai de réponse 30 jours, droit de saisir la CNIL), ARTICLE 11 (Résiliation : conditions, préavis, conséquences — facturation du travail réalisé, remboursements éventuels, résiliation anticipée pour faute après mise en demeure restée sans effet) and ARTICLE 12 (Droit applicable et litiges : droit français, tentative de règlement amiable préalable obligatoire, médiation de la consommation si applicable, tribunal de commerce compétent). Write each article in full. Start each with ## Article N — [title].",
+    },
+  },
+  privacy: {
+    SECTION_1: {
+      title: 'Collecte des données & Base légale (RGPD)',
+      instruction: "Write the following sections of a French Privacy Policy (Politique de Confidentialité RGPD) :\n\n## 1. Responsable du traitement\nIdentité complète, adresse, email de contact du responsable du traitement.\n\n## 2. Données collectées\nListe exhaustive de tous les types de données collectées (nom, prénom, email, téléphone, adresse, données de navigation, cookies, données de paiement, etc.) avec la méthode de collecte pour chacune.\n\n## 3. Finalités et bases légales\nPour chaque finalité de traitement, préciser : la finalité, la base légale RGPD (consentement Art.6(1)(a), exécution d'un contrat Art.6(1)(b), intérêt légitime Art.6(1)(f), obligation légale Art.6(1)(c)), les catégories de données concernées. Write each section in full.",
+    },
+    SECTION_2: {
+      title: 'Droits des personnes & Conservation des données & Cookies',
+      instruction: "Write :\n\n## 4. Durées de conservation\nPour chaque catégorie de données, préciser la durée de conservation exacte et sa justification légale.\n\n## 5. Droits des personnes\nDescription détaillée de tous les droits RGPD : droit d'accès, rectification, effacement (droit à l'oubli), limitation du traitement, portabilité, opposition, droit de ne pas faire l'objet d'une décision automatisée. Pour chaque droit : comment l'exercer (email, adresse postale), délai de réponse (30 jours), droit de réclamation auprès de la CNIL (www.cnil.fr).\n\n## 6. Cookies et traceurs\nTypes de cookies (essentiels, analytiques, marketing), leur finalité, leur durée de vie, mécanisme de consentement, et méthode d'opt-out. Write each section in full.",
+    },
+    SECTION_3: {
+      title: 'Sécurité & Transferts & Modifications & Contact',
+      instruction: "Write :\n\n## 7. Sécurité des données\nMesures techniques et organisationnelles de sécurité mises en œuvre (chiffrement TLS, HTTPS, contrôle d'accès, sauvegardes, etc.).\n\n## 8. Partage et transferts de données\nListe des sous-traitants tiers (hébergeur, analytics, paiement, emailing, etc.) et tout transfert hors UE avec les garanties applicables (décisions d'adéquation, clauses contractuelles types).\n\n## 9. Modifications de la politique\nComment et quand les utilisateurs seront notifiés des mises à jour, date d'entrée en vigueur de la version actuelle.\n\n## 10. Contact\nCoordonnées complètes pour toute demande relative à la vie privée (email, adresse postale, délai de réponse). Write each section in full.",
+    },
+  },
+  notice: {
+    SECTION_1: {
+      title: 'Éditeur du site & Hébergeur',
+      instruction: "Write the French Mentions Légales (conformément à la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique) :\n\n## Éditeur du site\nInformations complètes : dénomination sociale, forme juridique, capital social (si applicable), adresse du siège social, numéro SIRET/RCS, numéro de TVA intracommunautaire (si applicable), email, téléphone, directeur de la publication (nom et qualité).\n\n## Hébergeur\nCoordonnées de l'hébergeur : nom de la société, adresse, contact.\n\n## Activité\nBrève description de l'objet du site web et de l'activité principale de la société. Write each section in full with all legally required information.",
+    },
+    SECTION_2: {
+      title: 'Propriété intellectuelle & Responsabilité & Loi applicable',
+      instruction: "Write :\n\n## Propriété intellectuelle\nTout le contenu du site (textes, images, logos, vidéos, structure) est la propriété exclusive de la société, protégé par le Code de la propriété intellectuelle. Conditions de reproduction et d'utilisation. Politique relative aux liens hypertextes.\n\n## Limitation de responsabilité\nExactitude des informations (meilleur effort, sans garantie), disponibilité du site (maintenance, pannes), liens vers des sites tiers (non responsable du contenu externe), force majeure.\n\n## Loi applicable et juridiction\nLe droit français régit ce site. Législation applicable (loi LCEN, RGPD, Code de la consommation selon applicable). Juridiction compétente (tribunaux français). Résolution des litiges (tentative amiable préalable obligatoire). Write each section in full with all legally required mentions.",
+    },
+  },
 };
 
 function buildBaseMessage(toolId, input) {
@@ -220,21 +269,39 @@ Provide a complete competitive analysis based solely on the <WEBSITE_CONTENT> pr
     }
 
     case 'legal': {
-      const DOC_LABELS = {
-        tos:     'CGV — Conditions Générales de Vente (minimum 12-15 articles)',
-        privacy: 'Politique de Confidentialité (RGPD — couvrir: responsable du traitement, données collectées, finalités, durées de conservation, droits des utilisateurs, cookies, tiers)',
-        notice:  'Mentions Légales (conformément au droit français — éditeur, hébergeur, propriété intellectuelle, responsabilité, loi applicable)',
-        all:     'Les trois documents complets dans cet ordre: 1) CGV complètes (min. 12 articles), puis ---, 2) Politique de Confidentialité complète, puis ---, 3) Mentions Légales complètes',
-      };
-      const docType = input.docType || 'tos';
-      return `Today's date: ${input.today || new Date().toLocaleDateString('fr-FR')}
-Company name: ${input.company}
-Business type: ${input.type || 'not specified'}
-Country/jurisdiction: ${input.country || 'not specified'}
-Address: ${input.address || 'not specified'}
-Business activity: ${input.activity || 'not specified'}
+      const baseCtx = `Date : ${input.today || new Date().toLocaleDateString('fr-FR')}
+Entreprise : ${input.company}
+Forme juridique : ${input.type || 'non précisé'}
+Pays / juridiction : ${input.country || 'France'}
+Adresse : ${input.address || 'non précisée'}
+Activité : ${input.activity || 'non précisée'}`;
 
-Document to generate: ${DOC_LABELS[docType] || DOC_LABELS.tos}`;
+      const docType = input.docType || 'tos';
+      const sectionKey = input.sectionKey;
+
+      if (sectionKey && LEGAL_SECTION_SPECS[docType]?.[sectionKey]) {
+        const spec = LEGAL_SECTION_SPECS[docType][sectionKey];
+        const DOC_NAMES = {
+          tos: 'CGV — Conditions Générales de Vente',
+          privacy: 'Politique de Confidentialité (RGPD)',
+          notice: 'Mentions Légales',
+        };
+        return `${baseCtx}
+
+Document : ${DOC_NAMES[docType] || docType}
+Section à rédiger : ${spec.title}
+
+${spec.instruction}`;
+      }
+
+      // Fallback (no sectionKey — legacy path)
+      const DOC_LABELS = {
+        tos:     'CGV — Conditions Générales de Vente (minimum 12 articles)',
+        privacy: 'Politique de Confidentialité complète (RGPD)',
+        notice:  'Mentions Légales complètes',
+        all:     'Les trois documents complets séparés par ---',
+      };
+      return `${baseCtx}\n\nDocument à générer : ${DOC_LABELS[docType] || DOC_LABELS.tos}`;
     }
 
     case 'contract':

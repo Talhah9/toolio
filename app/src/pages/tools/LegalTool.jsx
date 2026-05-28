@@ -19,6 +19,48 @@ const DOCTYPE_OPTIONS = [
   { id: 'all',     key: 'tool.legal.doctype.all' },
 ];
 
+const TYPE_KEYS = ['sole', 'ltd', 'llc', 'partnership', 'other'];
+
+const SECTION_DEFS = {
+  tos: [
+    { key: 'SECTION_1', label: 'Art. 1-2' },
+    { key: 'SECTION_2', label: 'Art. 3-4' },
+    { key: 'SECTION_3', label: 'Art. 5-6' },
+    { key: 'SECTION_4', label: 'Art. 7-9' },
+    { key: 'SECTION_5', label: 'Art. 10-12' },
+  ],
+  privacy: [
+    { key: 'SECTION_1', label: 'Collecte' },
+    { key: 'SECTION_2', label: 'Droits' },
+    { key: 'SECTION_3', label: 'Sécurité' },
+  ],
+  notice: [
+    { key: 'SECTION_1', label: 'Éditeur' },
+    { key: 'SECTION_2', label: 'PI & Resp.' },
+  ],
+};
+
+function buildSectionList(docType) {
+  if (docType === 'all') {
+    return [
+      ...SECTION_DEFS.tos.map(s => ({ ...s, compositeKey: `tos_${s.key}`, docType: 'tos', tabLabel: `CGV ${s.label}` })),
+      ...SECTION_DEFS.privacy.map(s => ({ ...s, compositeKey: `privacy_${s.key}`, docType: 'privacy', tabLabel: `Conf. ${s.label}` })),
+      ...SECTION_DEFS.notice.map(s => ({ ...s, compositeKey: `notice_${s.key}`, docType: 'notice', tabLabel: `ML ${s.label}` })),
+    ];
+  }
+  return SECTION_DEFS[docType].map(s => ({ ...s, compositeKey: s.key, docType, tabLabel: s.label }));
+}
+
+function buildFullDocument(sectionList, sectionsData, docType) {
+  if (docType !== 'all') {
+    return sectionList.map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
+  }
+  const tos = sectionList.filter(s => s.docType === 'tos').map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
+  const privacy = sectionList.filter(s => s.docType === 'privacy').map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
+  const notice = sectionList.filter(s => s.docType === 'notice').map(s => sectionsData[s.compositeKey] || '').filter(Boolean).join('\n\n');
+  return [tos, privacy, notice].filter(Boolean).join('\n\n---\n\n');
+}
+
 export function LegalTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
@@ -28,8 +70,14 @@ export function LegalTool({ tool, initialData }) {
   const [address, setAddress] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
   const [docType, setDocType] = useState(initialData?.docType ?? 'tos');
-  const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  const [sections, setSections] = useState({});
+  const [currentGenerating, setCurrentGenerating] = useState(null);
+  const [completedSections, setCompletedSections] = useState([]);
+  const [activeTab, setActiveTab] = useState(null);
+  const [sectionList, setSectionList] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -37,47 +85,88 @@ export function LegalTool({ tool, initialData }) {
   const resultRef = useRef(null);
 
   useEffect(() => {
-    if (resultRef.current) {
+    if (currentGenerating && resultRef.current) {
       resultRef.current.scrollTop = resultRef.current.scrollHeight;
     }
-  }, [output]);
+  }, [sections, currentGenerating]);
+
+  const hasOutput = completedSections.length > 0 || currentGenerating !== null;
+  const isComplete = sectionList.length > 0 && completedSections.length === sectionList.length;
+
+  const getFullDoc = () => buildFullDocument(sectionList, sections, docType);
 
   const generate = async () => {
     if (!company.trim()) { toast(t('tool.legal.error.name')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
-    setLoading(true);
-    setOutput('');
+
+    const currentSectionList = buildSectionList(docType);
+    setSectionList(currentSectionList);
+    setSections({});
+    setCompletedSections([]);
+    setActiveTab(currentSectionList[0]?.compositeKey ?? null);
+    setIsGenerating(true);
+    setGenId(null);
+
+    const baseInput = {
+      company, type, country, address, activity,
+      today: new Date().toLocaleDateString('fr-FR'),
+    };
+
+    const allResults = {};
+
     try {
-      const input = { company, type, country, address, activity, docType, today: new Date().toLocaleDateString('fr-FR') };
-      const fullText = await streamGenerate(
-        { toolId: tool.id, input, session, lang },
-        (chunk) => setOutput(chunk),
-      );
-      const id = await logGeneration(tool.id, input, fullText, tool.credits);
+      for (const sec of currentSectionList) {
+        const cKey = sec.compositeKey;
+        setCurrentGenerating(cKey);
+        setActiveTab(cKey);
+        setSections(prev => ({ ...prev, [cKey]: '' }));
+
+        const input = { ...baseInput, docType: sec.docType, sectionKey: sec.key };
+        const fullText = await streamGenerate(
+          { toolId: tool.id, input, session, lang },
+          (chunk) => setSections(prev => ({ ...prev, [cKey]: chunk })),
+        );
+
+        allResults[cKey] = fullText;
+        setCompletedSections(prev => [...prev, cKey]);
+      }
+
+      setCurrentGenerating(null);
+      const fullDoc = buildFullDocument(currentSectionList, allResults, docType);
+      const id = await logGeneration(tool.id, { ...baseInput, docType }, fullDoc, tool.credits);
       setGenId(id);
       setShowCelebration(true);
     } catch (err) {
       toast(err.message || t('tool.error.generic'));
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
+      setCurrentGenerating(null);
     }
   };
-
-  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
 
   const downloadPdf = () => exportPdf({
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
-    output,
+    output: getFullDoc(),
     filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
   });
 
-  const TYPE_KEYS = ['sole', 'ltd', 'llc', 'partnership', 'other'];
+  const copy = () => {
+    const doc = getFullDoc();
+    if (!doc.trim()) return;
+    navigator.clipboard?.writeText(doc);
+    toast(t('tool.copied'));
+  };
+
+  const activeContent = activeTab ? sections[activeTab] : null;
+  const isActiveStreaming = activeTab === currentGenerating;
+  const progressPct = sectionList.length > 0 ? (completedSections.length / sectionList.length) * 100 : 0;
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
+        {/* LEFT: Form */}
         <div className="card card-pad">
           <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.legal.section.title')}</h3>
 
@@ -131,11 +220,12 @@ export function LegalTool({ tool, initialData }) {
             <span className="muted">{t('tool.cost')}</span>
             <span style={{ color: '#10B981', fontWeight: 600 }}>{t('tool.free')}</span>
           </div>
-          <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-            {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.legal.btn')}</>}
+          <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={isGenerating}>
+            {isGenerating ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.legal.btn')}</>}
           </button>
         </div>
 
+        {/* RIGHT: Result */}
         <div>
           <div className="result-zone">
             <div className="result-head">
@@ -143,30 +233,91 @@ export function LegalTool({ tool, initialData }) {
               <div className="row" style={{ gap: 6 }}>
                 <SaveButton generationId={genId} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} />
                 <ShareButton generationId={genId} />
-                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!output}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
-                {output && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
-                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!output || loading}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
-                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!output}><Glyph name="expand" size={12} /> Fullscreen</button>
+                <button className="btn btn-ghost btn-sm" onClick={copy} disabled={!hasOutput}><Glyph name="copy" size={12} /> {t('tool.copy')}</button>
+                {hasOutput && <button className="btn btn-ghost btn-sm" onClick={downloadPdf}><Glyph name="arrow-down" size={12} /> {t('tool.pdf')}</button>}
+                <button className="btn btn-ghost btn-sm" onClick={generate} disabled={!isComplete || isGenerating}><Glyph name="refresh" size={12} /> {t('tool.regenerate')}</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setViewerOpen(true)} disabled={!isComplete}><Glyph name="expand" size={12} /> Fullscreen</button>
               </div>
             </div>
-            {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            {loading && !output ? (
-              <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
-            ) : output && loading ? (
-              <div className="result-body" ref={resultRef}>
-                <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
-                <pre className="stream-text" style={{ margin: 0 }}>{output}<span className="stream-cursor" /></pre>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0 4px', color: 'var(--accent)', fontSize: 13 }}>
-                  {[0, 1, 2].map(i => (
-                    <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
-                  ))}
-                  <span>{t('tool.legal.streaming')}</span>
+
+            {viewerOpen && (
+              <ResultViewer output={getFullDoc()} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />
+            )}
+
+            {!hasOutput ? (
+              <div className="result-empty">{t('tool.result.placeholder')}</div>
+            ) : (
+              <div style={{ padding: '12px 16px 0' }}>
+                {/* Tab bar */}
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
+                  {sectionList.map(sec => {
+                    const cKey = sec.compositeKey;
+                    const isDone = completedSections.includes(cKey);
+                    const isCurrent = currentGenerating === cKey;
+                    const isActive = activeTab === cKey;
+                    return (
+                      <button key={cKey} type="button" onClick={() => setActiveTab(cKey)}
+                        style={{
+                          padding: '5px 10px', borderRadius: 6, fontSize: 12,
+                          fontWeight: isActive ? 600 : 400, cursor: 'pointer',
+                          border: '1px solid ' + (isActive ? 'var(--accent)' : 'var(--border)'),
+                          background: isActive ? 'color-mix(in srgb, var(--accent) 12%, var(--bg))' : 'var(--bg)',
+                          color: isActive ? 'var(--accent)' : isDone ? 'var(--fg)' : 'var(--fg-3)',
+                          display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.15s',
+                          opacity: !isDone && !isCurrent ? 0.45 : 1,
+                        }}>
+                        {isCurrent && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite', flexShrink: 0 }} />}
+                        {isDone && !isCurrent && <span style={{ color: '#10B981', fontSize: 10, lineHeight: 1 }}>✓</span>}
+                        {sec.tabLabel}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Progress indicator */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, marginBottom: 4 }}>
+                    {isGenerating ? (
+                      <span style={{ color: 'var(--accent)' }}>
+                        ⚡ {lang === 'fr' ? 'Section' : 'Section'} {completedSections.length + 1}/{sectionList.length} {lang === 'fr' ? 'en cours…' : 'in progress…'}
+                      </span>
+                    ) : isComplete ? (
+                      <span style={{ color: '#10B981' }}>
+                        ✅ {lang === 'fr' ? `Document complet — ${sectionList.length} sections` : `Complete — ${sectionList.length} sections`}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', background: 'var(--accent)', borderRadius: 2, width: `${progressPct}%`, transition: 'width 0.4s ease' }} />
+                  </div>
+                </div>
+
+                {/* Active tab content */}
+                <div className="result-body" ref={resultRef}>
+                  {activeTab && (
+                    <>
+                      {isActiveStreaming ? (
+                        <>
+                          <style>{`@keyframes dot-bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}`}</style>
+                          <pre className="stream-text" style={{ margin: 0 }}>{activeContent}<span className="stream-cursor" /></pre>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 0 4px', color: 'var(--accent)', fontSize: 13 }}>
+                            {[0, 1, 2].map(i => (
+                              <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                            ))}
+                            <span>{t('tool.legal.streaming')}</span>
+                          </div>
+                        </>
+                      ) : activeContent ? (
+                        <MarkdownResult>{activeContent}</MarkdownResult>
+                      ) : (
+                        <div className="result-empty" style={{ fontSize: 13, padding: '24px 0' }}>
+                          {lang === 'fr' ? 'Sera généré automatiquement…' : 'Will be generated automatically…'}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
-            ) : output ? (
-              <MarkdownResult>{output}</MarkdownResult>
-            ) : (
-              <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}
           </div>
         </div>
