@@ -17,6 +17,12 @@ const LEGAL_TYPES = ['EI', 'Micro-entreprise', 'EURL', 'SASU', 'SARL', 'SAS', 'S
 const DEPOSIT_OPTIONS = ['30', '40', '50'];
 const PAYMENT_OPTIONS = ['30', '45', '60'];
 
+const F = { marginBottom: 20 };
+const LBL = { display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 6 };
+const INP = { height: 44, borderRadius: 10 };
+const SEL = { height: 44, borderRadius: 10 };
+const REQ = { color: 'var(--accent)', marginLeft: 2 };
+
 export function LegalTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
@@ -27,7 +33,6 @@ export function LegalTool({ tool, initialData }) {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [website, setWebsite] = useState('');
-  const [directorName, setDirectorName] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
   const [vatSubject, setVatSubject] = useState(false);
 
@@ -69,7 +74,7 @@ export function LegalTool({ tool, initialData }) {
       DEPOSIT_PERCENT: depositPercent,
       PAYMENT_DELAY: paymentDelay,
       DATE: today,
-      DIRECTOR_NAME: directorName.trim() || company.trim(),
+      DIRECTOR_NAME: company.trim(),
       HOSTING_PROVIDER: hostingProvider.trim() || 'Hébergeur à préciser',
       HOSTING_ADDRESS: hostingAddress.trim() || 'Adresse à compléter',
       ACTIVITY_DESC: activity.trim(),
@@ -152,119 +157,152 @@ export function LegalTool({ tool, initialData }) {
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
-        <div className="card card-pad">
-          <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.legal.section.title')}</h3>
+        <div className="card" style={{ padding: 28 }}>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.legal.company.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
-              <input className="input" value={company} onChange={e => setCompany(e.target.value)} placeholder={t('tool.legal.company.placeholder')} />
+          {/* Row 1: Nom + Forme juridique */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, ...F }}>
+            <div>
+              <label style={LBL}>{t('tool.legal.company.label')}<span style={REQ}>*</span></label>
+              <input className="input" style={INP} value={company} onChange={e => setCompany(e.target.value)} placeholder={t('tool.legal.company.placeholder')} />
             </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.legal.type.label')}</label>
-              <select className="select" value={legalType} onChange={e => setLegalType(e.target.value)}>
+            <div>
+              <label style={LBL}>{t('tool.legal.type.label')}</label>
+              <select className="select" style={SEL} value={legalType} onChange={e => setLegalType(e.target.value)}>
                 {LEGAL_TYPES.map(lt => <option key={lt} value={lt}>{lt}</option>)}
               </select>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.legal.siret.label')}</label>
-              <input className="input" value={siret} onChange={e => setSiret(e.target.value)} placeholder="123 456 789 00012" />
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.legal.email.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
-              <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="hello@monsite.fr" />
-            </div>
+          {/* Row 2: Adresse (full width) */}
+          <div style={F}>
+            <label style={LBL}>{t('tool.legal.address.label')}<span style={REQ}>*</span></label>
+            <input className="input" style={INP} value={address} onChange={e => setAddress(e.target.value)} placeholder={t('tool.legal.address.placeholder')} />
           </div>
 
-          <div className="field">
-            <label className="label">{t('tool.legal.address.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
-            <input className="input" value={address} onChange={e => setAddress(e.target.value)} placeholder={t('tool.legal.address.placeholder')} />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.legal.website.label')}</label>
-              <input className="input" value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://monsite.fr" />
+          {/* Row 3: SIRET + Email */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, ...F }}>
+            <div>
+              <label style={LBL}>{t('tool.legal.siret.label')}</label>
+              <input className="input" style={INP} value={siret} onChange={e => setSiret(e.target.value)} placeholder="123 456 789 00012" />
             </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.legal.director.label')}</label>
-              <input className="input" value={directorName} onChange={e => setDirectorName(e.target.value)} placeholder={t('tool.legal.director.placeholder')} />
+            <div>
+              <label style={LBL}>{t('tool.legal.email.label')}<span style={REQ}>*</span></label>
+              <input className="input" style={INP} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="hello@monsite.fr" />
             </div>
           </div>
 
-          <div className="field">
-            <label className="label">{t('tool.legal.activity.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
-            <textarea className="textarea" value={activity} onChange={e => setActivity(e.target.value)} placeholder={t('tool.legal.activity.placeholder')} rows={3} />
+          {/* Row 4: Site internet (full width) */}
+          <div style={F}>
+            <label style={LBL}>{t('tool.legal.website.label')}</label>
+            <input className="input" style={INP} value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://monsite.fr" />
           </div>
 
-          <div className="field">
-            <label className="label">{t('tool.legal.doctype.label')}</label>
+          {/* Row 5: Description activité */}
+          <div style={F}>
+            <label style={LBL}>{t('tool.legal.activity.label')}<span style={REQ}>*</span></label>
+            <textarea className="textarea" style={{ minHeight: 100, borderRadius: 10, resize: 'vertical' }} value={activity} onChange={e => setActivity(e.target.value)} placeholder={t('tool.legal.activity.placeholder')} />
+          </div>
+
+          <div style={{ height: 1, background: 'var(--border)', margin: '8px 0 24px' }} />
+
+          {/* Row 6: Document type pills */}
+          <div style={F}>
+            <label style={LBL}>{t('tool.legal.doctype.label')}</label>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {[['tos', 'tool.legal.doctype.tos'], ['privacy', 'tool.legal.doctype.privacy'], ['notice', 'tool.legal.doctype.notice'], ['all', 'tool.legal.doctype.all']].map(([val, key]) => (
-                <button key={val} type="button" onClick={() => setDocType(val)} className="btn btn-sm"
-                  style={{ border: '1px solid ' + (docType === val ? 'var(--fg)' : 'var(--border)'), background: docType === val ? 'var(--fg)' : 'var(--bg)', color: docType === val ? '#fff' : 'var(--fg-2)' }}>
-                  {t(key)}
-                </button>
-              ))}
+              {[['tos', 'tool.legal.doctype.tos'], ['privacy', 'tool.legal.doctype.privacy'], ['notice', 'tool.legal.doctype.notice'], ['all', 'tool.legal.doctype.all']].map(([val, key]) => {
+                const active = docType === val;
+                return (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setDocType(val)}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: 20,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      border: '1.5px solid ' + (active ? 'var(--accent)' : 'var(--border)'),
+                      background: active ? 'var(--accent)' : 'var(--bg)',
+                      color: active ? '#fff' : 'var(--fg-2)',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {t(key)}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          {/* CGV options */}
           {showCgvOptions && (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                <div className="field" style={{ margin: 0 }}>
-                  <label className="label">{t('tool.legal.clienttype.label')}</label>
-                  <select className="select" value={clientType} onChange={e => setClientType(e.target.value)}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, ...F }}>
+                <div>
+                  <label style={LBL}>{t('tool.legal.clienttype.label')}</label>
+                  <select className="select" style={SEL} value={clientType} onChange={e => setClientType(e.target.value)}>
                     <option value="B2B">{t('tool.legal.clienttype.b2b')}</option>
                     <option value="B2C">{t('tool.legal.clienttype.b2c')}</option>
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label className="label">{t('tool.legal.deposit.label')}</label>
-                  <select className="select" value={depositPercent} onChange={e => setDepositPercent(e.target.value)}>
+                <div>
+                  <label style={LBL}>{t('tool.legal.deposit.label')}</label>
+                  <select className="select" style={SEL} value={depositPercent} onChange={e => setDepositPercent(e.target.value)}>
                     {DEPOSIT_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
                   </select>
                 </div>
-                <div className="field" style={{ margin: 0 }}>
-                  <label className="label">{t('tool.legal.payment.label')}</label>
-                  <select className="select" value={paymentDelay} onChange={e => setPaymentDelay(e.target.value)}>
+                <div>
+                  <label style={LBL}>{t('tool.legal.payment.label')}</label>
+                  <select className="select" style={SEL} value={paymentDelay} onChange={e => setPaymentDelay(e.target.value)}>
                     {PAYMENT_OPTIONS.map(v => <option key={v} value={v}>{v} {lang === 'fr' ? 'jours' : 'days'}</option>)}
                   </select>
                 </div>
               </div>
 
-              <div className="field">
-                <label className="label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={vatSubject} onChange={e => setVatSubject(e.target.checked)} />
+              <div style={{ ...F, marginTop: -4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>
+                  <input
+                    type="checkbox"
+                    checked={vatSubject}
+                    onChange={e => setVatSubject(e.target.checked)}
+                    style={{ width: 16, height: 16, accentColor: 'var(--accent)', cursor: 'pointer' }}
+                  />
                   {t('tool.legal.vat.label')}
                 </label>
               </div>
             </>
           )}
 
+          {/* Hébergeur (mentions légales) */}
           {showHosting && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.legal.hosting.label')}</label>
-                <input className="input" value={hostingProvider} onChange={e => setHostingProvider(e.target.value)} placeholder={t('tool.legal.hosting.placeholder')} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, ...F }}>
+              <div>
+                <label style={LBL}>{t('tool.legal.hosting.label')}</label>
+                <input className="input" style={INP} value={hostingProvider} onChange={e => setHostingProvider(e.target.value)} placeholder={t('tool.legal.hosting.placeholder')} />
               </div>
-              <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.legal.hosting.address.label')}</label>
-                <input className="input" value={hostingAddress} onChange={e => setHostingAddress(e.target.value)} placeholder={t('tool.legal.hosting.address.placeholder')} />
+              <div>
+                <label style={LBL}>{t('tool.legal.hosting.address.label')}</label>
+                <input className="input" style={INP} value={hostingAddress} onChange={e => setHostingAddress(e.target.value)} placeholder={t('tool.legal.hosting.address.placeholder')} />
               </div>
             </div>
           )}
 
-          <div className="hr" style={{ margin: '20px 0' }} />
-          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
-            <span className="muted">{t('tool.cost')}</span>
-            <span style={{ color: '#10B981', fontWeight: 600 }}>{t('tool.free')}</span>
+          <div style={{ height: 1, background: 'var(--border)', margin: '4px 0 20px' }} />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <span style={{ fontSize: 13, color: 'var(--fg-3)' }}>{t('tool.cost')}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#10B981' }}>{t('tool.free')}</span>
           </div>
+
           <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-            {loading ? t('tool.legal.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.legal.btn')}</>}
+            {loading
+              ? <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                  {[0, 1, 2].map(i => <span key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', opacity: 0.8, animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />)}
+                  {t('tool.legal.generating')}
+                </span>
+              : <><Glyph name="sparkle" size={14} /> {t('tool.legal.btn')}</>
+            }
           </button>
         </div>
 
