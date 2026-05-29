@@ -345,12 +345,16 @@ Payment terms: ${input.paymentTerms || '30 days'}
 Generate a complete freelance service agreement.`;
     }
 
-    case 'linkedin-content':
+    case 'linkedin-content': {
+      const styleSection = input.styleContext
+        ? `\nUser's own LinkedIn posts (REPLICATE their exact tone, vocabulary, sentence structure, hook style — do not imitate the topic, only the style):\n"""\n${input.styleContext}\n"""\n`
+        : '';
       return `Topic: ${input.topic}
 Tone: ${input.tone}
 Format: ${input.format}
-
+${styleSection}
 Write a LinkedIn post.`;
+    }
 
     case 'devis': {
       const lines = Array.isArray(input.lines)

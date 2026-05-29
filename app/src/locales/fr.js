@@ -201,6 +201,10 @@ export const fr = {
   'tool.linkedin.format.opinion': 'Opinion forte',
   'tool.linkedin.format.question': 'Question ouverte',
   'tool.linkedin.overlimit': '— dépasse la limite LinkedIn',
+  'tool.linkedin.style.label': 'Mon style d\'écriture',
+  'tool.linkedin.style.optional': 'Optionnel',
+  'tool.linkedin.style.placeholder': 'Collez 2-3 de vos anciens posts LinkedIn ici…',
+  'tool.linkedin.style.hint': 'Sauvegardé automatiquement. L\'IA imitera votre ton, vocabulaire et structure.',
   'tool.linkedin.error.topic': 'Entrez un sujet ou une idée.',
 
   // ── Devis tool ───────────────────────────────────────────────

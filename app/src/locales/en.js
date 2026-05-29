@@ -201,6 +201,10 @@ export const en = {
   'tool.linkedin.format.opinion': 'Strong opinion',
   'tool.linkedin.format.question': 'Open question',
   'tool.linkedin.overlimit': '— over LinkedIn limit',
+  'tool.linkedin.style.label': 'My writing style',
+  'tool.linkedin.style.optional': 'Optional',
+  'tool.linkedin.style.placeholder': 'Paste 2–3 of your own LinkedIn posts here…',
+  'tool.linkedin.style.hint': 'Auto-saved. The AI will replicate your tone, vocabulary and structure.',
   'tool.linkedin.error.topic': 'Enter a topic or idea.',
 
   // ── Devis tool ───────────────────────────────────────────────

@@ -721,37 +721,39 @@ function CommunitySection({ lang, navigate, reduce }) {
     : [{ n: '200+', label: 'active members' }, { n: '13', label: 'AI tools' }, { n: '1', label: 'free consultation for first 50' }];
   return (
     <FadeUp>
-      <section style={{ background: 'linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FF4757 100%)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
-        {/* Texture */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '-15%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+      <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,208,44,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         <div className="container" style={{ position: 'relative' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#fff', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
-              🔥 {lang === 'fr' ? 'Communauté' : 'Community'}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.15)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#818CF8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
+              🚀 {lang === 'fr' ? 'Communauté' : 'Community'}
             </span>
             <h2 style={{ fontSize: 'clamp(30px, 5vw, 54px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              {lang === 'fr' ? <>Rejoignez les freelances<br />qui passent au niveau sup.</> : <>Join the freelancers<br />levelling up together.</>}
+              {lang === 'fr'
+                ? <>Rejoignez la communauté<br /><span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>des entrepreneurs</span></>
+                : <>Join the community<br /><span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>of entrepreneurs</span></>}
             </h2>
-            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.8)', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
-              {lang === 'fr' ? 'Trouvez des missions, partagez vos opportunités, échangez avec des pairs qui comprennent vos défis.' : 'Find missions, share opportunities, connect with peers who get your challenges.'}
+            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
+              {lang === 'fr' ? 'Trouvez des missions, partagez vos opportunités, échangez avec d\'autres freelances.' : 'Find missions, share opportunities, connect with other freelancers.'}
             </p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
+            <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
               {stats.map(({ n, label }, i) => (
                 <div key={i} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{n}</div>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6, maxWidth: 120, lineHeight: 1.4 }}>{label}</div>
+                  <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: i === 1 ? '#fad02c' : '#fff', lineHeight: 1 }}>{n}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 6, maxWidth: 130, lineHeight: 1.4 }}>{label}</div>
                 </div>
               ))}
             </div>
 
             <motion.button
               onClick={() => navigate('/community')}
-              style={{ background: '#fff', color: '#FF6B35', border: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 900, fontSize: 16, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}
-              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 900, fontSize: 16, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 8px 32px rgba(79,70,229,0.4)' }}
+              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.5)' }}
               whileTap={reduce ? {} : { scale: 0.97 }}
             >
               {lang === 'fr' ? 'Rejoindre la communauté →' : 'Join the community →'}
@@ -760,6 +762,106 @@ function CommunitySection({ lang, navigate, reduce }) {
         </div>
       </section>
     </FadeUp>
+  );
+}
+
+// ── Dashboard CSS mockup section ─────────────────────────────
+
+const MOCKUP_TOOLS = [
+  { label: 'Contenu LinkedIn', badge: '⭐ BEST SELLER', badgeBg: '#fad02c', badgeColor: '#78350F', dot: '#818CF8' },
+  { label: 'Générateur de devis', badge: 'Gratuit', badgeBg: '#D1FAE5', badgeColor: '#065F46', dot: '#10B981' },
+  { label: 'Relance client', badge: 'Gratuit', badgeBg: '#D1FAE5', badgeColor: '#065F46', dot: '#34D399' },
+  { label: 'CGV & mentions légales', badge: 'Pro', badgeBg: 'rgba(79,70,229,0.1)', badgeColor: '#4F46E5', dot: '#6366F1' },
+  { label: 'Contrat freelance', badge: 'Pro', badgeBg: 'rgba(79,70,229,0.1)', badgeColor: '#4F46E5', dot: '#A78BFA' },
+  { label: 'Audit CRO + SEO', badge: 'Pro', badgeBg: 'rgba(79,70,229,0.1)', badgeColor: '#4F46E5', dot: '#F59E0B' },
+];
+
+function DashboardMockup({ lang, navigate, reduce }) {
+  return (
+    <section style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', padding: '100px 24px' }}>
+      <div className="container">
+        <FadeUp>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
+              {lang === 'fr' ? 'Votre espace de travail' : 'Your workspace'}
+            </span>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: 'var(--fg)', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+              {lang === 'fr'
+                ? <>Arrêtez de bricoler.<br /><span style={{ color: '#4F46E5' }}>Passez à l'action.</span></>
+                : <>Stop patching things together.<br /><span style={{ color: '#4F46E5' }}>Start shipping.</span></>}
+            </h2>
+            <p style={{ fontSize: 16, color: 'var(--fg-3)', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
+              {lang === 'fr' ? 'Tous vos outils freelance au même endroit, prêts en quelques secondes.' : 'All your freelance tools in one place, ready in seconds.'}
+            </p>
+          </div>
+        </FadeUp>
+
+        <FadeUp delay={0.1}>
+          {/* Browser chrome wrapper */}
+          <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', boxShadow: '0 32px 80px rgba(15,15,60,0.14), 0 0 0 1px rgba(15,15,60,0.06)', background: '#fff' }}>
+            {/* Browser top bar */}
+            <div style={{ background: '#F3F4F6', borderBottom: '1px solid #E5E7EB', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
+              </div>
+              <div style={{ flex: 1, background: '#fff', borderRadius: 6, padding: '4px 12px', fontSize: 11, color: '#9CA3AF', maxWidth: 280, margin: '0 auto', textAlign: 'center', border: '1px solid #E5E7EB' }}>
+                app.savvly.fr/dashboard
+              </div>
+            </div>
+
+            {/* App shell */}
+            <div style={{ display: 'flex', minHeight: 400 }}>
+              {/* Sidebar */}
+              <div style={{ width: 200, background: '#F9FAFB', borderRight: '1px solid #E5E7EB', padding: '20px 0', flexShrink: 0 }}>
+                <div style={{ padding: '0 16px', marginBottom: 24 }}>
+                  <div style={{ fontWeight: 900, fontSize: 15, color: '#4F46E5', letterSpacing: '-0.01em' }}>Savvly</div>
+                </div>
+                {['Dashboard', 'Outils', 'Plan', 'Profil'].map((item, i) => (
+                  <div key={i} style={{ padding: '8px 16px', fontSize: 13, color: i === 0 ? '#4F46E5' : '#6B7280', fontWeight: i === 0 ? 700 : 400, background: i === 0 ? 'rgba(79,70,229,0.08)' : 'transparent', borderRight: i === 0 ? '2px solid #4F46E5' : 'none', cursor: 'pointer' }}>
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              {/* Main content */}
+              <div style={{ flex: 1, padding: '24px 28px', overflow: 'hidden' }}>
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: '#0F0F1A', marginBottom: 4 }}>{lang === 'fr' ? 'Vos outils' : 'Your tools'}</div>
+                  <div style={{ fontSize: 13, color: '#9CA3AF' }}>{lang === 'fr' ? 'Choisissez un outil pour commencer.' : 'Choose a tool to get started.'}</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+                  {MOCKUP_TOOLS.map((t, i) => (
+                    <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: '14px 14px 12px', cursor: 'pointer' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: `${t.dot}22`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: 10, height: 10, borderRadius: '50%', background: t.dot }} />
+                        </div>
+                        <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 20, background: t.badgeBg, color: t.badgeColor, whiteSpace: 'nowrap' }}>{t.badge}</span>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: '#0F0F1A', lineHeight: 1.4 }}>{t.label}</div>
+                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8 }}>{lang === 'fr' ? 'Utiliser →' : 'Use →'}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </FadeUp>
+
+        <FadeUp delay={0.2}>
+          <div style={{ textAlign: 'center', marginTop: 40 }}>
+            <motion.button
+              onClick={() => navigate('/auth?mode=register')}
+              style={{ background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 14, padding: '15px 36px', fontWeight: 900, fontSize: 15, cursor: 'pointer', boxShadow: '0 8px 32px rgba(79,70,229,0.3)' }}
+              whileHover={reduce ? {} : { scale: 1.03 }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+            >
+              {lang === 'fr' ? 'Accéder au dashboard →' : 'Access the dashboard →'}
+            </motion.button>
+          </div>
+        </FadeUp>
+      </div>
+    </section>
   );
 }
 
@@ -1063,10 +1165,12 @@ export function Landing() {
       {/* ── NEW: 4 outils qui changent tout ──────────────────── */}
       <FeaturedTools lang={lang} navigate={navigate} reduce={reduce} />
 
+      {/* ── NEW: Dashboard mockup ─────────────────────────────── */}
+      <DashboardMockup lang={lang} navigate={navigate} reduce={reduce} />
+
       {/* ── 2. PAIN POINTS ────────────────────────────────────── */}
-      <TornEdge topColor="#fff" bottomColor="#0A0A0A" />
       <FadeUp>
-        <section className="lp-dark section lp-pain-section" style={{ paddingTop: 0 }}>
+        <section className="lp-dark section lp-pain-section">
           <div className="container">
             <div className="section-hd" style={{ marginBottom: 40 }}>
               <span className="eyebrow">{t('landing.pain.eyebrow')}</span>
@@ -1110,8 +1214,6 @@ export function Landing() {
           </div>
         </section>
       </FadeUp>
-
-      <TornEdge topColor="#0A0A0A" bottomColor="var(--bg-soft)" flip />
 
       {/* ── 3. ANIMATED DEMO ──────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>

@@ -37,7 +37,7 @@ export const TOOLS = [
     short_en: 'LinkedIn',               short_fr: 'LinkedIn',
     desc_en: 'Write engaging LinkedIn posts tailored to your niche and tone of voice.',
     desc_fr: 'Rédige des posts LinkedIn engageants adaptés à votre niche et votre ton.',
-    credits: 10, plan: 'free', glyph: 'linkedin-content',
+    credits: 10, plan: 'pro', glyph: 'linkedin-content',
   },
   {
     id: 'image',

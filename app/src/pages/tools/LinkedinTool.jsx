@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
@@ -36,8 +36,18 @@ export function LinkedinTool({ tool, initialData }) {
   const [topic, setTopic] = useState(location.state?.topic ?? initialData?.topic ?? '');
   const [tone, setTone] = useState(initialData?.tone ?? 'direct');
   const [format, setFormat] = useState(initialData?.format ?? 'storytelling');
+  const [writingStyle, setWritingStyle] = useState('');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savvly-linkedin-style');
+    if (saved) setWritingStyle(saved);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('savvly-linkedin-style', writingStyle);
+  }, [writingStyle]);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -53,8 +63,9 @@ export function LinkedinTool({ tool, initialData }) {
     setLoading(true);
     setOutput('');
     try {
+      const styleContext = writingStyle.trim() || undefined;
       const fullText = await streamGenerate(
-        { toolId: tool.id, input: { topic, tone, format }, session, lang },
+        { toolId: tool.id, input: { topic, tone, format, styleContext }, session, lang },
         (chunk) => setOutput(chunk),
       );
       const id = await logGeneration(tool.id, { topic, tone, format }, fullText, tool.credits);
@@ -106,6 +117,24 @@ export function LinkedinTool({ tool, initialData }) {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="field">
+            <label className="label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>{t('tool.linkedin.style.label')}</span>
+              <span style={{ fontSize: 11, color: 'var(--fg-4)', fontWeight: 400 }}>{t('tool.linkedin.style.optional')}</span>
+            </label>
+            <textarea
+              className="textarea"
+              value={writingStyle}
+              onChange={e => setWritingStyle(e.target.value)}
+              placeholder={t('tool.linkedin.style.placeholder')}
+              rows={4}
+              style={{ resize: 'vertical', fontSize: 13 }}
+            />
+            <p style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 4, lineHeight: 1.5 }}>
+              {t('tool.linkedin.style.hint')}
+            </p>
           </div>
 
           <div className="hr" style={{ margin: '20px 0' }} />
