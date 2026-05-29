@@ -452,7 +452,7 @@ export const fr = {
   'landing.stats.users': '1 200+',
   'landing.stats.users.label': 'freelances utilisent Savvly',
   'landing.stats.tools': '13',
-  'landing.stats.tools.label': 'outils IA',
+  'landing.stats.tools.label': 'outils IA + 1 consultation',
   'landing.stats.credits': '50',
   'landing.stats.credits.label': 'crédits offerts à l\'inscription',
   'landing.stats.hosting': 'UE',

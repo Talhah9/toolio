@@ -75,6 +75,11 @@ export function Dashboard() {
                 <div className="tool-card-head">
                   <ToolIcon tool={tool} size="lg" />
                   <div className="row" style={{ gap: 6 }}>
+                    {tool.id === 'linkedin-content' && (
+                      <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 20, background: '#fad02c', color: '#78350F', whiteSpace: 'nowrap', letterSpacing: '0.02em' }}>
+                        ⭐ BEST SELLER
+                      </span>
+                    )}
                     {tool.franceOnly && (
                       <span style={{
                         fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 20,

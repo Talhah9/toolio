@@ -494,6 +494,275 @@ function FAQItem({ q, a }) {
   );
 }
 
+// ── Torn paper edge ───────────────────────────────────────────
+
+function TornEdge({ topColor = '#0A0A0A', bottomColor = '#fff', flip = false }) {
+  const path = "M0,0 L0,32 Q48,52 96,32 Q144,12 192,32 Q240,52 288,32 Q336,12 384,36 Q432,56 480,36 Q528,16 576,36 Q624,56 672,36 Q720,16 768,38 Q816,56 864,38 Q912,20 960,38 Q1008,56 1056,38 Q1104,18 1152,38 Q1200,56 1248,36 Q1296,16 1344,36 Q1392,56 1440,36 L1440,0 Z";
+  return (
+    <div style={{ position: 'relative', height: 52, overflow: 'hidden', background: bottomColor, flexShrink: 0 }}>
+      <svg viewBox="0 0 1440 52" preserveAspectRatio="none" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100%', transform: flip ? 'scaleY(-1)' : 'none', display: 'block' }}>
+        <path d={path} fill={topColor} />
+      </svg>
+    </div>
+  );
+}
+
+// ── "L'arme ultime" comparison section ───────────────────────
+
+function UltimateSection({ lang, navigate, reduce }) {
+  const rows = lang === 'fr' ? [
+    ['Rédaction de devis',           false, true],
+    ['Contrats prêts en 30s',        false, true],
+    ['CGV & mentions légales IA',    false, true],
+    ['Posts LinkedIn optimisés',     false, true],
+    ['Relances clients automatiques',false, true],
+    ['Audit de profil freelance',    false, true],
+    ['Support & mises à jour',       false, true],
+  ] : [
+    ['Quote drafting',               false, true],
+    ['Contracts in 30s',             false, true],
+    ['AI terms & legal notices',     false, true],
+    ['Optimised LinkedIn posts',     false, true],
+    ['Automated client follow-ups',  false, true],
+    ['Freelance profile audit',      false, true],
+    ['Support & updates',            false, true],
+  ];
+
+  return (
+    <section style={{ background: '#FDFCF7', padding: '100px 24px 80px', borderTop: '1px solid #EDE9D8' }}>
+      <div className="container">
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
+            {lang === 'fr' ? 'L\'arme ultime' : 'The ultimate weapon'}
+          </span>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+            {lang === 'fr' ? <>Arrêtez de bricoler.<br /><span style={{ color: '#4F46E5' }}>Passez à l'essentiel.</span></> : <>Stop hacking it.<br /><span style={{ color: '#4F46E5' }}>Get to what matters.</span></>}
+          </h2>
+          <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>
+            {lang === 'fr' ? 'Comparé aux solutions bricolées, Savvly vous fait gagner 10h par semaine — minimum.' : 'Compared to patchwork solutions, Savvly saves you 10h a week — minimum.'}
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 40, alignItems: 'start', maxWidth: 1000, margin: '0 auto' }}>
+          {/* Comparison table */}
+          <FadeUp>
+            <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 32px rgba(15,15,60,0.07)', border: '1px solid #EDE9D8' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', background: '#F7F7FF', padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #EDE9D8' }}>
+                <span style={{ color: '#6B6B8A' }}>{lang === 'fr' ? 'Fonctionnalité' : 'Feature'}</span>
+                <span style={{ textAlign: 'center', color: '#9CA3AF' }}>{lang === 'fr' ? 'Autres' : 'Others'}</span>
+                <span style={{ textAlign: 'center', color: '#4F46E5' }}>Savvly</span>
+              </div>
+              {rows.map(([label, others, savvly], i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', padding: '13px 20px', borderBottom: i < rows.length - 1 ? '1px solid #F3F4F6' : 'none', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, color: '#2D2D4A', fontWeight: 500 }}>{label}</span>
+                  <span style={{ textAlign: 'center', fontSize: 16 }}>
+                    {others ? '✓' : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>}
+                  </span>
+                  <span style={{ textAlign: 'center', fontSize: 16 }}>
+                    {savvly ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 4" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg> : '✗'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* CSS Laptop mockup */}
+          <FadeUp delay={0.15}>
+            <div style={{ position: 'relative' }}>
+              {/* Screen */}
+              <div style={{ background: '#1E1E3A', borderRadius: '14px 14px 4px 4px', padding: '28px 20px 20px', border: '6px solid #2D2D4A', boxShadow: '0 20px 60px rgba(15,15,60,0.3)', position: 'relative', overflow: 'hidden' }}>
+                {/* Browser chrome */}
+                <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+                  {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
+                </div>
+                {/* URL bar */}
+                <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: 6, padding: '6px 12px', fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  app.savvly.fr/tools/devis
+                </div>
+                {/* Content lines */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: 6, background: 'linear-gradient(135deg, #4F46E5, #818CF8)', flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ height: 8, background: 'rgba(255,255,255,0.15)', borderRadius: 4, marginBottom: 4 }} />
+                      <div style={{ height: 6, background: 'rgba(255,255,255,0.07)', borderRadius: 4, width: '65%' }} />
+                    </div>
+                  </div>
+                  {[85, 70, 90, 55, 75].map((w, i) => (
+                    <div key={i} style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, width: `${w}%` }} />
+                  ))}
+                  <div style={{ marginTop: 8, background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', borderRadius: 8, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'blink 1s step-end infinite' }} />
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{lang === 'fr' ? 'Génération en cours…' : 'Generating…'}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Base */}
+              <div style={{ background: '#2D2D4A', height: 10, borderRadius: '0 0 6px 6px', margin: '0 8px' }} />
+              <div style={{ background: '#1E1E3A', height: 5, borderRadius: '0 0 12px 12px', width: '60%', margin: '0 auto' }} />
+
+              {/* Floating badge */}
+              <motion.div
+                animate={reduce ? {} : { y: [-4, 4, -4] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ position: 'absolute', top: -16, right: -16, background: '#fad02c', color: '#0F0F1A', borderRadius: 12, padding: '8px 14px', fontSize: 12, fontWeight: 900, boxShadow: '0 8px 24px rgba(250,208,44,0.4)', zIndex: 2 }}
+              >
+                30s ⚡
+              </motion.div>
+            </div>
+          </FadeUp>
+        </div>
+
+        <FadeUp delay={0.2}>
+          <div style={{ textAlign: 'center', marginTop: 48 }}>
+            <motion.button
+              onClick={() => navigate('/auth?mode=register')}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 900, fontSize: 16, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 8px 32px rgba(79,70,229,0.35)' }}
+              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.45)' }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+            >
+              {lang === 'fr' ? 'Essayer gratuitement →' : 'Try for free →'}
+            </motion.button>
+          </div>
+        </FadeUp>
+      </div>
+    </section>
+  );
+}
+
+// ── "4 outils qui changent tout" ──────────────────────────────
+
+const FEATURED_TOOLS = [
+  { id: 'linkedin-content', color: '#4F46E5', points: [20,55,35,70,25,80,15,95] },
+  { id: 'legal',            color: '#10B981', points: [20,90,35,75,50,80,65,60,80,45,95,20] },
+  { id: 'devis',            color: '#F59E0B', points: [20,85,40,70,60,55,80,35,95,15] },
+  { id: 'contract',         color: '#EF4444', points: [20,95,40,75,60,60,80,40,95,20] },
+];
+
+function MiniChart({ points, color }) {
+  const n = points.length;
+  const coords = [];
+  for (let i = 0; i < n; i += 2) {
+    coords.push(`${points[i]},${points[i + 1]}`);
+  }
+  const polyline = coords.join(' ');
+  const fill = `${polyline} ${coords[coords.length - 1].split(',')[0]},100 ${coords[0].split(',')[0]},100`;
+  return (
+    <svg width="100%" height="48" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ display: 'block' }}>
+      <polygon points={fill} fill={color} fillOpacity={0.15} />
+      <polyline points={polyline} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={coords[coords.length - 1].split(',')[0]} cy={coords[coords.length - 1].split(',')[1]} r="4" fill={color} />
+    </svg>
+  );
+}
+
+function FeaturedTools({ lang, navigate, reduce }) {
+  const labels = {
+    'linkedin-content': { fr: 'LinkedIn Content', en: 'LinkedIn Content', uses: '3 421', fr_desc: 'Rédigez des posts qui engagent votre audience en quelques secondes.', en_desc: 'Write posts that engage your audience in seconds.' },
+    'legal':            { fr: 'Docs Juridiques', en: 'Legal Docs', uses: '2 134', fr_desc: 'CGV, mentions légales et politique de confidentialité en 30s.', en_desc: 'Terms, legal notices and privacy policy in 30s.' },
+    'devis':            { fr: 'Devis Pro',        en: 'Pro Quotes', uses: '1 567', fr_desc: 'Générez des devis professionnels qui convainquent vos clients.', en_desc: 'Generate professional quotes that win clients.' },
+    'contract':         { fr: 'Contrats',         en: 'Contracts', uses: '1 891', fr_desc: 'Contrats freelance prêts à signer, personnalisés à votre activité.', en_desc: 'Sign-ready freelance contracts tailored to your business.' },
+  };
+
+  return (
+    <section style={{ background: '#fff', padding: '100px 24px', borderTop: '1px solid var(--border)' }}>
+      <div className="container">
+        <FadeUp>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.12)', border: '1px solid rgba(250,208,44,0.35)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
+              {lang === 'fr' ? '⭐ Les favoris' : '⭐ Top picks'}
+            </span>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+              {lang === 'fr' ? <>4 outils qui <span style={{ color: '#4F46E5' }}>changent tout</span></> : <>4 tools that <span style={{ color: '#4F46E5' }}>change everything</span></>}
+            </h2>
+            <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
+              {lang === 'fr' ? 'Les outils les plus utilisés par notre communauté de freelances.' : 'The most used tools by our freelance community.'}
+            </p>
+          </div>
+        </FadeUp>
+
+        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20, maxWidth: 1000, margin: '0 auto' }}>
+          {FEATURED_TOOLS.map(({ id, color, points }) => {
+            const info = labels[id];
+            return (
+              <motion.div
+                key={id}
+                variants={cardVariants}
+                onClick={() => navigate('/auth?mode=register')}
+                style={{ background: '#fff', border: '1.5px solid #EDE9D8', borderRadius: 20, padding: '24px 24px 20px', cursor: 'pointer', overflow: 'hidden', position: 'relative' }}
+                whileHover={reduce ? {} : { y: -4, boxShadow: `0 12px 40px ${color}22`, borderColor: color + '44', transition: { duration: 0.2 } }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: '#0F0F1A', marginBottom: 4 }}>{lang === 'fr' ? info.fr : info.en}</div>
+                    <div style={{ fontSize: 12, color: color, fontWeight: 700 }}>{info.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</div>
+                  </div>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: color, marginTop: 4, boxShadow: `0 0 8px ${color}` }} />
+                </div>
+                <p style={{ fontSize: 13, color: '#6B6B8A', lineHeight: 1.6, margin: '0 0 16px' }}>
+                  {lang === 'fr' ? info.fr_desc : info.en_desc}
+                </p>
+                <MiniChart points={points} color={color} />
+              </motion.div>
+            );
+          })}
+        </StaggerGrid>
+      </div>
+    </section>
+  );
+}
+
+// ── New Community section (coral/orange) ──────────────────────
+
+function CommunitySection({ lang, navigate, reduce }) {
+  const stats = lang === 'fr'
+    ? [{ n: '200+', label: 'membres actifs' }, { n: '13', label: 'outils IA' }, { n: '1', label: 'consultation offerte aux 50 premiers' }]
+    : [{ n: '200+', label: 'active members' }, { n: '13', label: 'AI tools' }, { n: '1', label: 'free consultation for first 50' }];
+  return (
+    <FadeUp>
+      <section style={{ background: 'linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FF4757 100%)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+        {/* Texture */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-15%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+
+        <div className="container" style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#fff', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
+              🔥 {lang === 'fr' ? 'Communauté' : 'Community'}
+            </span>
+            <h2 style={{ fontSize: 'clamp(30px, 5vw, 54px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              {lang === 'fr' ? <>Rejoignez les freelances<br />qui passent au niveau sup.</> : <>Join the freelancers<br />levelling up together.</>}
+            </h2>
+            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.8)', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
+              {lang === 'fr' ? 'Trouvez des missions, partagez vos opportunités, échangez avec des pairs qui comprennent vos défis.' : 'Find missions, share opportunities, connect with peers who get your challenges.'}
+            </p>
+
+            {/* Stats row */}
+            <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
+              {stats.map(({ n, label }, i) => (
+                <div key={i} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{n}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 6, maxWidth: 120, lineHeight: 1.4 }}>{label}</div>
+                </div>
+              ))}
+            </div>
+
+            <motion.button
+              onClick={() => navigate('/community')}
+              style={{ background: '#fff', color: '#FF6B35', border: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 900, fontSize: 16, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}
+              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+            >
+              {lang === 'fr' ? 'Rejoindre la communauté →' : 'Join the community →'}
+            </motion.button>
+          </div>
+        </div>
+      </section>
+    </FadeUp>
+  );
+}
+
 // ── Animated Demo tabs ────────────────────────────────────────
 
 function getDemoTabs(t) {
@@ -788,9 +1057,16 @@ export function Landing() {
         </div>
       </section>
 
+      {/* ── NEW: "L'arme ultime" comparison ──────────────────── */}
+      <UltimateSection lang={lang} navigate={navigate} reduce={reduce} />
+
+      {/* ── NEW: 4 outils qui changent tout ──────────────────── */}
+      <FeaturedTools lang={lang} navigate={navigate} reduce={reduce} />
+
       {/* ── 2. PAIN POINTS ────────────────────────────────────── */}
+      <TornEdge topColor="#fff" bottomColor="#0A0A0A" />
       <FadeUp>
-        <section className="lp-dark section lp-pain-section">
+        <section className="lp-dark section lp-pain-section" style={{ paddingTop: 0 }}>
           <div className="container">
             <div className="section-hd" style={{ marginBottom: 40 }}>
               <span className="eyebrow">{t('landing.pain.eyebrow')}</span>
@@ -834,6 +1110,8 @@ export function Landing() {
           </div>
         </section>
       </FadeUp>
+
+      <TornEdge topColor="#0A0A0A" bottomColor="var(--bg-soft)" flip />
 
       {/* ── 3. ANIMATED DEMO ──────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
@@ -1070,43 +1348,8 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── 8. COMMUNITY TEASER ──────────────────────────────── */}
-      <FadeUp>
-        <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,208,44,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-          <div className="container" style={{ position: 'relative' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.15)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#818CF8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
-                🚀 Communauté
-              </span>
-              <h2 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                Rejoignez la communauté<br />
-                <span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  des entrepreneurs
-                </span>
-              </h2>
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', margin: '0 0 16px', lineHeight: 1.65, maxWidth: 560 }}>
-                Trouvez des missions, partagez vos opportunités, échangez avec d'autres freelances.
-              </p>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', margin: '0 0 40px', lineHeight: 1.6 }}>
-                Un espace dédié aux indépendants : feed, channels thématiques, missions et networking.
-              </p>
-              <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 0 }}>
-                <motion.button
-                  onClick={() => navigate('/community')}
-                  style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '15px 32px', fontWeight: 800, fontSize: 15, cursor: 'pointer', letterSpacing: '0.01em' }}
-                  whileHover={reduce ? {} : { scale: 1.03 }}
-                  whileTap={reduce ? {} : { scale: 0.97 }}
-                >
-                  Rejoindre la communauté →
-                </motion.button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </FadeUp>
+      {/* ── 8. COMMUNITY (coral/orange) ──────────────────────── */}
+      <CommunitySection lang={lang} navigate={navigate} reduce={reduce} />
 
       {/* ── 9. COACHING ──────────────────────────────────────── */}
       <FadeUp>
