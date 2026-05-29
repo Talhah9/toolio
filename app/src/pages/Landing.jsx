@@ -1174,11 +1174,23 @@ export function Landing() {
           <div className="container">
             <div className="section-hd" style={{ marginBottom: 40 }}>
               <span className="eyebrow">{t('landing.pain.eyebrow')}</span>
-              <h2 className="h1" style={{ color: '#fff', maxWidth: 680 }}>
+              <h2 className="h1" style={{ color: '#fff', maxWidth: 720, lineHeight: 1.25 }}>
                 {lang === 'fr' ? (
-                  <>Vous êtes devenu freelance pour faire du bon travail.<br />Pas pour passer 3 heures sur un devis.</>
+                  <>
+                    La plateforme{' '}
+                    <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>tout-en-un</span>
+                    {' '}pour freelances et entrepreneurs<br />
+                    qui veulent{' '}
+                    <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>passer à l'action.</span>
+                  </>
                 ) : (
-                  <>You became a freelancer to do great work.<br />Not to spend 3 hours on a quote.</>
+                  <>
+                    The{' '}
+                    <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>all-in-one</span>
+                    {' '}platform for freelancers and entrepreneurs<br />
+                    who want to{' '}
+                    <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>take action.</span>
+                  </>
                 )}
               </h2>
             </div>
