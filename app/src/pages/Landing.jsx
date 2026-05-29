@@ -632,33 +632,55 @@ function UltimateSection({ lang, navigate, reduce }) {
 
 // ── Bento card illustrations ─────────────────────────────────
 
+const LI_POSTS = [
+  "J'ai doublé mon TJM en 6 mois.\n\nVoici ce que j'ai changé :\n\n→ J'ai arrêté de vendre du temps\n→ J'ai packagé mon offre\n→ J'ai posté 1x/jour sur LinkedIn\n\nRésultat : 3 nouveaux clients en 30 jours.",
+  "On m'a dit que mon tarif était trop élevé.\n\nJ'ai quand même signé.\n\nParce que la valeur que j'apporte est réelle.\n\nSi tu dois justifier ton prix, c'est que tu parles au mauvais client.",
+];
+
 function IlluLinkedIn({ reduce }) {
-  const POST_TEXT = '18 mois avant, je facturais\n350€/jour. Aujourd\'hui : 1 200€.\n\n→ Stop vendre des heures.\n→ Vendez des résultats.\n→ Montrez de la valeur.';
+  const [postIdx, setPostIdx] = useState(0);
   const [chars, setChars] = useState(0);
+  const textRef = useRef(null);
 
   useEffect(() => {
-    if (reduce) { setChars(POST_TEXT.length); return; }
+    const post = LI_POSTS[postIdx];
+    if (reduce) { setChars(post.length); return; }
     setChars(0);
     let c = 0;
     const tick = setInterval(() => {
       c += 1;
       setChars(c);
-      if (c >= POST_TEXT.length) { clearInterval(tick); setTimeout(() => setChars(0), 2200); }
-    }, 28);
+      if (c >= post.length) {
+        clearInterval(tick);
+        setTimeout(() => {
+          setChars(0);
+          setPostIdx(i => (i + 1) % LI_POSTS.length);
+        }, 2000);
+      }
+    }, 40);
     return () => clearInterval(tick);
-  }, [reduce]);
+  }, [postIdx, reduce]);
+
+  useEffect(() => {
+    if (textRef.current) textRef.current.scrollTop = textRef.current.scrollHeight;
+  }, [chars]);
+
+  const post = LI_POSTS[postIdx];
+  const typing = chars < post.length;
 
   return (
-    <div style={{ background: '#F3F4F6', borderRadius: 14, padding: '14px 16px', fontSize: 12, color: '#1D1D1F', lineHeight: 1.75, whiteSpace: 'pre-line', flex: 1, overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+    <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '14px 16px', fontSize: 12, color: '#1D1D1F', lineHeight: 1.75, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexShrink: 0 }}>
         <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#4F46E5,#818CF8)', flexShrink: 0 }} />
         <div>
           <div style={{ fontWeight: 700, fontSize: 11, color: '#0F0F1A' }}>Talhah Ally</div>
           <div style={{ fontSize: 10, color: '#9CA3AF' }}>Freelance & Coach Business</div>
         </div>
       </div>
-      {POST_TEXT.slice(0, chars)}
-      {chars < POST_TEXT.length && <span style={{ display: 'inline-block', width: 2, height: 14, background: '#4F46E5', verticalAlign: 'middle', animation: 'blink 0.8s step-end infinite' }} />}
+      <div ref={textRef} className="lp-linkedin-scroll" style={{ flex: 1, whiteSpace: 'pre-line', overflowY: 'scroll' }}>
+        {post.slice(0, chars)}
+        {typing && <span style={{ display: 'inline-block', width: 2, height: 13, background: '#4F46E5', verticalAlign: 'middle', animation: 'blink 0.8s step-end infinite' }} />}
+      </div>
     </div>
   );
 }
