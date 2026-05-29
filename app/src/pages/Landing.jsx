@@ -630,42 +630,170 @@ function UltimateSection({ lang, navigate, reduce }) {
 
 // ── "4 outils qui changent tout" ──────────────────────────────
 
-// Each tool gets a distinct upward trend, defined as SVG path data (x,y in a 0-100 viewBox, y=0 is top)
-const FEATURED_TOOLS = [
-  { id: 'linkedin-content', color: '#4F46E5', line: '0,80 20,68 40,54 60,38 80,22 100,8' },
-  { id: 'legal',            color: '#10B981', line: '0,85 25,72 45,62 65,45 85,28 100,12' },
-  { id: 'devis',            color: '#F59E0B', line: '0,82 20,74 40,60 60,44 80,26 100,10' },
-  { id: 'contract',         color: '#EF4444', line: '0,88 20,76 45,58 65,40 85,22 100,6'  },
-];
+// ── Bento card illustrations ─────────────────────────────────
 
-function MiniChart({ line, color }) {
-  const area = `${line} 100,100 0,100`;
-  const pts = line.split(' ');
-  const last = pts[pts.length - 1].split(',');
+function IlluLinkedIn({ reduce }) {
+  const POST_TEXT = '18 mois avant, je facturais\n350€/jour. Aujourd\'hui : 1 200€.\n\n→ Stop vendre des heures.\n→ Vendez des résultats.\n→ Montrez de la valeur.';
+  const [chars, setChars] = useState(0);
+
+  useEffect(() => {
+    if (reduce) { setChars(POST_TEXT.length); return; }
+    setChars(0);
+    let c = 0;
+    const tick = setInterval(() => {
+      c += 1;
+      setChars(c);
+      if (c >= POST_TEXT.length) { clearInterval(tick); setTimeout(() => setChars(0), 2200); }
+    }, 28);
+    return () => clearInterval(tick);
+  }, [reduce]);
+
   return (
-    <svg width="100%" height="56" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ display: 'block', marginTop: 'auto' }}>
-      <polygon points={area} fill={color} fillOpacity={0.18} />
-      <polyline points={line} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={last[0]} cy={last[1]} r="5" fill={color} />
-    </svg>
+    <div style={{ background: '#F3F4F6', borderRadius: 14, padding: '14px 16px', fontSize: 12, color: '#1D1D1F', lineHeight: 1.75, whiteSpace: 'pre-line', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#4F46E5,#818CF8)', flexShrink: 0 }} />
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 11, color: '#0F0F1A' }}>Talhah Ally</div>
+          <div style={{ fontSize: 10, color: '#9CA3AF' }}>Freelance & Coach Business</div>
+        </div>
+      </div>
+      {POST_TEXT.slice(0, chars)}
+      {chars < POST_TEXT.length && <span style={{ display: 'inline-block', width: 2, height: 14, background: '#4F46E5', verticalAlign: 'middle', animation: 'blink 0.8s step-end infinite' }} />}
+    </div>
   );
 }
 
-function FeaturedTools({ lang, navigate, reduce }) {
-  const labels = {
-    'linkedin-content': { fr: 'LinkedIn Content', en: 'LinkedIn Content', uses: '3 421', fr_desc: 'Rédigez des posts qui engagent votre audience en quelques secondes.', en_desc: 'Write posts that engage your audience in seconds.' },
-    'legal':            { fr: 'Docs Juridiques', en: 'Legal Docs', uses: '2 134', fr_desc: 'CGV, mentions légales et politique de confidentialité en 30s.', en_desc: 'Terms, legal notices and privacy policy in 30s.' },
-    'devis':            { fr: 'Devis Pro',        en: 'Pro Quotes', uses: '1 567', fr_desc: 'Générez des devis professionnels qui convainquent vos clients.', en_desc: 'Generate professional quotes that win clients.' },
-    'contract':         { fr: 'Contrats',         en: 'Contracts', uses: '1 891', fr_desc: 'Contrats freelance prêts à signer, personnalisés à votre activité.', en_desc: 'Sign-ready freelance contracts tailored to your business.' },
-  };
+function IlluAudit({ reduce }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const [score, setScore] = useState(0);
+  const R = 38;
+  const circ = 2 * Math.PI * R;
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reduce) { setScore(85); return; }
+    let v = 0;
+    const id = setInterval(() => { v = Math.min(v + 1, 85); setScore(v); if (v >= 85) clearInterval(id); }, 18);
+    return () => clearInterval(id);
+  }, [inView, reduce]);
+
+  const filled = (score / 100) * circ;
+  const color = score >= 70 ? '#10B981' : score >= 40 ? '#F59E0B' : '#EF4444';
 
   return (
-    <section style={{ background: '#fff', padding: '100px 24px', borderTop: '1px solid var(--border)' }}>
+    <div ref={ref} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, flex: 1 }}>
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r={R} fill="none" stroke="#E5E7EB" strokeWidth="10" />
+        <circle cx="50" cy="50" r={R} fill="none" stroke={color} strokeWidth="10"
+          strokeDasharray={`${filled} ${circ - filled}`}
+          strokeDashoffset={circ * 0.25}
+          strokeLinecap="round" />
+        <text x="50" y="56" textAnchor="middle" fontSize="22" fontWeight="900" fill="#0F0F1A">{score}</text>
+      </svg>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%', maxWidth: 140 }}>
+        {[['SEO', 88], ['CRO', 72], ['Perf.', 91]].map(([l, v]) => (
+          <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 10, color: '#6B7280', width: 32 }}>{l}</span>
+            <div style={{ flex: 1, height: 4, background: '#E5E7EB', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${v}%`, background: '#4F46E5', borderRadius: 2, transition: 'width 1.2s ease' }} />
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#374151', width: 24, textAlign: 'right' }}>{v}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function IlluDevis() {
+  return (
+    <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px', fontSize: 10.5, color: '#374151', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', flex: 1 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+        <div>
+          <div style={{ fontWeight: 900, fontSize: 12, color: '#0F0F1A' }}>DEVIS — 2026-042</div>
+          <div style={{ color: '#9CA3AF', marginTop: 2 }}>Valable 30 jours</div>
+        </div>
+        <div style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 20, background: '#D1FAE5', color: '#065F46' }}>Gratuit</div>
+      </div>
+      {[['Refonte UI mobile', '1', '4 500€'], ['Intégration Stripe', '1', '800€']].map(([d, q, p], i) => (
+        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 24px 56px', gap: 4, padding: '5px 0', borderBottom: '1px solid #F9FAFB' }}>
+          <span>{d}</span><span style={{ textAlign: 'center', color: '#9CA3AF' }}>{q}</span>
+          <span style={{ textAlign: 'right', fontWeight: 600 }}>{p}</span>
+        </div>
+      ))}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontWeight: 900, fontSize: 11.5, borderTop: '2px solid #0F0F1A', paddingTop: 8, color: '#0F0F1A' }}>
+        <span>TOTAL HT</span><span>5 300€</span>
+      </div>
+    </div>
+  );
+}
+
+function IlluLegal() {
+  return (
+    <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px', fontSize: 10.5, color: '#374151', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', flex: 1, overflow: 'hidden' }}>
+      <div style={{ fontWeight: 900, fontSize: 12, color: '#0F0F1A', marginBottom: 10 }}>CONDITIONS GÉNÉRALES</div>
+      {[
+        { art: 'Art. 1 — Identification', active: true },
+        { art: 'Art. 2 — Champ d\'application', active: false },
+        { art: 'Art. 3 — Services proposés', active: false },
+        { art: 'Art. 4 — Formation du contrat', active: false },
+        { art: 'Art. 5 — Tarifs & Paiement', active: false },
+      ].map(({ art, active }, i) => (
+        <div key={i} style={{ padding: '5px 0', borderBottom: '1px solid #F9FAFB', color: active ? '#4F46E5' : '#6B7280', fontWeight: active ? 700 : 400 }}>{art}</div>
+      ))}
+      <div style={{ marginTop: 10, background: '#F0FDF4', borderRadius: 8, padding: '6px 10px', fontSize: 10, color: '#065F46', fontWeight: 700 }}>
+        ✓ Conforme droit français · RGPD
+      </div>
+    </div>
+  );
+}
+
+// ── Bento featured tools grid ─────────────────────────────────
+
+function FeaturedTools({ lang, navigate, reduce }) {
+  const cards = [
+    {
+      title: lang === 'fr' ? 'LinkedIn Content' : 'LinkedIn Content',
+      badge: { text: '⭐ BEST SELLER', bg: '#fad02c', color: '#78350F' },
+      desc: lang === 'fr' ? 'Rédigez des posts engageants adaptés à votre niche. S\'adapte à votre style d\'écriture.' : 'Write engaging posts for your niche. Adapts to your writing style.',
+      uses: '3 421',
+      accent: '#4F46E5',
+      illu: <IlluLinkedIn reduce={reduce} />,
+    },
+    {
+      title: lang === 'fr' ? 'Audit CRO + SEO' : 'SEO & CRO Audit',
+      badge: { text: 'Pro', bg: 'rgba(79,70,229,0.1)', color: '#4F46E5' },
+      desc: lang === 'fr' ? 'Analysez n\'importe quel site et identifiez les leviers de conversion et SEO.' : 'Audit any site for conversion and SEO improvement opportunities.',
+      uses: '1 247',
+      accent: '#10B981',
+      illu: <IlluAudit reduce={reduce} />,
+    },
+    {
+      title: lang === 'fr' ? 'Générateur de devis' : 'Quote Generator',
+      badge: { text: lang === 'fr' ? 'Gratuit' : 'Free', bg: '#D1FAE5', color: '#065F46' },
+      desc: lang === 'fr' ? 'Créez un devis professionnel prêt à envoyer en moins de 2 minutes.' : 'Generate a professional quote ready to send in under 2 minutes.',
+      uses: '1 567',
+      accent: '#F59E0B',
+      illu: <IlluDevis />,
+    },
+    {
+      title: lang === 'fr' ? 'CGV & Docs Juridiques' : 'Terms & Legal Docs',
+      badge: { text: 'Pro', bg: 'rgba(79,70,229,0.1)', color: '#4F46E5' },
+      desc: lang === 'fr' ? 'CGV, mentions légales, politique de confidentialité en 30 secondes.' : 'Terms, legal notice, and privacy policy in 30 seconds.',
+      uses: '2 134',
+      accent: '#6366F1',
+      illu: <IlluLegal />,
+    },
+  ];
+
+  return (
+    <section style={{ background: '#F5F5F7', padding: '100px 24px', borderTop: '1px solid var(--border)' }}>
       <div className="container">
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.12)', border: '1px solid rgba(250,208,44,0.35)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-              {lang === 'fr' ? '⭐ Les favoris' : '⭐ Top picks'}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.15)', border: '1px solid rgba(250,208,44,0.4)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
+              {lang === 'fr' ? 'Les favoris' : 'Top picks'}
             </span>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
               {lang === 'fr' ? <>4 outils qui <span style={{ color: '#4F46E5' }}>changent tout</span></> : <>4 tools that <span style={{ color: '#4F46E5' }}>change everything</span></>}
@@ -676,32 +804,38 @@ function FeaturedTools({ lang, navigate, reduce }) {
           </div>
         </FadeUp>
 
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 860, margin: '0 auto' }}>
-          {FEATURED_TOOLS.map(({ id, color, line }) => {
-            const info = labels[id];
-            return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, maxWidth: 960, margin: '0 auto' }}>
+          {cards.map((card, i) => (
+            <FadeUp key={i} delay={i * 0.1}>
               <motion.div
-                key={id}
-                variants={cardVariants}
                 onClick={() => navigate('/auth?mode=register')}
-                style={{ background: '#fff', border: '1.5px solid #EDE9D8', borderRadius: 20, padding: '28px 28px 0', cursor: 'pointer', overflow: 'hidden', position: 'relative', minHeight: 280, display: 'flex', flexDirection: 'column' }}
-                whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${color}25`, borderColor: color + '55', transition: { duration: 0.2 } }}
+                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 280, border: '1px solid rgba(0,0,0,0.05)' }}
+                whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${card.accent}20`, transition: { duration: 0.2 } }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                {/* Left: text */}
+                <div style={{ padding: '28px 24px 28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontSize: 17, fontWeight: 800, color: '#0F0F1A', marginBottom: 6 }}>{lang === 'fr' ? info.fr : info.en}</div>
-                    <div style={{ fontSize: 13, color: color, fontWeight: 700 }}>{info.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: card.badge.bg, color: card.badge.color, whiteSpace: 'nowrap' }}>
+                        {card.badge.text}
+                      </span>
+                      <span style={{ fontSize: 11, color: card.accent, fontWeight: 700 }}>{card.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</span>
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 800, color: '#0F0F1A', marginBottom: 10, lineHeight: 1.25 }}>{card.title}</div>
+                    <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.65, margin: 0 }}>{card.desc}</p>
                   </div>
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 10px ${color}` }} />
+                  <div style={{ marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: card.accent }}>
+                    {lang === 'fr' ? 'Essayer' : 'Try it'} →
+                  </div>
                 </div>
-                <p style={{ fontSize: 14, color: '#6B6B8A', lineHeight: 1.65, margin: '0 0 20px', flex: 1 }}>
-                  {lang === 'fr' ? info.fr_desc : info.en_desc}
-                </p>
-                <MiniChart line={line} color={color} />
+                {/* Right: illustration */}
+                <div style={{ background: `${card.accent}08`, padding: '20px 16px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15` }}>
+                  {card.illu}
+                </div>
               </motion.div>
-            );
-          })}
-        </StaggerGrid>
+            </FadeUp>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -1024,7 +1158,7 @@ export function Landing() {
     }
   }, [location.hash]);
 
-  const freeTools = TOOLS.filter(tool => tool.plan === 'free' && !tool.franceOnly);
+  const freeTools = TOOLS.filter(tool => tool.plan === 'free');
   const proTools  = TOOLS.filter(tool => tool.plan === 'pro');
 
   const faqs = [
@@ -1210,7 +1344,7 @@ export function Landing() {
               <>{`Your `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>LinkedIn profile</span>{` doesn't attract enough`}</>,
             ]).map((line, i) => (
               <FadeUp key={i} delay={i * 0.12}>
-                <div style={{ fontSize: 'clamp(24px, 3.5vw, 48px)', fontWeight: 900, color: '#0F0F1A', lineHeight: 1.25, letterSpacing: '-0.02em' }}>
+                <div style={{ fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: 900, color: '#0F0F1A', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
                   {line}
                 </div>
               </FadeUp>
