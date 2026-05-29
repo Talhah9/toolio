@@ -533,14 +533,11 @@ function UltimateSection({ lang, navigate, reduce }) {
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-            {lang === 'fr' ? 'L\'arme ultime' : 'The ultimate weapon'}
+            {lang === 'fr' ? 'Comparaison' : 'Comparison'}
           </span>
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-            {lang === 'fr' ? <>Arrêtez de bricoler.<br /><span style={{ color: '#4F46E5' }}>Passez à l'essentiel.</span></> : <>Stop hacking it.<br /><span style={{ color: '#4F46E5' }}>Get to what matters.</span></>}
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+            {lang === 'fr' ? <>Savvly vs. le reste<br /><span style={{ color: '#4F46E5' }}>10h gagnées par semaine.</span></> : <>Savvly vs. the rest<br /><span style={{ color: '#4F46E5' }}>10h saved per week.</span></>}
           </h2>
-          <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 520, margin: '0 auto', lineHeight: 1.65 }}>
-            {lang === 'fr' ? 'Comparé aux solutions bricolées, Savvly vous fait gagner 10h par semaine — minimum.' : 'Compared to patchwork solutions, Savvly saves you 10h a week — minimum.'}
-          </p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 40, alignItems: 'start', maxWidth: 1000, margin: '0 auto' }}>
@@ -633,26 +630,23 @@ function UltimateSection({ lang, navigate, reduce }) {
 
 // ── "4 outils qui changent tout" ──────────────────────────────
 
+// Each tool gets a distinct upward trend, defined as SVG path data (x,y in a 0-100 viewBox, y=0 is top)
 const FEATURED_TOOLS = [
-  { id: 'linkedin-content', color: '#4F46E5', points: [20,55,35,70,25,80,15,95] },
-  { id: 'legal',            color: '#10B981', points: [20,90,35,75,50,80,65,60,80,45,95,20] },
-  { id: 'devis',            color: '#F59E0B', points: [20,85,40,70,60,55,80,35,95,15] },
-  { id: 'contract',         color: '#EF4444', points: [20,95,40,75,60,60,80,40,95,20] },
+  { id: 'linkedin-content', color: '#4F46E5', line: '0,80 20,68 40,54 60,38 80,22 100,8' },
+  { id: 'legal',            color: '#10B981', line: '0,85 25,72 45,62 65,45 85,28 100,12' },
+  { id: 'devis',            color: '#F59E0B', line: '0,82 20,74 40,60 60,44 80,26 100,10' },
+  { id: 'contract',         color: '#EF4444', line: '0,88 20,76 45,58 65,40 85,22 100,6'  },
 ];
 
-function MiniChart({ points, color }) {
-  const n = points.length;
-  const coords = [];
-  for (let i = 0; i < n; i += 2) {
-    coords.push(`${points[i]},${points[i + 1]}`);
-  }
-  const polyline = coords.join(' ');
-  const fill = `${polyline} ${coords[coords.length - 1].split(',')[0]},100 ${coords[0].split(',')[0]},100`;
+function MiniChart({ line, color }) {
+  const area = `${line} 100,100 0,100`;
+  const pts = line.split(' ');
+  const last = pts[pts.length - 1].split(',');
   return (
-    <svg width="100%" height="48" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ display: 'block' }}>
-      <polygon points={fill} fill={color} fillOpacity={0.15} />
-      <polyline points={polyline} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={coords[coords.length - 1].split(',')[0]} cy={coords[coords.length - 1].split(',')[1]} r="4" fill={color} />
+    <svg width="100%" height="56" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ display: 'block', marginTop: 'auto' }}>
+      <polygon points={area} fill={color} fillOpacity={0.18} />
+      <polyline points={line} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={last[0]} cy={last[1]} r="5" fill={color} />
     </svg>
   );
 }
@@ -682,28 +676,28 @@ function FeaturedTools({ lang, navigate, reduce }) {
           </div>
         </FadeUp>
 
-        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20, maxWidth: 1000, margin: '0 auto' }}>
-          {FEATURED_TOOLS.map(({ id, color, points }) => {
+        <StaggerGrid style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 860, margin: '0 auto' }}>
+          {FEATURED_TOOLS.map(({ id, color, line }) => {
             const info = labels[id];
             return (
               <motion.div
                 key={id}
                 variants={cardVariants}
                 onClick={() => navigate('/auth?mode=register')}
-                style={{ background: '#fff', border: '1.5px solid #EDE9D8', borderRadius: 20, padding: '24px 24px 20px', cursor: 'pointer', overflow: 'hidden', position: 'relative' }}
-                whileHover={reduce ? {} : { y: -4, boxShadow: `0 12px 40px ${color}22`, borderColor: color + '44', transition: { duration: 0.2 } }}
+                style={{ background: '#fff', border: '1.5px solid #EDE9D8', borderRadius: 20, padding: '28px 28px 0', cursor: 'pointer', overflow: 'hidden', position: 'relative', minHeight: 280, display: 'flex', flexDirection: 'column' }}
+                whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${color}25`, borderColor: color + '55', transition: { duration: 0.2 } }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: '#0F0F1A', marginBottom: 4 }}>{lang === 'fr' ? info.fr : info.en}</div>
-                    <div style={{ fontSize: 12, color: color, fontWeight: 700 }}>{info.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</div>
+                    <div style={{ fontSize: 17, fontWeight: 800, color: '#0F0F1A', marginBottom: 6 }}>{lang === 'fr' ? info.fr : info.en}</div>
+                    <div style={{ fontSize: 13, color: color, fontWeight: 700 }}>{info.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</div>
                   </div>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: color, marginTop: 4, boxShadow: `0 0 8px ${color}` }} />
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0, boxShadow: `0 0 10px ${color}` }} />
                 </div>
-                <p style={{ fontSize: 13, color: '#6B6B8A', lineHeight: 1.6, margin: '0 0 16px' }}>
+                <p style={{ fontSize: 14, color: '#6B6B8A', lineHeight: 1.65, margin: '0 0 20px', flex: 1 }}>
                   {lang === 'fr' ? info.fr_desc : info.en_desc}
                 </p>
-                <MiniChart points={points} color={color} />
+                <MiniChart line={line} color={color} />
               </motion.div>
             );
           })}
@@ -1168,64 +1162,74 @@ export function Landing() {
       {/* ── NEW: Dashboard mockup ─────────────────────────────── */}
       <DashboardMockup lang={lang} navigate={navigate} reduce={reduce} />
 
-      {/* ── 2. PAIN POINTS ────────────────────────────────────── */}
-      <FadeUp>
-        <section className="lp-dark section lp-pain-section">
-          <div className="container">
-            <div className="section-hd" style={{ marginBottom: 40 }}>
-              <span className="eyebrow">{t('landing.pain.eyebrow')}</span>
-              <h2 className="h1" style={{ color: '#fff', maxWidth: 720, lineHeight: 1.25 }}>
-                {lang === 'fr' ? (
-                  <>
-                    La plateforme{' '}
-                    <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>tout-en-un</span>
-                    {' '}pour freelances et entrepreneurs<br />
-                    qui veulent{' '}
-                    <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>passer à l'action.</span>
-                  </>
-                ) : (
-                  <>
-                    The{' '}
-                    <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>all-in-one</span>
-                    {' '}platform for freelancers and entrepreneurs<br />
-                    who want to{' '}
-                    <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 16px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>take action.</span>
-                  </>
-                )}
-              </h2>
+      {/* ── NEW: Pill headline — right after dashboard mockup ─── */}
+      <section style={{ background: '#fff', padding: '80px 24px 72px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
+        <div className="container">
+          <FadeUp>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 900, color: 'var(--fg)', maxWidth: 760, margin: '0 auto', lineHeight: 1.25, letterSpacing: '-0.02em' }}>
+              {lang === 'fr' ? (
+                <>
+                  La plateforme{' '}
+                  <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>tout-en-un</span>
+                  {' '}pour freelances et entrepreneurs<br />
+                  qui veulent{' '}
+                  <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>passer à l'action.</span>
+                </>
+              ) : (
+                <>
+                  The{' '}
+                  <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>all-in-one</span>
+                  {' '}platform for freelancers and entrepreneurs<br />
+                  who want to{' '}
+                  <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>take action.</span>
+                </>
+              )}
+            </h2>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ── 2. PAIN POINTS — cream bg, big pills typography ───── */}
+      <section style={{ background: '#FFF9F0', borderTop: '1px solid #EADDC8', padding: '100px 24px' }}>
+        <div className="container">
+          <FadeUp>
+            <div style={{ textAlign: 'center', marginBottom: 52 }}>
+              <span className="eyebrow" style={{ color: '#92400E' }}>{t('landing.pain.eyebrow')}</span>
             </div>
-            <div className="pain-grid">
-              <PainCard
-                icon={
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-                  </svg>
-                }
-                title={t('landing.pain.card1.title')}
-                body={t('landing.pain.card1.body')}
-              />
-              <PainCard
-                icon={
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
-                }
-                title={t('landing.pain.card2.title')}
-                body={t('landing.pain.card2.body')}
-              />
-              <PainCard
-                icon={
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                }
-                title={t('landing.pain.card3.title')}
-                body={t('landing.pain.card3.body')}
-              />
-            </div>
+          </FadeUp>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28, maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
+            {(lang === 'fr' ? [
+              <>{`Vous passez `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>3 heures</span>{` sur un devis`}</>,
+              <>{`Votre `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>contrat</span>{` tient en 2 lignes`}</>,
+              <>{`Vous `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>relancez</span>{` vos clients à la main`}</>,
+              <>{`Votre `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>profil LinkedIn</span>{` n'attire pas assez`}</>,
+            ] : [
+              <>{`You spend `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>3 hours</span>{` on a single quote`}</>,
+              <>{`Your `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>contract</span>{` is two sentences long`}</>,
+              <>{`You follow up with clients `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>manually</span></>,
+              <>{`Your `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>LinkedIn profile</span>{` doesn't attract enough`}</>,
+            ]).map((line, i) => (
+              <FadeUp key={i} delay={i * 0.12}>
+                <div style={{ fontSize: 'clamp(24px, 3.5vw, 48px)', fontWeight: 900, color: '#0F0F1A', lineHeight: 1.25, letterSpacing: '-0.02em' }}>
+                  {line}
+                </div>
+              </FadeUp>
+            ))}
           </div>
-        </section>
-      </FadeUp>
+          <FadeUp delay={0.55}>
+            <div style={{ textAlign: 'center', marginTop: 56 }}>
+              <motion.button
+                onClick={() => navigate('/auth?mode=register')}
+                style={{ background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 14, padding: '15px 36px', fontWeight: 900, fontSize: 15, cursor: 'pointer', boxShadow: '0 8px 32px rgba(79,70,229,0.25)' }}
+                whileHover={reduce ? {} : { scale: 1.03 }}
+                whileTap={reduce ? {} : { scale: 0.97 }}
+              >
+                {lang === 'fr' ? 'Résoudre ça maintenant →' : 'Fix this now →'}
+              </motion.button>
+            </div>
+          </FadeUp>
+        </div>
+      </section>
 
       {/* ── 3. ANIMATED DEMO ──────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
