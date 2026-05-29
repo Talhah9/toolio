@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion, useInView, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useInView, AnimatePresence, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { MarketingNav } from '../components/MarketingNav';
 import { MarketingFooter } from '../components/MarketingFooter';
 import { Glyph } from '../components/Glyph';
@@ -804,12 +804,12 @@ function FeaturedTools({ lang, navigate, reduce }) {
           </div>
         </FadeUp>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, maxWidth: 960, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20, maxWidth: 960, margin: '0 auto' }}>
           {cards.map((card, i) => (
             <FadeUp key={i} delay={i * 0.1}>
               <motion.div
                 onClick={() => navigate('/auth?mode=register')}
-                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 280, border: '1px solid rgba(0,0,0,0.05)' }}
+                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 200, border: '1px solid rgba(0,0,0,0.05)' }}
                 whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${card.accent}20`, transition: { duration: 0.2 } }}
               >
                 {/* Left: text */}
@@ -893,7 +893,7 @@ function CommunitySection({ lang, navigate, reduce }) {
   );
 }
 
-// ── Dashboard CSS mockup section ─────────────────────────────
+// ── Container scroll — 3D laptop reveal ──────────────────────
 
 const MOCKUP_TOOLS = [
   { label: 'Contenu LinkedIn', badge: '⭐ BEST SELLER', badgeBg: '#fad02c', badgeColor: '#78350F', dot: '#818CF8' },
@@ -904,84 +904,97 @@ const MOCKUP_TOOLS = [
   { label: 'Audit CRO + SEO', badge: 'Pro', badgeBg: 'rgba(79,70,229,0.1)', badgeColor: '#4F46E5', dot: '#F59E0B' },
 ];
 
-function DashboardMockup({ lang, navigate, reduce }) {
+function ContainerScroll({ lang, navigate, reduce }) {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'end start'],
+  });
+  const rotateX = useTransform(scrollYProgress, [0, 0.45], [20, 0]);
+  const scale   = useTransform(scrollYProgress, [0, 0.45], [1.05, 1]);
+
   return (
-    <section style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', padding: '100px 24px' }}>
+    <section ref={containerRef} style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px 80px' }}>
       <div className="container">
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
               {lang === 'fr' ? 'Votre espace de travail' : 'Your workspace'}
             </span>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: 'var(--fg)', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+            <h2 style={{ fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
               {lang === 'fr'
                 ? <>Arrêtez de bricoler.<br /><span style={{ color: '#4F46E5' }}>Passez à l'action.</span></>
-                : <>Stop patching things together.<br /><span style={{ color: '#4F46E5' }}>Start shipping.</span></>}
+                : <>Stop patching it together.<br /><span style={{ color: '#4F46E5' }}>Start shipping.</span></>}
             </h2>
-            <p style={{ fontSize: 16, color: 'var(--fg-3)', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
+            <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
               {lang === 'fr' ? 'Tous vos outils freelance au même endroit, prêts en quelques secondes.' : 'All your freelance tools in one place, ready in seconds.'}
             </p>
           </div>
         </FadeUp>
 
-        <FadeUp delay={0.1}>
-          {/* Browser chrome wrapper */}
-          <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', boxShadow: '0 32px 80px rgba(15,15,60,0.14), 0 0 0 1px rgba(15,15,60,0.06)', background: '#fff' }}>
-            {/* Browser top bar */}
-            <div style={{ background: '#F3F4F6', borderBottom: '1px solid #E5E7EB', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ display: 'flex', gap: 6 }}>
-                {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
-              </div>
-              <div style={{ flex: 1, background: '#fff', borderRadius: 6, padding: '4px 12px', fontSize: 11, color: '#9CA3AF', maxWidth: 280, margin: '0 auto', textAlign: 'center', border: '1px solid #E5E7EB' }}>
-                app.savvly.fr/dashboard
-              </div>
-            </div>
-
-            {/* App shell */}
-            <div style={{ display: 'flex', minHeight: 400 }}>
-              {/* Sidebar */}
-              <div style={{ width: 200, background: '#F9FAFB', borderRight: '1px solid #E5E7EB', padding: '20px 0', flexShrink: 0 }}>
-                <div style={{ padding: '0 16px', marginBottom: 24 }}>
-                  <div style={{ fontWeight: 900, fontSize: 15, color: '#4F46E5', letterSpacing: '-0.01em' }}>Savvly</div>
+        <div style={{ perspective: '1200px', maxWidth: 960, margin: '0 auto' }}>
+          <motion.div style={{
+            rotateX: reduce ? 0 : rotateX,
+            scale:   reduce ? 1 : scale,
+            transformOrigin: 'top center',
+          }}>
+            <div style={{ border: '8px solid #222', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.2)' }}>
+              {/* Browser chrome */}
+              <div style={{ background: '#1C1C1E', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
                 </div>
-                {['Dashboard', 'Outils', 'Plan', 'Profil'].map((item, i) => (
-                  <div key={i} style={{ padding: '8px 16px', fontSize: 13, color: i === 0 ? '#4F46E5' : '#6B7280', fontWeight: i === 0 ? 700 : 400, background: i === 0 ? 'rgba(79,70,229,0.08)' : 'transparent', borderRight: i === 0 ? '2px solid #4F46E5' : 'none', cursor: 'pointer' }}>
-                    {item}
-                  </div>
-                ))}
-              </div>
-
-              {/* Main content */}
-              <div style={{ flex: 1, padding: '24px 28px', overflow: 'hidden' }}>
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 18, fontWeight: 900, color: '#0F0F1A', marginBottom: 4 }}>{lang === 'fr' ? 'Vos outils' : 'Your tools'}</div>
-                  <div style={{ fontSize: 13, color: '#9CA3AF' }}>{lang === 'fr' ? 'Choisissez un outil pour commencer.' : 'Choose a tool to get started.'}</div>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,0.4)', maxWidth: 260, margin: '0 auto', textAlign: 'center' }}>
+                  app.savvly.fr/dashboard
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
-                  {MOCKUP_TOOLS.map((t, i) => (
-                    <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: '14px 14px 12px', cursor: 'pointer' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: 8, background: `${t.dot}22`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <div style={{ width: 10, height: 10, borderRadius: '50%', background: t.dot }} />
-                        </div>
-                        <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 20, background: t.badgeBg, color: t.badgeColor, whiteSpace: 'nowrap' }}>{t.badge}</span>
-                      </div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: '#0F0F1A', lineHeight: 1.4 }}>{t.label}</div>
-                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8 }}>{lang === 'fr' ? 'Utiliser →' : 'Use →'}</div>
-                    </div>
+              </div>
+              {/* App shell */}
+              <div style={{ display: 'flex', minHeight: 460, background: '#F9FAFB' }}>
+                {/* Sidebar */}
+                <div style={{ width: 200, background: '#fff', borderRight: '1px solid #E5E7EB', padding: '20px 0', flexShrink: 0 }}>
+                  <div style={{ padding: '0 16px 20px', fontWeight: 900, fontSize: 15, color: '#4F46E5' }}>Savvly</div>
+                  {['Dashboard', 'Outils', 'Plan & crédits', 'Profil'].map((item, i) => (
+                    <div key={i} style={{ padding: '9px 16px', fontSize: 13, color: i === 0 ? '#4F46E5' : '#6B7280', fontWeight: i === 0 ? 700 : 400, background: i === 0 ? 'rgba(79,70,229,0.08)' : 'transparent', borderRight: i === 0 ? '2px solid #4F46E5' : 'none' }}>{item}</div>
                   ))}
                 </div>
+                {/* Main */}
+                <div style={{ flex: 1, padding: '24px 28px', overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                    <div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0F0F1A' }}>{lang === 'fr' ? 'Vos outils' : 'Your tools'}</div>
+                      <div style={{ fontSize: 13, color: '#9CA3AF' }}>{lang === 'fr' ? 'Choisissez un outil pour commencer.' : 'Choose a tool to get started.'}</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#4F46E5' }}>50 crédits</span>
+                      <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: 'rgba(79,70,229,0.1)', color: '#4F46E5' }}>Pro</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
+                    {MOCKUP_TOOLS.map((tk, i) => (
+                      <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: '14px 14px 12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 8, background: `${tk.dot}22`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: 10, height: 10, borderRadius: '50%', background: tk.dot }} />
+                          </div>
+                          <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 20, background: tk.badgeBg, color: tk.badgeColor, whiteSpace: 'nowrap' }}>{tk.badge}</span>
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: '#0F0F1A', lineHeight: 1.4 }}>{tk.label}</div>
+                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8 }}>{lang === 'fr' ? 'Utiliser →' : 'Use →'}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </FadeUp>
+          </motion.div>
+        </div>
 
         <FadeUp delay={0.2}>
-          <div style={{ textAlign: 'center', marginTop: 40 }}>
+          <div style={{ textAlign: 'center', marginTop: 48 }}>
             <motion.button
               onClick={() => navigate('/auth?mode=register')}
-              style={{ background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 14, padding: '15px 36px', fontWeight: 900, fontSize: 15, cursor: 'pointer', boxShadow: '0 8px 32px rgba(79,70,229,0.3)' }}
-              whileHover={reduce ? {} : { scale: 1.03 }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 900, fontSize: 16, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 8px 32px rgba(79,70,229,0.35)' }}
+              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.45)' }}
               whileTap={reduce ? {} : { scale: 0.97 }}
             >
               {lang === 'fr' ? 'Accéder au dashboard →' : 'Access the dashboard →'}
@@ -1293,77 +1306,8 @@ export function Landing() {
       {/* ── NEW: 4 outils qui changent tout ──────────────────── */}
       <FeaturedTools lang={lang} navigate={navigate} reduce={reduce} />
 
-      {/* ── NEW: Dashboard mockup ─────────────────────────────── */}
-      <DashboardMockup lang={lang} navigate={navigate} reduce={reduce} />
-
-      {/* ── NEW: Pill headline — right after dashboard mockup ─── */}
-      <section style={{ background: '#fff', padding: '80px 24px 72px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
-        <div className="container">
-          <FadeUp>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 900, color: 'var(--fg)', maxWidth: 760, margin: '0 auto', lineHeight: 1.25, letterSpacing: '-0.02em' }}>
-              {lang === 'fr' ? (
-                <>
-                  La plateforme{' '}
-                  <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>tout-en-un</span>
-                  {' '}pour freelances et entrepreneurs<br />
-                  qui veulent{' '}
-                  <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>passer à l'action.</span>
-                </>
-              ) : (
-                <>
-                  The{' '}
-                  <span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>all-in-one</span>
-                  {' '}platform for freelancers and entrepreneurs<br />
-                  who want to{' '}
-                  <span style={{ background: '#3730A3', color: '#fff', borderRadius: 100, padding: '4px 18px', fontWeight: 800, whiteSpace: 'nowrap', display: 'inline-block' }}>take action.</span>
-                </>
-              )}
-            </h2>
-          </FadeUp>
-        </div>
-      </section>
-
-      {/* ── 2. PAIN POINTS — cream bg, big pills typography ───── */}
-      <section style={{ background: '#FFF9F0', borderTop: '1px solid #EADDC8', padding: '100px 24px' }}>
-        <div className="container">
-          <FadeUp>
-            <div style={{ textAlign: 'center', marginBottom: 52 }}>
-              <span className="eyebrow" style={{ color: '#92400E' }}>{t('landing.pain.eyebrow')}</span>
-            </div>
-          </FadeUp>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 28, maxWidth: 820, margin: '0 auto', textAlign: 'center' }}>
-            {(lang === 'fr' ? [
-              <>{`Vous passez `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>3 heures</span>{` sur un devis`}</>,
-              <>{`Votre `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>contrat</span>{` tient en 2 lignes`}</>,
-              <>{`Vous `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>relancez</span>{` vos clients à la main`}</>,
-              <>{`Votre `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>profil LinkedIn</span>{` n'attire pas assez`}</>,
-            ] : [
-              <>{`You spend `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>3 hours</span>{` on a single quote`}</>,
-              <>{`Your `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>contract</span>{` is two sentences long`}</>,
-              <>{`You follow up with clients `}<span style={{ background: '#4F46E5', color: '#fff', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>manually</span></>,
-              <>{`Your `}<span style={{ background: '#fad02c', color: '#78350F', borderRadius: 100, padding: '2px 18px', fontWeight: 800, display: 'inline-block' }}>LinkedIn profile</span>{` doesn't attract enough`}</>,
-            ]).map((line, i) => (
-              <FadeUp key={i} delay={i * 0.12}>
-                <div style={{ fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: 900, color: '#0F0F1A', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-                  {line}
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-          <FadeUp delay={0.55}>
-            <div style={{ textAlign: 'center', marginTop: 56 }}>
-              <motion.button
-                onClick={() => navigate('/auth?mode=register')}
-                style={{ background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 14, padding: '15px 36px', fontWeight: 900, fontSize: 15, cursor: 'pointer', boxShadow: '0 8px 32px rgba(79,70,229,0.25)' }}
-                whileHover={reduce ? {} : { scale: 1.03 }}
-                whileTap={reduce ? {} : { scale: 0.97 }}
-              >
-                {lang === 'fr' ? 'Résoudre ça maintenant →' : 'Fix this now →'}
-              </motion.button>
-            </div>
-          </FadeUp>
-        </div>
-      </section>
+      {/* ── NEW: Dashboard scroll animation ──────────────────── */}
+      <ContainerScroll lang={lang} navigate={navigate} reduce={reduce} />
 
       {/* ── 3. ANIMATED DEMO ──────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
