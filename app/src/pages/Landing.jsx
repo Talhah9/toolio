@@ -804,32 +804,32 @@ function FeaturedTools({ lang, navigate, reduce }) {
           </div>
         </FadeUp>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20, maxWidth: 960, margin: '0 auto' }}>
+        <div className="featured-tools-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24, maxWidth: 960, margin: '0 auto' }}>
           {cards.map((card, i) => (
             <FadeUp key={i} delay={i * 0.1}>
               <motion.div
                 onClick={() => navigate('/auth?mode=register')}
-                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 200, border: '1px solid rgba(0,0,0,0.05)' }}
+                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 320, border: '1px solid rgba(0,0,0,0.05)' }}
                 whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${card.accent}20`, transition: { duration: 0.2 } }}
               >
                 {/* Left: text */}
-                <div style={{ padding: '28px 24px 28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ padding: '32px 28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: card.badge.bg, color: card.badge.color, whiteSpace: 'nowrap' }}>
                         {card.badge.text}
                       </span>
                       <span style={{ fontSize: 11, color: card.accent, fontWeight: 700 }}>{card.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</span>
                     </div>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: '#0F0F1A', marginBottom: 10, lineHeight: 1.25 }}>{card.title}</div>
-                    <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.65, margin: 0 }}>{card.desc}</p>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: '#0F0F1A', marginBottom: 12, lineHeight: 1.2 }}>{card.title}</div>
+                    <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.6, margin: 0 }}>{card.desc}</p>
                   </div>
-                  <div style={{ marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: card.accent }}>
+                  <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: card.accent }}>
                     {lang === 'fr' ? 'Essayer' : 'Try it'} →
                   </div>
                 </div>
                 {/* Right: illustration */}
-                <div style={{ background: `${card.accent}08`, padding: '20px 16px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15` }}>
+                <div style={{ background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minHeight: 160 }}>
                   {card.illu}
                 </div>
               </motion.div>
@@ -910,8 +910,14 @@ function ContainerScroll({ lang, navigate, reduce }) {
     target: containerRef,
     offset: ['start end', 'end start'],
   });
-  const rotateX = useTransform(scrollYProgress, [0, 0.45], [20, 0]);
-  const scale   = useTransform(scrollYProgress, [0, 0.45], [1.05, 1]);
+  const rotateX    = useTransform(scrollYProgress, [0, 0.45], [25, 0]);
+  const scale      = useTransform(scrollYProgress, [0, 0.45], [1.15, 1]);
+  const translateY = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const boxShadow  = useTransform(
+    scrollYProgress,
+    [0, 0.45],
+    ['0 60px 120px rgba(0,0,0,0.35)', '0 20px 60px rgba(0,0,0,0.12)'],
+  );
 
   return (
     <section ref={containerRef} style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px 80px' }}>
@@ -932,13 +938,17 @@ function ContainerScroll({ lang, navigate, reduce }) {
           </div>
         </FadeUp>
 
-        <div style={{ perspective: '1200px', maxWidth: 960, margin: '0 auto' }}>
+        <div style={{ perspective: '800px', maxWidth: 960, margin: '0 auto' }}>
           <motion.div style={{
-            rotateX: reduce ? 0 : rotateX,
-            scale:   reduce ? 1 : scale,
+            rotateX:         reduce ? 0 : rotateX,
+            scale:           reduce ? 1 : scale,
+            y:               reduce ? 0 : translateY,
             transformOrigin: 'top center',
+            border:          '8px solid #222',
+            borderRadius:    20,
+            overflow:        'hidden',
+            boxShadow:       reduce ? '0 20px 60px rgba(0,0,0,0.12)' : boxShadow,
           }}>
-            <div style={{ border: '8px solid #222', borderRadius: 20, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.2)' }}>
               {/* Browser chrome */}
               <div style={{ background: '#1C1C1E', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ display: 'flex', gap: 6 }}>
@@ -985,7 +995,6 @@ function ContainerScroll({ lang, navigate, reduce }) {
                   </div>
                 </div>
               </div>
-            </div>
           </motion.div>
         </div>
 

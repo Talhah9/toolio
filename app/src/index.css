@@ -1279,6 +1279,10 @@ a {
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; border: 2px solid var(--bg); }
 ::-webkit-scrollbar-thumb:hover { background: var(--fg-4); }
 
+@media (max-width: 768px) {
+  .featured-tools-grid { grid-template-columns: 1fr !important; }
+}
+
 @media (max-width: 900px) {
   .tools-grid { grid-template-columns: repeat(2, 1fr); }
   .pricing-grid, .packs-grid { grid-template-columns: 1fr; }
