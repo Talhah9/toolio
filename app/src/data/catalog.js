@@ -53,7 +53,7 @@ export const TOOLS = [
     short_en: 'Quote',                  short_fr: 'Devis',
     desc_en: 'Build a professional client quote with line items, totals, and payment terms.',
     desc_fr: 'Crée un devis professionnel avec lignes, totaux et conditions de paiement.',
-    credits: 5, plan: 'free', glyph: 'invoice',
+    credits: 5, plan: 'pro', glyph: 'invoice',
   },
   {
     id: 'relance',
