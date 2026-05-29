@@ -828,7 +828,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
               {lang === 'fr' ? 'Les favoris' : 'Top picks'}
             </span>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-              {lang === 'fr' ? <>4 outils qui <span style={{ color: '#4F46E5' }}>changent tout</span></> : <>4 tools that <span style={{ color: '#4F46E5' }}>change everything</span></>}
+              {lang === 'fr' ? <>4 outils <span style={{ color: '#4F46E5' }}>indispensables</span></> : <>4 <span style={{ color: '#4F46E5' }}>essential</span> tools</>}
             </h2>
             <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
               {lang === 'fr' ? 'Les outils les plus utilisés par notre communauté de freelances.' : 'The most used tools by our freelance community.'}

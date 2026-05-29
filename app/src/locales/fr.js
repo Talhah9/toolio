@@ -390,7 +390,7 @@ export const fr = {
   'payment.success': 'Paiement confirmé — vos crédits ont été mis à jour !',
 
   // ── Landing page ─────────────────────────────────────────────
-  'landing.eyebrow.badge': '⚡ Accès anticipé · Tarif préférentiel',
+  'landing.eyebrow.badge': 'Savvly : l\'arme ultime des solopreneurs',
   'landing.eyebrow.text': '13 outils IA, un seul abonnement',
   'landing.hero.title': 'Tous les outils dont un freelance a besoin.',
   'landing.hero.ai.badge': "Propulsé par l'IA",
