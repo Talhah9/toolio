@@ -1662,6 +1662,10 @@ a {
   animation: blink 1s step-end infinite;
   margin-left: 1px; vertical-align: text-bottom; height: 1.1em;
 }
+.lp-li-cursor {
+  color: #4F46E5; font-weight: 700;
+  animation: blink 0.8s step-end infinite;
+}
 @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* How steps */

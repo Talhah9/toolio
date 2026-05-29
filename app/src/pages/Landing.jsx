@@ -687,9 +687,9 @@ function IlluLinkedIn({ reduce }) {
         </div>
       </div>
       <div ref={textRef} style={{ maxHeight: 180, overflowY: 'hidden', whiteSpace: 'pre-line' }}>
-        {post.slice(0, chars)}
-        {capped && '…'}
-        {typing && <span style={{ display: 'inline-block', width: 2, height: 13, background: '#4F46E5', verticalAlign: 'middle', animation: 'blink 0.8s step-end infinite' }} />}
+        <span>{post.slice(0, chars)}</span>
+        {capped && <span>…</span>}
+        {typing && <span className="lp-li-cursor">|</span>}
       </div>
     </div>
   );
