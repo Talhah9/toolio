@@ -633,23 +633,36 @@ function UltimateSection({ lang, navigate, reduce }) {
 // ── Bento card illustrations ─────────────────────────────────
 
 const LI_POSTS = [
-  "J'ai doublé mon TJM en 6 mois.\n\nVoici ce que j'ai changé :\n\n→ J'ai arrêté de vendre du temps\n→ J'ai packagé mon offre\n→ J'ai posté 1x/jour sur LinkedIn\n\nRésultat : 3 nouveaux clients en 30 jours.",
-  "On m'a dit que mon tarif était trop élevé.\n\nJ'ai quand même signé.\n\nParce que la valeur que j'apporte est réelle.\n\nSi tu dois justifier ton prix, c'est que tu parles au mauvais client.",
+  "J'ai doublé mon TJM en 6 mois.\n\n→ J'ai arrêté de vendre du temps\n→ J'ai packagé mon offre\n→ J'ai posté 1x/jour\n\n3 nouveaux clients en 30 jours.",
+  "On m'a dit que mon tarif était trop élevé.\n\nJ'ai quand même signé.\n\nLa valeur que j'apporte est réelle.",
 ];
 
 function IlluLinkedIn({ reduce }) {
   const [postIdx, setPostIdx] = useState(0);
   const [chars, setChars] = useState(0);
+  const [capped, setCapped] = useState(false);
   const textRef = useRef(null);
 
   useEffect(() => {
     const post = LI_POSTS[postIdx];
+    setCapped(false);
     if (reduce) { setChars(post.length); return; }
     setChars(0);
     let c = 0;
     const tick = setInterval(() => {
       c += 1;
       setChars(c);
+      // stop early if the text container overflows its max-height
+      if (textRef.current && textRef.current.scrollHeight > textRef.current.clientHeight) {
+        clearInterval(tick);
+        setCapped(true);
+        setTimeout(() => {
+          setCapped(false);
+          setChars(0);
+          setPostIdx(i => (i + 1) % LI_POSTS.length);
+        }, 2000);
+        return;
+      }
       if (c >= post.length) {
         clearInterval(tick);
         setTimeout(() => {
@@ -661,12 +674,8 @@ function IlluLinkedIn({ reduce }) {
     return () => clearInterval(tick);
   }, [postIdx, reduce]);
 
-  useEffect(() => {
-    if (textRef.current) textRef.current.scrollTop = textRef.current.scrollHeight;
-  }, [chars]);
-
   const post = LI_POSTS[postIdx];
-  const typing = chars < post.length;
+  const typing = chars < post.length && !capped;
 
   return (
     <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '14px 16px', fontSize: 12, color: '#1D1D1F', lineHeight: 1.75, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -677,8 +686,9 @@ function IlluLinkedIn({ reduce }) {
           <div style={{ fontSize: 10, color: '#9CA3AF' }}>Freelance & Coach Business</div>
         </div>
       </div>
-      <div ref={textRef} className="lp-linkedin-scroll" style={{ flex: 1, whiteSpace: 'pre-line', overflowY: 'scroll' }}>
+      <div ref={textRef} style={{ maxHeight: 180, overflowY: 'hidden', whiteSpace: 'pre-line' }}>
         {post.slice(0, chars)}
+        {capped && '…'}
         {typing && <span style={{ display: 'inline-block', width: 2, height: 13, background: '#4F46E5', verticalAlign: 'middle', animation: 'blink 0.8s step-end infinite' }} />}
       </div>
     </div>
@@ -831,11 +841,11 @@ function FeaturedTools({ lang, navigate, reduce }) {
             <FadeUp key={i} delay={i * 0.1}>
               <motion.div
                 onClick={() => navigate('/auth?mode=register')}
-                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 320, border: '1px solid rgba(0,0,0,0.05)' }}
+                style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '50% 50%', minHeight: 320, border: '1px solid rgba(0,0,0,0.05)' }}
                 whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${card.accent}20`, transition: { duration: 0.2 } }}
               >
                 {/* Left: text */}
-                <div style={{ padding: '32px 28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ padding: '32px 28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0, overflow: 'hidden' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: card.badge.bg, color: card.badge.color, whiteSpace: 'nowrap' }}>
@@ -851,7 +861,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
                   </div>
                 </div>
                 {/* Right: illustration */}
-                <div style={{ background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minHeight: 160 }}>
+                <div style={{ background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minWidth: 0, overflow: 'hidden' }}>
                   {card.illu}
                 </div>
               </motion.div>
