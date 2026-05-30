@@ -510,22 +510,15 @@ function TornEdge({ topColor = '#0A0A0A', bottomColor = '#fff', flip = false }) 
 // ── "L'arme ultime" comparison section ───────────────────────
 
 function UltimateSection({ lang, navigate, reduce }) {
-  const rows = lang === 'fr' ? [
-    ['Rédaction de devis',           false, true],
-    ['Contrats prêts en 30s',        false, true],
-    ['CGV & mentions légales IA',    false, true],
-    ['Posts LinkedIn optimisés',     false, true],
-    ['Relances clients automatiques',false, true],
-    ['Audit de profil freelance',    false, true],
-    ['Support & mises à jour',       false, true],
-  ] : [
-    ['Quote drafting',               false, true],
-    ['Contracts in 30s',             false, true],
-    ['AI terms & legal notices',     false, true],
-    ['Optimised LinkedIn posts',     false, true],
-    ['Automated client follow-ups',  false, true],
-    ['Freelance profile audit',      false, true],
-    ['Support & updates',            false, true],
+  const { t } = useLang();
+  const rows = [
+    [t('landing.ultimate.row.1'), false, true],
+    [t('landing.ultimate.row.2'), false, true],
+    [t('landing.ultimate.row.3'), false, true],
+    [t('landing.ultimate.row.4'), false, true],
+    [t('landing.ultimate.row.5'), false, true],
+    [t('landing.ultimate.row.6'), false, true],
+    [t('landing.ultimate.row.7'), false, true],
   ];
 
   return (
@@ -533,10 +526,10 @@ function UltimateSection({ lang, navigate, reduce }) {
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-            {lang === 'fr' ? 'Comparaison' : 'Comparison'}
+            {t('landing.ultimate.badge')}
           </span>
           <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-            {lang === 'fr' ? <>Savvly vs. le reste<br /><span style={{ color: '#4F46E5' }}>10h gagnées par semaine.</span></> : <>Savvly vs. the rest<br /><span style={{ color: '#4F46E5' }}>10h saved per week.</span></>}
+            {t('landing.ultimate.h2.line1')}<br /><span style={{ color: '#4F46E5' }}>{t('landing.ultimate.h2.line2')}</span>
           </h2>
         </div>
 
@@ -545,8 +538,8 @@ function UltimateSection({ lang, navigate, reduce }) {
           <FadeUp>
             <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 32px rgba(15,15,60,0.07)', border: '1px solid #EDE9D8' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', background: '#F7F7FF', padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #EDE9D8' }}>
-                <span style={{ color: '#6B6B8A' }}>{lang === 'fr' ? 'Fonctionnalité' : 'Feature'}</span>
-                <span style={{ textAlign: 'center', color: '#9CA3AF' }}>{lang === 'fr' ? 'Autres' : 'Others'}</span>
+                <span style={{ color: '#6B6B8A' }}>{t('landing.ultimate.col.feature')}</span>
+                <span style={{ textAlign: 'center', color: '#9CA3AF' }}>{t('landing.ultimate.col.others')}</span>
                 <span style={{ textAlign: 'center', color: '#4F46E5' }}>Savvly</span>
               </div>
               {rows.map(([label, others, savvly], i) => (
@@ -591,7 +584,7 @@ function UltimateSection({ lang, navigate, reduce }) {
                   ))}
                   <div style={{ marginTop: 8, background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', borderRadius: 8, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'blink 1s step-end infinite' }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{lang === 'fr' ? 'Génération en cours…' : 'Generating…'}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{t('landing.ultimate.generating')}</span>
                   </div>
                 </div>
               </div>
@@ -619,7 +612,7 @@ function UltimateSection({ lang, navigate, reduce }) {
               whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.45)' }}
               whileTap={reduce ? {} : { scale: 0.97 }}
             >
-              {lang === 'fr' ? 'Essayer gratuitement →' : 'Try for free →'}
+              {t('landing.ultimate.cta')}
             </motion.button>
           </div>
         </FadeUp>
@@ -784,35 +777,36 @@ function IlluLegal() {
 // ── Bento featured tools grid ─────────────────────────────────
 
 function FeaturedTools({ lang, navigate, reduce }) {
+  const { t } = useLang();
   const cards = [
     {
-      title: lang === 'fr' ? 'LinkedIn Content' : 'LinkedIn Content',
+      title: t('landing.featured.li.title'),
       badge: { text: '⭐ BEST SELLER', bg: '#fad02c', color: '#78350F' },
-      desc: lang === 'fr' ? 'Rédigez des posts engageants adaptés à votre niche. S\'adapte à votre style d\'écriture.' : 'Write engaging posts for your niche. Adapts to your writing style.',
+      desc: t('landing.featured.li.desc'),
       uses: '3 421',
       accent: '#4F46E5',
       illu: <IlluLinkedIn reduce={reduce} />,
     },
     {
-      title: lang === 'fr' ? 'Audit CRO + SEO' : 'SEO & CRO Audit',
+      title: t('landing.featured.audit.title'),
       badge: { text: 'Pro', bg: 'rgba(79,70,229,0.1)', color: '#4F46E5' },
-      desc: lang === 'fr' ? 'Analysez n\'importe quel site et identifiez les leviers de conversion et SEO.' : 'Audit any site for conversion and SEO improvement opportunities.',
+      desc: t('landing.featured.audit.desc'),
       uses: '1 247',
       accent: '#10B981',
       illu: <IlluAudit reduce={reduce} />,
     },
     {
-      title: lang === 'fr' ? 'Générateur de devis' : 'Quote Generator',
-      badge: { text: lang === 'fr' ? 'Gratuit' : 'Free', bg: '#D1FAE5', color: '#065F46' },
-      desc: lang === 'fr' ? 'Créez un devis professionnel prêt à envoyer en moins de 2 minutes.' : 'Generate a professional quote ready to send in under 2 minutes.',
+      title: t('landing.featured.devis.title'),
+      badge: { text: t('landing.featured.devis.badge'), bg: '#D1FAE5', color: '#065F46' },
+      desc: t('landing.featured.devis.desc'),
       uses: '1 567',
       accent: '#F59E0B',
       illu: <IlluDevis />,
     },
     {
-      title: lang === 'fr' ? 'CGV & Docs Juridiques' : 'Terms & Legal Docs',
+      title: t('landing.featured.legal.title'),
       badge: { text: 'Pro', bg: 'rgba(79,70,229,0.1)', color: '#4F46E5' },
-      desc: lang === 'fr' ? 'CGV, mentions légales, politique de confidentialité en 30 secondes.' : 'Terms, legal notice, and privacy policy in 30 seconds.',
+      desc: t('landing.featured.legal.desc'),
       uses: '2 134',
       accent: '#6366F1',
       illu: <IlluLegal />,
@@ -825,13 +819,13 @@ function FeaturedTools({ lang, navigate, reduce }) {
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.15)', border: '1px solid rgba(250,208,44,0.4)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-              {lang === 'fr' ? 'Les favoris' : 'Top picks'}
+              {t('landing.featured.badge')}
             </span>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
               {lang === 'fr' ? <>4 outils <span style={{ color: '#4F46E5' }}>indispensables</span></> : <>4 <span style={{ color: '#4F46E5' }}>essential</span> tools</>}
             </h2>
             <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
-              {lang === 'fr' ? 'Les outils les plus utilisés par notre communauté de freelances.' : 'The most used tools by our freelance community.'}
+              {t('landing.featured.sub')}
             </p>
           </div>
         </FadeUp>
@@ -851,13 +845,13 @@ function FeaturedTools({ lang, navigate, reduce }) {
                       <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: card.badge.bg, color: card.badge.color, whiteSpace: 'nowrap' }}>
                         {card.badge.text}
                       </span>
-                      <span style={{ fontSize: 11, color: card.accent, fontWeight: 700 }}>{card.uses} {lang === 'fr' ? 'utilisations' : 'uses'}</span>
+                      <span style={{ fontSize: 11, color: card.accent, fontWeight: 700 }}>{card.uses} {t('landing.featured.uses')}</span>
                     </div>
                     <div style={{ fontSize: 22, fontWeight: 700, color: '#0F0F1A', marginBottom: 12, lineHeight: 1.2 }}>{card.title}</div>
                     <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.6, margin: 0 }}>{card.desc}</p>
                   </div>
                   <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: card.accent }}>
-                    {lang === 'fr' ? 'Essayer' : 'Try it'} →
+                    {t('landing.featured.try')} →
                   </div>
                 </div>
                 {/* Right: illustration */}
@@ -876,9 +870,12 @@ function FeaturedTools({ lang, navigate, reduce }) {
 // ── New Community section (coral/orange) ──────────────────────
 
 function CommunitySection({ lang, navigate, reduce }) {
-  const stats = lang === 'fr'
-    ? [{ n: '200+', label: 'membres actifs' }, { n: '13', label: 'outils IA' }, { n: '1', label: 'consultation offerte aux 50 premiers' }]
-    : [{ n: '200+', label: 'active members' }, { n: '13', label: 'AI tools' }, { n: '1', label: 'free consultation for first 50' }];
+  const { t } = useLang();
+  const stats = [
+    { n: '200+', label: t('landing.community.stat1') },
+    { n: '13',   label: t('landing.community.stat2') },
+    { n: '1',    label: t('landing.community.stat3') },
+  ];
   return (
     <FadeUp>
       <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -889,15 +886,13 @@ function CommunitySection({ lang, navigate, reduce }) {
         <div className="container" style={{ position: 'relative' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.15)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#818CF8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
-              🚀 {lang === 'fr' ? 'Communauté' : 'Community'}
+              🚀 {t('landing.community.badge')}
             </span>
             <h2 style={{ fontSize: 'clamp(30px, 5vw, 54px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              {lang === 'fr'
-                ? <>Rejoignez la communauté<br /><span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>des entrepreneurs</span></>
-                : <>Join the community<br /><span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>of entrepreneurs</span></>}
+              {t('landing.community.h2.line1')}<br /><span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.community.h2.line2')}</span>
             </h2>
             <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
-              {lang === 'fr' ? 'Trouvez des missions, partagez vos opportunités, échangez avec d\'autres freelances.' : 'Find missions, share opportunities, connect with other freelancers.'}
+              {t('landing.community.sub')}
             </p>
 
             {/* Stats row */}
@@ -916,7 +911,7 @@ function CommunitySection({ lang, navigate, reduce }) {
               whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.5)' }}
               whileTap={reduce ? {} : { scale: 0.97 }}
             >
-              {lang === 'fr' ? 'Rejoindre la communauté →' : 'Join the community →'}
+              {t('landing.community.cta')}
             </motion.button>
           </div>
         </div>
@@ -937,6 +932,7 @@ const MOCKUP_TOOLS = [
 ];
 
 function ContainerScroll({ lang, navigate, reduce }) {
+  const { t } = useLang();
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -957,15 +953,13 @@ function ContainerScroll({ lang, navigate, reduce }) {
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-              {lang === 'fr' ? 'Votre espace de travail' : 'Your workspace'}
+              {t('landing.dash.badge')}
             </span>
             <h2 style={{ fontSize: 'clamp(32px, 5vw, 64px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-              {lang === 'fr'
-                ? <>Arrêtez de bricoler.<br /><span style={{ color: '#4F46E5' }}>Passez à l'action.</span></>
-                : <>Stop patching it together.<br /><span style={{ color: '#4F46E5' }}>Start shipping.</span></>}
+              {t('landing.dash.h2.line1')}<br /><span style={{ color: '#4F46E5' }}>{t('landing.dash.h2.line2')}</span>
             </h2>
             <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 480, margin: '0 auto', lineHeight: 1.65 }}>
-              {lang === 'fr' ? 'Tous vos outils freelance au même endroit, prêts en quelques secondes.' : 'All your freelance tools in one place, ready in seconds.'}
+              {t('landing.dash.sub')}
             </p>
           </div>
         </FadeUp>
@@ -1003,8 +997,8 @@ function ContainerScroll({ lang, navigate, reduce }) {
                 <div style={{ flex: 1, padding: '24px 28px', overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0F0F1A' }}>{lang === 'fr' ? 'Vos outils' : 'Your tools'}</div>
-                      <div style={{ fontSize: 13, color: '#9CA3AF' }}>{lang === 'fr' ? 'Choisissez un outil pour commencer.' : 'Choose a tool to get started.'}</div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0F0F1A' }}>{t('landing.dash.tools.title')}</div>
+                      <div style={{ fontSize: 13, color: '#9CA3AF' }}>{t('landing.dash.tools.sub')}</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{ fontSize: 12, fontWeight: 700, color: '#4F46E5' }}>50 crédits</span>
@@ -1021,7 +1015,7 @@ function ContainerScroll({ lang, navigate, reduce }) {
                           <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 20, background: tk.badgeBg, color: tk.badgeColor, whiteSpace: 'nowrap' }}>{tk.badge}</span>
                         </div>
                         <div style={{ fontSize: 11, fontWeight: 600, color: '#0F0F1A', lineHeight: 1.4 }}>{tk.label}</div>
-                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8 }}>{lang === 'fr' ? 'Utiliser →' : 'Use →'}</div>
+                        <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8 }}>{t('landing.dash.use')}</div>
                       </div>
                     ))}
                   </div>
@@ -1038,7 +1032,7 @@ function ContainerScroll({ lang, navigate, reduce }) {
               whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.45)' }}
               whileTap={reduce ? {} : { scale: 0.97 }}
             >
-              {lang === 'fr' ? 'Accéder au dashboard →' : 'Access the dashboard →'}
+              {t('landing.dash.cta')}
             </motion.button>
           </div>
         </FadeUp>
@@ -1267,18 +1261,7 @@ export function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.1, ease }}
             >
-              {lang === 'fr' ? (
-                <>
-                  <span style={{ display: 'block' }}>Tous les outils</span>
-                  <span style={{ display: 'block' }}>dont un freelance</span>
-                  <span style={{ display: 'block' }}>a besoin.</span>
-                </>
-              ) : (
-                <>
-                  <span style={{ display: 'block' }}>Every tool a</span>
-                  <span style={{ display: 'block' }}>freelance needs.</span>
-                </>
-              )}
+              {t('landing.hero.title')}
             </motion.h1>
 
             <motion.div
@@ -1526,7 +1509,7 @@ export function Landing() {
               <div>
                 <h3 className="plan-name">Free</h3>
                 <p className="muted" style={{ fontSize: 13, margin: '0 0 24px' }}>{t('landing.pricing.free.tagline')}</p>
-                <p className="plan-price">{format(0)}<small>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
+                <p className="plan-price">{format(0)}<small>/{t('landing.pricing.period')}</small></p>
               </div>
               <ul className="plan-features">
                 <li><Glyph name="check" size={14} /><span>{t('landing.pricing.free.f1')}</span></li>
@@ -1558,7 +1541,7 @@ export function Landing() {
                   </div>
                   <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: '0 0 24px' }}>{t('landing.pricing.pro.tagline')}</p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                    <p className="plan-price" style={{ margin: 0 }}>{format(15)}<small style={{ color: 'rgba(255,255,255,0.6)' }}>/{lang === 'fr' ? 'mois' : 'month'}</small></p>
+                    <p className="plan-price" style={{ margin: 0 }}>{format(15)}<small style={{ color: 'rgba(255,255,255,0.6)' }}>/{t('landing.pricing.period')}</small></p>
                     <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>{format(49)}</span>
                   </div>
                   <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 4 }}>{t('landing.pricing.pro.note')}</p>
