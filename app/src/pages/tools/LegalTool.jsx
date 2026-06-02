@@ -13,6 +13,7 @@ import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import { fillTemplate, CGV_TEMPLATE, PRIVACY_TEMPLATE, MENTIONS_TEMPLATE } from '../../lib/legalTemplates';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const LEGAL_TYPES = ['EI', 'Micro-entreprise', 'EURL', 'SASU', 'SARL', 'SAS', 'SA', 'Autre'];
 const DEPOSIT_OPTIONS = ['30', '40', '50'];
@@ -47,6 +48,7 @@ export function LegalTool({ tool, initialData }) {
   const [docType, setDocType] = useState(initialData?.docType ?? 'tos');
 
   const [output, setOutput] = useState('');
+  const [streamingRaw, setStreamingRaw] = useState('');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -98,13 +100,14 @@ export function LegalTool({ tool, initialData }) {
 
     setLoading(true);
     setOutput('');
+    setStreamingRaw('');
 
     try {
       const baseVars = buildBaseVars();
 
       const aiResponse = await streamGenerate(
         { toolId: tool.id, input: { mode: 'template', activity: activity.trim(), legalType, docType }, session, lang },
-        () => {},
+        (text) => setStreamingRaw(text),
       );
 
       const activityMatch = aiResponse.match(/\[ACTIVITY\]([\s\S]*?)\[\/ACTIVITY\]/);
@@ -322,8 +325,11 @@ export function LegalTool({ tool, initialData }) {
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             <div className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
-              {loading ? (
+              <StreamingBanner loading={loading} hasOutput={!!streamingRaw} />
+              {loading && !streamingRaw ? (
                 <GeneratingIndicator toolId="legal" />
+              ) : streamingRaw && loading ? (
+                <pre className="stream-text">{streamingRaw}<span className="stream-cursor" /></pre>
               ) : output ? (
                 <MarkdownResult>{output}</MarkdownResult>
               ) : (

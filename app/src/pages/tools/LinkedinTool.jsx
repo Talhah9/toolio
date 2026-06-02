@@ -9,6 +9,7 @@ import { SaveButton } from '../../components/SaveButton';
 import { ShareButton } from '../../components/ShareButton';
 import { useToast } from '../../components/Toast';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
@@ -163,6 +164,7 @@ export function LinkedinTool({ tool, initialData }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
+            <StreamingBanner loading={loading} hasOutput={!!output} />
             {loading && !output ? (
               <GeneratingIndicator toolId="linkedin-content" />
             ) : output ? (

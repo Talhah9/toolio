@@ -12,6 +12,7 @@ import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const EXPERIENCE_LEVELS = [
   { id: 'Junior',    key: 'tool.mission-finder.experience.junior' },
@@ -89,7 +90,7 @@ export function MissionFinderTool({ tool, initialData }) {
       const input = { expertise, tjm, experience, workPreference, location, sector: sector || undefined, goal };
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
-        () => {},
+        (text) => setRawOutput(text),
       );
       const parsed = parseSections(fullText, SECTION_KEYS);
       setSections(parsed);
@@ -321,8 +322,11 @@ export function MissionFinderTool({ tool, initialData }) {
               </div>
             )}
 
-            {loading ? (
+            <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
+            {loading && !rawOutput ? (
               <GeneratingIndicator toolId="mission-finder" />
+            ) : rawOutput && loading ? (
+              <pre className="stream-text">{rawOutput}<span className="stream-cursor" /></pre>
             ) : hasOutput ? (
               <MarkdownResult>{sections[activeTab] || ''}</MarkdownResult>
             ) : (

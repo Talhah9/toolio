@@ -13,6 +13,7 @@ import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import { fillTemplate, CONTRAT_TEMPLATE } from '../../lib/legalTemplates';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
 const DURATION_UNIT_KEYS = ['days', 'weeks', 'months'];
@@ -58,6 +59,7 @@ export function ContratTool({ tool, initialData }) {
   const [vatSubject, setVatSubject] = useState(false);
 
   const [output, setOutput] = useState('');
+  const [streamingRaw, setStreamingRaw] = useState('');
   const [loading, setLoading] = useState(false);
   const [genId, setGenId] = useState(null);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -88,13 +90,14 @@ export function ContratTool({ tool, initialData }) {
 
     setLoading(true);
     setOutput('');
+    setStreamingRaw('');
 
     try {
       const today = new Date().toLocaleDateString('fr-FR');
 
       const aiResponse = await streamGenerate(
         { toolId: tool.id, input: { mode: 'template', mission: mission.trim() }, session, lang },
-        () => {},
+        (text) => setStreamingRaw(text),
       );
 
       const missionMatch = aiResponse.match(/\[MISSION\]([\s\S]*?)\[\/MISSION\]/);
@@ -315,8 +318,11 @@ export function ContratTool({ tool, initialData }) {
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             <div className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
-              {loading ? (
+              <StreamingBanner loading={loading} hasOutput={!!streamingRaw} />
+              {loading && !streamingRaw ? (
                 <GeneratingIndicator toolId="contract" />
+              ) : streamingRaw && loading ? (
+                <pre className="stream-text">{streamingRaw}<span className="stream-cursor" /></pre>
               ) : output ? (
                 <MarkdownResult>{output}</MarkdownResult>
               ) : (

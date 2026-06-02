@@ -9,6 +9,7 @@ import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const TONES = [
   { id: 'cordial', labelKey: 'tool.relance.tone.cordial.label', descKey: 'tool.relance.tone.cordial.desc', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
@@ -150,6 +151,7 @@ export function RelanceTool({ tool }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
+            <StreamingBanner loading={loading} hasOutput={!!output} />
             {loading && !output ? (
               <GeneratingIndicator toolId="relance" />
             ) : output ? (

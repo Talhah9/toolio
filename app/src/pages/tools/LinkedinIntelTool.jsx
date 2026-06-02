@@ -13,6 +13,7 @@ import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const GOALS = [
   { id: 'visibility', key: 'tool.linkedin-intel.goal.visibility' },
@@ -143,7 +144,7 @@ export function LinkedinIntelTool({ tool }) {
           session,
           lang,
         },
-        () => {},
+        (text) => setRawOutput(text),
       );
       console.log('[linkedin-intel] raw output length:', fullText.length);
       const parsed = parseSections(fullText, TABS.map(t => t.id));
@@ -361,8 +362,11 @@ export function LinkedinIntelTool({ tool }) {
               </div>
             )}
 
-            {loading ? (
+            <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
+            {loading && !rawOutput ? (
               <GeneratingIndicator toolId="linkedin-intel" />
+            ) : rawOutput && loading ? (
+              <pre className="stream-text">{rawOutput}<span className="stream-cursor" /></pre>
             ) : hasOutput ? (
               activeTab === 'CONTENT_PLAN' ? (() => {
                 const ideas = parsePostIdeas(sections['CONTENT_PLAN']);

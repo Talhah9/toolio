@@ -14,6 +14,7 @@ import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const FOCUS_OPTIONS = [
   { id: 'positioning', key: 'tool.compete.focus.positioning' },
@@ -142,6 +143,7 @@ export function ConcurrentsTool({ tool }) {
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {!loading && output && score !== null && <ScoreGauge score={score} lang={lang} />}
+            <StreamingBanner loading={loading} hasOutput={!!output} />
             {loading && !output ? (
               <GeneratingIndicator toolId="compete" />
             ) : output && loading ? (

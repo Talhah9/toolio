@@ -9,6 +9,7 @@ import { ShareButton } from '../../components/ShareButton';
 import { ScoreGauge, parseScore } from '../../components/ScoreGauge';
 import { useToast } from '../../components/Toast';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
@@ -79,7 +80,7 @@ export function AuditTool({ tool }) {
     try {
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { url, checks: CHECK_KEYS.filter((_, i) => checks[i]) }, session, lang },
-        () => {},
+        (text) => setRawOutput(text),
       );
       const parsed = parseSections(fullText, TABS.map(t => t.id));
       setSections(parsed);
@@ -237,8 +238,11 @@ export function AuditTool({ tool }) {
               </div>
             )}
 
-            {loading ? (
+            <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
+            {loading && !rawOutput ? (
               <GeneratingIndicator toolId="audit" />
+            ) : rawOutput && loading ? (
+              <pre className="stream-text">{rawOutput}<span className="stream-cursor" /></pre>
             ) : hasOutput ? (
               sections[activeTab] ? (
                 <MarkdownResult>{sections[activeTab]}</MarkdownResult>

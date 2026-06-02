@@ -12,6 +12,7 @@ import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
+import StreamingBanner from '../../components/StreamingBanner';
 
 const CHANNELS = [
   { id: 'LinkedIn DM', key: 'tool.prospection.channel.linkedin' },
@@ -79,7 +80,7 @@ export function ProspectionTool({ tool, initialData }) {
     try {
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { niche, target, channel, tone, pain: pain || undefined }, session, lang },
-        () => {},
+        (text) => setRawOutput(text),
       );
       const parsed = parseSections(fullText, SECTION_KEYS);
       setSections(parsed);
@@ -294,8 +295,11 @@ export function ProspectionTool({ tool, initialData }) {
               </div>
             )}
 
-            {loading ? (
+            <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
+            {loading && !rawOutput ? (
               <GeneratingIndicator toolId="prospection" />
+            ) : rawOutput && loading ? (
+              <pre className="stream-text">{rawOutput}<span className="stream-cursor" /></pre>
             ) : hasOutput ? (
               <MarkdownResult>{getTabContent(activeTab)}</MarkdownResult>
             ) : (
