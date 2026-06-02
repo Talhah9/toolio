@@ -13,6 +13,7 @@ import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
+import GeneratingIndicator from '../../components/GeneratingIndicator';
 
 const FOCUS_OPTIONS = [
   { id: 'positioning', key: 'tool.compete.focus.positioning' },
@@ -142,7 +143,7 @@ export function ConcurrentsTool({ tool }) {
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {!loading && output && score !== null && <ScoreGauge score={score} lang={lang} />}
             {loading && !output ? (
-              <div className="result-empty"><span className="row" style={{ gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />{t('tool.result.working')}</span></div>
+              <GeneratingIndicator toolId="compete" />
             ) : output && loading ? (
               <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
             ) : output ? <MarkdownResult>{stripScore(output)}</MarkdownResult> : <div className="result-empty">{t('tool.result.placeholder')}</div>}

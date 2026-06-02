@@ -11,6 +11,7 @@ import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
+import GeneratingIndicator from '../../components/GeneratingIndicator';
 
 const EXPERIENCE_LEVELS = [
   { id: 'Junior',    key: 'tool.mission-finder.experience.junior' },
@@ -321,12 +322,7 @@ export function MissionFinderTool({ tool, initialData }) {
             )}
 
             {loading ? (
-              <div className="result-empty">
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
-                  {t('tool.result.working')}
-                </span>
-              </div>
+              <GeneratingIndicator toolId="mission-finder" />
             ) : hasOutput ? (
               <MarkdownResult>{sections[activeTab] || ''}</MarkdownResult>
             ) : (

@@ -8,6 +8,7 @@ import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
+import GeneratingIndicator from '../../components/GeneratingIndicator';
 
 const TONES = [
   { id: 'cordial', labelKey: 'tool.relance.tone.cordial.label', descKey: 'tool.relance.tone.cordial.desc', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE' },
@@ -150,12 +151,7 @@ export function RelanceTool({ tool }) {
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             {loading && !output ? (
-              <div className="result-empty">
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: activeTone?.color || 'var(--accent)', animation: 'pulse 1s infinite' }} />
-                  {t('tool.result.working')}
-                </span>
-              </div>
+              <GeneratingIndicator toolId="relance" />
             ) : output ? (
               loading ? (
                 <pre className="stream-text">{output}<span className="stream-cursor" /></pre>

@@ -55,6 +55,7 @@ export const en = {
   'tool.regenerate': 'Regenerate',
   'tool.result.placeholder': 'Your result will appear here.',
   'tool.result.working': 'Savvly is working…',
+  'tool.generating.title': 'Generating…',
   'tool.history': 'Recent history',
   'tool.history.seeall': 'See all',
   'tool.error.credits': 'Not enough credits. Top up your account.',

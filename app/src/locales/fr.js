@@ -55,6 +55,7 @@ export const fr = {
   'tool.regenerate': 'Régénérer',
   'tool.result.placeholder': 'Le résultat apparaîtra ici.',
   'tool.result.working': 'Savvly génère…',
+  'tool.generating.title': 'Génération en cours…',
   'tool.history': 'Historique récent',
   'tool.history.seeall': 'Tout voir',
   'tool.error.credits': 'Crédits insuffisants. Rechargez votre compte.',

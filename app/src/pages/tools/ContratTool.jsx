@@ -12,6 +12,7 @@ import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
 import { fillTemplate, CONTRAT_TEMPLATE } from '../../lib/legalTemplates';
+import GeneratingIndicator from '../../components/GeneratingIndicator';
 
 const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
 const DURATION_UNIT_KEYS = ['days', 'weeks', 'months'];
@@ -315,14 +316,7 @@ export function ContratTool({ tool, initialData }) {
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             <div className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
               {loading ? (
-                <div className="result-empty">
-                  <span className="row" style={{ gap: 10 }}>
-                    {[0, 1, 2].map(i => (
-                      <span key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: `dot-bounce 1.2s ease-in-out ${i * 0.2}s infinite` }} />
-                    ))}
-                    <span style={{ color: 'var(--accent)', fontSize: 13 }}>{t('tool.generating')}</span>
-                  </span>
-                </div>
+                <GeneratingIndicator toolId="contract" />
               ) : output ? (
                 <MarkdownResult>{output}</MarkdownResult>
               ) : (

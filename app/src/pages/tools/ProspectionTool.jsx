@@ -11,6 +11,7 @@ import { useApp } from '../../context/AppContext';
 import { useLang } from '../../context/LanguageContext';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
+import GeneratingIndicator from '../../components/GeneratingIndicator';
 
 const CHANNELS = [
   { id: 'LinkedIn DM', key: 'tool.prospection.channel.linkedin' },
@@ -294,12 +295,7 @@ export function ProspectionTool({ tool, initialData }) {
             )}
 
             {loading ? (
-              <div className="result-empty">
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1s infinite' }} />
-                  {t('tool.result.working')}
-                </span>
-              </div>
+              <GeneratingIndicator toolId="prospection" />
             ) : hasOutput ? (
               <MarkdownResult>{getTabContent(activeTab)}</MarkdownResult>
             ) : (
