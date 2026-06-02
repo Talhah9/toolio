@@ -1477,10 +1477,8 @@ a {
    Landing page — new sections
    ============================================================ */
 
-/* Dark sections */
-.lp-dark { background: #0A0A0A; color: #fff; }
-.lp-dark .eyebrow { color: rgba(255,255,255,0.45); }
-.lp-dark .h1 { color: #fff; }
+/* Stats + testimonials section */
+.lp-dark { background: #F8F8FA; color: #0F0F1A; }
 
 /* Pain section — diagonal clip only */
 .lp-pain-section {
@@ -1766,14 +1764,15 @@ a {
   transform: rotate(2deg);
 }
 
-/* Final CTA dark section */
+/* Final CTA section */
 .lp-final-dark {
-  background: #0A0A0A; color: #fff;
+  background: #fff; color: #0F0F1A;
   padding: 96px 0;
   text-align: center;
+  border-top: 1px solid var(--border);
 }
-.lp-final-dark .h1 { color: #fff; }
-.lp-final-dark .muted { color: rgba(255,255,255,0.55); }
+.lp-final-dark .h1 { color: #0F0F1A; }
+.lp-final-dark .muted { color: #6B6B8A; }
 
 /* Social proof inline pill */
 .lp-social-inline {

@@ -120,10 +120,10 @@ function AnimatedStat({ end, suffix = '', duration = 1.5, label }) {
   const count = useCountUp(end, duration, inView);
   return (
     <div ref={ref} className="stat-item">
-      <div className="stat-value" style={{ color: '#fff' }}>
+      <div className="stat-value" style={{ color: '#0F0F1A' }}>
         {count.toLocaleString()}{suffix}
       </div>
-      <div className="stat-label" style={{ color: 'rgba(255,255,255,0.5)' }}>{label}</div>
+      <div className="stat-label" style={{ color: '#6B6B8A' }}>{label}</div>
     </div>
   );
 }
@@ -632,26 +632,26 @@ const LI_POSTS = [
 
 function IlluLinkedIn({ reduce }) {
   const [postIdx, setPostIdx] = useState(0);
-  const [chars, setChars] = useState(0);
+  const [text, setText] = useState('');
   const [capped, setCapped] = useState(false);
   const textRef = useRef(null);
 
   useEffect(() => {
     const post = LI_POSTS[postIdx];
     setCapped(false);
-    if (reduce) { setChars(post.length); return; }
-    setChars(0);
+    setText('');
+    if (reduce) { setText(post); return; }
     let c = 0;
     const tick = setInterval(() => {
       c += 1;
-      setChars(c);
-      // stop early if the text container overflows its max-height
+      const next = post.slice(0, c);
+      setText(next);
       if (textRef.current && textRef.current.scrollHeight > textRef.current.clientHeight) {
         clearInterval(tick);
         setCapped(true);
         setTimeout(() => {
           setCapped(false);
-          setChars(0);
+          setText('');
           setPostIdx(i => (i + 1) % LI_POSTS.length);
         }, 2000);
         return;
@@ -659,7 +659,7 @@ function IlluLinkedIn({ reduce }) {
       if (c >= post.length) {
         clearInterval(tick);
         setTimeout(() => {
-          setChars(0);
+          setText('');
           setPostIdx(i => (i + 1) % LI_POSTS.length);
         }, 2000);
       }
@@ -668,7 +668,7 @@ function IlluLinkedIn({ reduce }) {
   }, [postIdx, reduce]);
 
   const post = LI_POSTS[postIdx];
-  const typing = chars < post.length && !capped;
+  const typing = text.length < post.length && !capped;
 
   return (
     <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', padding: '14px 16px', fontSize: 12, color: '#1D1D1F', lineHeight: 1.75, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -680,9 +680,9 @@ function IlluLinkedIn({ reduce }) {
         </div>
       </div>
       <div ref={textRef} style={{ maxHeight: 180, overflowY: 'hidden', whiteSpace: 'pre-line' }}>
-        <span>{post.slice(0, chars)}</span>
+        <span>{text}</span>
         {capped && <span>…</span>}
-        {typing && <span className="lp-li-cursor">|</span>}
+        {typing && <span style={{ color: '#4F46E5', fontWeight: 700, animation: 'blink 1s step-end infinite' }}>|</span>}
       </div>
     </div>
   );
@@ -893,34 +893,34 @@ function NewsletterSection({ reduce }) {
 
   return (
     <FadeUp>
-      <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <section style={{ background: '#FFF9F0', borderTop: '1px solid #EDE8E0', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(79,70,229,0.04) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         <div className="container" style={{ position: 'relative' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 620, margin: '0 auto' }}>
 
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.12)', border: '1px solid rgba(250,208,44,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#fad02c', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.25)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
               {t('landing.newsletter.badge')}
             </span>
 
-            <h2 style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 900, color: '#fff', margin: '0 0 18px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            <h2 style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 18px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
               {t('landing.newsletter.h2.line1')}<br />
-              <span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span style={{ color: '#4F46E5' }}>
                 {t('landing.newsletter.h2.line2')}
               </span>
             </h2>
 
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', margin: '0 0 44px', lineHeight: 1.65, maxWidth: 500 }}>
+            <p style={{ fontSize: 16, color: '#6B6B8A', margin: '0 0 44px', lineHeight: 1.65, maxWidth: 500 }}>
               {t('landing.newsletter.sub')}
             </p>
 
             {status === 'success' ? (
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 10 }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#0F0F1A', marginBottom: 10 }}>
                   {t('landing.newsletter.success')}
                 </div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
+                <div style={{ fontSize: 14, color: '#6B6B8A' }}>
                   {t('landing.newsletter.success.sub')}
                 </div>
               </div>
@@ -933,7 +933,7 @@ function NewsletterSection({ reduce }) {
                   placeholder={t('landing.newsletter.placeholder')}
                   required
                   disabled={status === 'loading'}
-                  style={{ flex: 1, minWidth: 220, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '14px 18px', fontSize: 14, color: '#fff', outline: 'none' }}
+                  style={{ flex: 1, minWidth: 220, background: '#fff', border: '1px solid #D1C9BE', borderRadius: 12, padding: '14px 18px', fontSize: 14, color: '#0F0F1A', outline: 'none' }}
                 />
                 <motion.button
                   type="submit"
@@ -945,7 +945,7 @@ function NewsletterSection({ reduce }) {
                   {status === 'loading' ? '...' : t('landing.newsletter.cta')}
                 </motion.button>
                 {status === 'error' && (
-                  <p style={{ width: '100%', textAlign: 'center', fontSize: 13, color: '#F87171', margin: '6px 0 0' }}>
+                  <p style={{ width: '100%', textAlign: 'center', fontSize: 13, color: '#DC2626', margin: '6px 0 0' }}>
                     {t('landing.newsletter.error')}
                   </p>
                 )}
@@ -953,7 +953,7 @@ function NewsletterSection({ reduce }) {
             )}
 
             {status !== 'success' && (
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 16 }}>
+              <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 16 }}>
                 {t('landing.newsletter.disclaimer')}
               </p>
             )}
@@ -975,20 +975,20 @@ function CommunitySection({ lang, navigate, reduce }) {
   ];
   return (
     <FadeUp>
-      <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,208,44,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <section style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(79,70,229,0.05) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,208,44,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         <div className="container" style={{ position: 'relative' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.15)', border: '1px solid rgba(79,70,229,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#818CF8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
               🚀 {t('landing.community.badge')}
             </span>
-            <h2 style={{ fontSize: 'clamp(30px, 5vw, 54px)', fontWeight: 900, color: '#fff', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              {t('landing.community.h2.line1')}<br /><span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.community.h2.line2')}</span>
+            <h2 style={{ fontSize: 'clamp(30px, 5vw, 54px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              {t('landing.community.h2.line1')}<br /><span style={{ color: '#4F46E5' }}>{t('landing.community.h2.line2')}</span>
             </h2>
-            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.5)', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
+            <p style={{ fontSize: 17, color: '#6B6B8A', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
               {t('landing.community.sub')}
             </p>
 
@@ -996,8 +996,8 @@ function CommunitySection({ lang, navigate, reduce }) {
             <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
               {stats.map(({ n, label }, i) => (
                 <div key={i} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: i === 1 ? '#fad02c' : '#fff', lineHeight: 1 }}>{n}</div>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 6, maxWidth: 130, lineHeight: 1.4 }}>{label}</div>
+                  <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: i === 1 ? '#D97706' : '#0F0F1A', lineHeight: 1 }}>{n}</div>
+                  <div style={{ fontSize: 13, color: '#6B6B8A', marginTop: 6, maxWidth: 130, lineHeight: 1.4 }}>{label}</div>
                 </div>
               ))}
             </div>
@@ -1448,6 +1448,9 @@ export function Landing() {
         </div>
       </section>
 
+      {/* ── 3b. NEWSLETTER ───────────────────────────────────── */}
+      <NewsletterSection reduce={reduce} />
+
       {/* ── 4. SOCIAL PROOF — STATS + TESTIMONIALS ────────────── */}
       <section className="section lp-dark">
         <div className="container">
@@ -1722,9 +1725,6 @@ export function Landing() {
         </section>
       </FadeUp>
 
-      {/* ── 10. NEWSLETTER ───────────────────────────────────── */}
-      <NewsletterSection reduce={reduce} />
-
       {/* ── 11. FAQ ───────────────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
@@ -1748,8 +1748,8 @@ export function Landing() {
       <FadeUp>
         <section className="lp-final-dark">
           <div className="container-narrow">
-            <h2 className="h1" style={{ marginBottom: 16, color: '#fff' }}>{t('landing.final.title')}</h2>
-            <p style={{ marginBottom: 32, color: 'rgba(255,255,255,0.55)', fontSize: 15 }}>{t('landing.final.sub')}</p>
+            <h2 className="h1" style={{ marginBottom: 16, color: '#0F0F1A' }}>{t('landing.final.title')}</h2>
+            <p style={{ marginBottom: 32, color: '#6B6B8A', fontSize: 15 }}>{t('landing.final.sub')}</p>
             <motion.button
               className="btn btn-accent btn-lg"
               onClick={() => navigate('/auth?mode=register')}
@@ -1774,7 +1774,7 @@ export function Landing() {
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: 0 }}>{t('landing.final.social')}</p>
+              <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>{t('landing.final.social')}</p>
             </div>
           </div>
         </section>
