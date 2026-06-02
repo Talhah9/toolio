@@ -1,0 +1,270 @@
+<svg width="900" height="700" viewBox="0 0 900 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');]]></style>
+  </defs>
+
+  <!-- Page background -->
+  <rect width="900" height="700" fill="#FAFAFA"/>
+
+  <!-- ── HEADER ──────────────────────────────────────────────── -->
+  <rect width="900" height="68" fill="#111111"/>
+  <!-- Mini S emblem in header -->
+  <g transform="translate(32,13) scale(0.808)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#818CF8"/>
+  </g>
+  <text x="72" y="35"
+        font-family="'Syne','Helvetica Neue',Arial,sans-serif"
+        font-weight="800" font-size="22" fill="#FFFFFF" letter-spacing="-0.3">Savvly.</text>
+  <text x="72" y="55"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="400" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2.5">BRAND GUIDELINES 2025</text>
+  <text x="868" y="44"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="400" font-size="11" fill="rgba(255,255,255,0.35)"
+        text-anchor="end">savvly.co</text>
+
+  <!-- ── SECTION 1: LOGO VARIANTS ───────────────────────────── -->
+  <rect x="0" y="68" width="900" height="198" fill="#FFFFFF"/>
+  <!-- Divider line -->
+  <line x1="0" y1="266" x2="900" y2="266" stroke="#E5E7EB" stroke-width="1"/>
+
+  <!-- Section label -->
+  <text x="40" y="98"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#9CA3AF" letter-spacing="2.5">LOGO VARIANTS</text>
+
+  <!-- Full logo light — preview box -->
+  <rect x="40" y="108" width="220" height="68" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+  <!-- Inline full light logo -->
+  <g transform="translate(52,115) scale(0.885)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#111111" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#4F46E5"/>
+  </g>
+  <text x="104" y="153"
+        font-family="'Syne','Helvetica Neue',Arial,sans-serif"
+        font-weight="800" font-size="26" fill="#111111" letter-spacing="-0.5">Savvly.</text>
+  <text x="40" y="194"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#9CA3AF">Light / For white backgrounds</text>
+
+  <!-- Full logo dark — preview box -->
+  <rect x="290" y="108" width="220" height="68" rx="8" fill="#111111"/>
+  <g transform="translate(302,115) scale(0.885)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#818CF8"/>
+  </g>
+  <text x="354" y="153"
+        font-family="'Syne','Helvetica Neue',Arial,sans-serif"
+        font-weight="800" font-size="26" fill="#FFFFFF" letter-spacing="-0.5">Savvly.</text>
+  <text x="290" y="194"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#9CA3AF">Dark / For dark backgrounds</text>
+
+  <!-- Icon light -->
+  <rect x="548" y="108" width="68" height="68" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+  <g transform="translate(566,117) scale(0.808)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#111111" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#4F46E5"/>
+  </g>
+
+  <!-- Icon dark -->
+  <rect x="628" y="108" width="68" height="68" rx="14" fill="#111111"/>
+  <g transform="translate(646,117) scale(0.808)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#818CF8"/>
+  </g>
+
+  <!-- Icon purple -->
+  <rect x="708" y="108" width="68" height="68" rx="14" fill="#4F46E5"/>
+  <g transform="translate(726,117) scale(0.808)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#C7D2FE"/>
+  </g>
+
+  <!-- Favicon -->
+  <rect x="788" y="108" width="68" height="68" rx="14" fill="#4F46E5"/>
+  <g transform="translate(803,118) scale(0.577)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="6" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="6" fill="#C7D2FE"/>
+  </g>
+
+  <!-- Icon labels -->
+  <text x="582" y="194"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9.5" fill="#9CA3AF" text-anchor="middle">Light</text>
+  <text x="662" y="194"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9.5" fill="#9CA3AF" text-anchor="middle">Dark</text>
+  <text x="742" y="194"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9.5" fill="#9CA3AF" text-anchor="middle">Purple</text>
+  <text x="822" y="194"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9.5" fill="#9CA3AF" text-anchor="middle">Favicon</text>
+
+  <!-- Minimum size note -->
+  <text x="548" y="240"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9.5" fill="#C0C0C0">Minimum size: 24×24px icon / 120px wide full logo</text>
+
+  <!-- ── SECTION 2: COLOR PALETTE ────────────────────────────── -->
+  <rect x="0" y="266" width="900" height="138" fill="#F8F8FA"/>
+  <line x1="0" y1="404" x2="900" y2="404" stroke="#E5E7EB" stroke-width="1"/>
+
+  <text x="40" y="294"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#9CA3AF" letter-spacing="2.5">COLOR PALETTE</text>
+
+  <!-- Color swatches -->
+  <!-- Purple -->
+  <rect x="40" y="306" width="140" height="56" rx="8" fill="#4F46E5"/>
+  <text x="50" y="328"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="rgba(255,255,255,0.65)">PRIMARY</text>
+  <text x="50" y="348"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="12" fill="#FFFFFF">#4F46E5</text>
+  <text x="50" y="380"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#6B6B8A">Indigo Purple</text>
+
+  <!-- Gold -->
+  <rect x="196" y="306" width="140" height="56" rx="8" fill="#fad02c"/>
+  <text x="206" y="328"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="rgba(0,0,0,0.5)">ACCENT</text>
+  <text x="206" y="348"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="12" fill="#111111">#fad02c</text>
+  <text x="196" y="380"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#6B6B8A">Gold</text>
+
+  <!-- Dark -->
+  <rect x="352" y="306" width="140" height="56" rx="8" fill="#111111"/>
+  <text x="362" y="328"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="rgba(255,255,255,0.5)">DARK</text>
+  <text x="362" y="348"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="12" fill="#FFFFFF">#111111</text>
+  <text x="352" y="380"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#6B6B8A">Ink Black</text>
+
+  <!-- Cream -->
+  <rect x="508" y="306" width="140" height="56" rx="8" fill="#FFF9F0" stroke="#E5D9C8" stroke-width="1"/>
+  <text x="518" y="328"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#9CA3AF">WARM BG</text>
+  <text x="518" y="348"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="12" fill="#6B6B8A">#FFF9F0</text>
+  <text x="508" y="380"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#6B6B8A">Warm Cream</text>
+
+  <!-- White -->
+  <rect x="664" y="306" width="140" height="56" rx="8" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="674" y="328"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#9CA3AF">BASE</text>
+  <text x="674" y="348"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="12" fill="#6B6B8A">#FFFFFF</text>
+  <text x="664" y="380"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="10" fill="#6B6B8A">Pure White</text>
+
+  <!-- ── SECTION 3: TYPOGRAPHY ───────────────────────────────── -->
+  <rect x="0" y="404" width="900" height="124" fill="#FFFFFF"/>
+  <line x1="0" y1="528" x2="900" y2="528" stroke="#E5E7EB" stroke-width="1"/>
+
+  <text x="40" y="432"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#9CA3AF" letter-spacing="2.5">TYPOGRAPHY</text>
+
+  <!-- Heading font sample -->
+  <rect x="40" y="442" width="400" height="72" rx="8" fill="#F8F8FA"/>
+  <text x="58" y="468"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9" fill="#9CA3AF" letter-spacing="1.5">HEADING — SYNE 800</text>
+  <text x="58" y="498"
+        font-family="'Syne','Helvetica Neue',Arial,sans-serif"
+        font-weight="800" font-size="28" fill="#111111" letter-spacing="-0.5">One platform. Every tool.</text>
+
+  <!-- Body font sample -->
+  <rect x="460" y="442" width="400" height="72" rx="8" fill="#F8F8FA"/>
+  <text x="478" y="468"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="9" fill="#9CA3AF" letter-spacing="1.5">BODY — DM SANS 400</text>
+  <text x="478" y="490"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="400" font-size="14" fill="#374151" xml:space="preserve">Contracts, quotes, LinkedIn posts, legal docs —</text>
+  <text x="478" y="508"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="400" font-size="14" fill="#374151">generated in seconds by AI.</text>
+
+  <!-- ── SECTION 4: DO'S AND DON'TS ─────────────────────────── -->
+  <rect x="0" y="528" width="900" height="128" fill="#F8F8FA"/>
+  <line x1="0" y1="656" x2="900" y2="656" stroke="#E5E7EB" stroke-width="1"/>
+
+  <text x="40" y="556"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#9CA3AF" letter-spacing="2.5">DO'S AND DON'TS</text>
+
+  <!-- Do's column -->
+  <rect x="40" y="565" width="380" height="80" rx="8" fill="#F0FDF4"/>
+  <text x="58" y="584"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#15803D" letter-spacing="1">DO</text>
+  <!-- Check marks using path shapes -->
+  <text x="58" y="604"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="12" fill="#166534">✓  Use on white, cream, or #111 backgrounds</text>
+  <text x="58" y="622"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="12" fill="#166534">✓  Maintain clear space equal to emblem height</text>
+  <text x="58" y="639"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="12" fill="#166534">✓  Use the purple icon on purple brand backgrounds</text>
+
+  <!-- Don'ts column -->
+  <rect x="440" y="565" width="420" height="80" rx="8" fill="#FFF1F2"/>
+  <text x="458" y="584"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-weight="500" font-size="10" fill="#BE123C" letter-spacing="1">DON'T</text>
+  <text x="458" y="604"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="12" fill="#9F1239">✗  Distort, rotate, or recolor the S emblem</text>
+  <text x="458" y="622"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="12" fill="#9F1239">✗  Place on busy or low-contrast backgrounds</text>
+  <text x="458" y="639"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="12" fill="#9F1239">✗  Use outline or thin-weight variations</text>
+
+  <!-- ── FOOTER ──────────────────────────────────────────────── -->
+  <rect x="0" y="656" width="900" height="44" fill="#111111"/>
+  <text x="40" y="683"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="11" fill="rgba(255,255,255,0.35)">© 2025 Savvly · One platform, every tool for your success.</text>
+  <text x="860" y="683"
+        font-family="'DM Sans','Helvetica Neue',Arial,sans-serif"
+        font-size="11" fill="rgba(255,255,255,0.35)" text-anchor="end">Version 1.0</text>
+</svg>

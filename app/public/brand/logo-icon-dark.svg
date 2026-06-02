@@ -1,0 +1,10 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="20" fill="#111111"/>
+  <!-- S emblem centered -->
+  <g transform="translate(26,20) scale(1.154)">
+    <path d="M 28,4 C 42,4 42,26 21,26 C 0,26 0,48 14,48"
+          stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="4" r="5" fill="#fad02c"/>
+    <circle cx="14" cy="48" r="5" fill="#818CF8"/>
+  </g>
+</svg>
