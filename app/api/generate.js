@@ -27,7 +27,7 @@ const ASCII_INSTRUCTION = '\n\nIMPORTANT: Do not use emoji or special unicode ch
 
 const CALLOUT_INSTRUCTION = '\n\nUse blockquote callouts to highlight key insights (sparingly, max 3 per response): > ✅ Good: [finding] | > ⚠️ Warning: [finding] | > 💡 Tip: [recommendation] | > 🚨 Critical: [issue].';
 
-const COMPLETION_INSTRUCTION = '\n\nAlways complete your response fully. Never truncate mid-sentence or mid-section. Output all requested sections even if they are brief.';
+const COMPLETION_INSTRUCTION = '\n\nNever truncate your response. Always complete your full answer. If you reach the end of a section, finish it completely before stopping. Output all requested sections even if they are brief. Never end mid-sentence or mid-list.';
 
 const SYSTEM_PROMPTS = {
   audit: `You are an expert SEO & CRO auditor. Be concise — every section must fit within a tight token budget.
@@ -193,16 +193,18 @@ const AUDIT_CHECK_LABELS = {
 };
 
 const MAX_TOKENS = {
-  audit:              2500,
-  compete:            3000,
-  legal:              1500,
-  contract:           3500,
-  'linkedin-content':  600,
-  devis:               800,
-  relance:             400,
+  audit:              4000,
+  compete:            4000,
+  legal:              2000,
+  contract:           4000,
+  'linkedin-content': 2000,
+  devis:              2000,
+  relance:            1000,
+  statut:             1000,
+  urssaf:             1000,
   'linkedin-intel':   4000,
-  prospection:        1200,
-  'mission-finder':   3500,
+  prospection:        4000,
+  'mission-finder':   4000,
 };
 
 const LEGAL_SECTION_SPECS = {
