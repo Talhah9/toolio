@@ -120,10 +120,10 @@ function AnimatedStat({ end, suffix = '', duration = 1.5, label }) {
   const count = useCountUp(end, duration, inView);
   return (
     <div ref={ref} className="stat-item">
-      <div className="stat-value" style={{ color: '#0F0F1A' }}>
+      <div className="stat-value" style={{ color: '#fff' }}>
         {count.toLocaleString()}{suffix}
       </div>
-      <div className="stat-label" style={{ color: '#6B6B8A' }}>{label}</div>
+      <div className="stat-label" style={{ color: 'rgba(255,255,255,0.5)' }}>{label}</div>
     </div>
   );
 }
