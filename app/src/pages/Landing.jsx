@@ -867,6 +867,103 @@ function FeaturedTools({ lang, navigate, reduce }) {
   );
 }
 
+// ── Newsletter lead magnet ────────────────────────────────────
+
+function NewsletterSection({ reduce }) {
+  const { t } = useLang();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!email.includes('@') || !email.includes('.')) return;
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/subscribe-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error('failed');
+      setStatus('success');
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  return (
+    <FadeUp>
+      <section style={{ background: '#0A0A0A', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        <div className="container" style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 620, margin: '0 auto' }}>
+
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.12)', border: '1px solid rgba(250,208,44,0.3)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#fad02c', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
+              {t('landing.newsletter.badge')}
+            </span>
+
+            <h2 style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 900, color: '#fff', margin: '0 0 18px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              {t('landing.newsletter.h2.line1')}<br />
+              <span style={{ background: 'linear-gradient(90deg, #818CF8, #fad02c)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                {t('landing.newsletter.h2.line2')}
+              </span>
+            </h2>
+
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', margin: '0 0 44px', lineHeight: 1.65, maxWidth: 500 }}>
+              {t('landing.newsletter.sub')}
+            </p>
+
+            {status === 'success' ? (
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 10 }}>
+                  {t('landing.newsletter.success')}
+                </div>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
+                  {t('landing.newsletter.success.sub')}
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 480, display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder={t('landing.newsletter.placeholder')}
+                  required
+                  disabled={status === 'loading'}
+                  style={{ flex: 1, minWidth: 220, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '14px 18px', fontSize: 14, color: '#fff', outline: 'none' }}
+                />
+                <motion.button
+                  type="submit"
+                  disabled={status === 'loading'}
+                  style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 24px', fontWeight: 800, fontSize: 14, cursor: status === 'loading' ? 'not-allowed' : 'pointer', opacity: status === 'loading' ? 0.7 : 1, whiteSpace: 'nowrap' }}
+                  whileHover={reduce || status === 'loading' ? {} : { scale: 1.03 }}
+                  whileTap={reduce || status === 'loading' ? {} : { scale: 0.97 }}
+                >
+                  {status === 'loading' ? '...' : t('landing.newsletter.cta')}
+                </motion.button>
+                {status === 'error' && (
+                  <p style={{ width: '100%', textAlign: 'center', fontSize: 13, color: '#F87171', margin: '6px 0 0' }}>
+                    {t('landing.newsletter.error')}
+                  </p>
+                )}
+              </form>
+            )}
+
+            {status !== 'success' && (
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginTop: 16 }}>
+                {t('landing.newsletter.disclaimer')}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    </FadeUp>
+  );
+}
+
 // ── New Community section (coral/orange) ──────────────────────
 
 function CommunitySection({ lang, navigate, reduce }) {
@@ -1625,7 +1722,10 @@ export function Landing() {
         </section>
       </FadeUp>
 
-      {/* ── 10. FAQ ───────────────────────────────────────────── */}
+      {/* ── 10. NEWSLETTER ───────────────────────────────────── */}
+      <NewsletterSection reduce={reduce} />
+
+      {/* ── 11. FAQ ───────────────────────────────────────────── */}
       <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>

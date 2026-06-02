@@ -1035,6 +1035,18 @@ export const fr = {
   // ── Shared ────────────────────────────────────────────────────
   'landing.pricing.period': 'mois',
 
+  // ── Newsletter ───────────────────────────────────────────────
+  'landing.newsletter.badge': '🎁 GRATUIT',
+  'landing.newsletter.h2.line1': '10 ressources gratuites',
+  'landing.newsletter.h2.line2': 'pour lancer votre activité',
+  'landing.newsletter.sub': 'Contrat, devis, scripts LinkedIn, calculateur TJM… Recevez le guide PDF complet directement dans votre boîte mail.',
+  'landing.newsletter.placeholder': 'votre@email.com',
+  'landing.newsletter.cta': 'Recevoir le guide gratuit →',
+  'landing.newsletter.disclaimer': 'Gratuit. Sans spam. Désabonnement en 1 clic.',
+  'landing.newsletter.success': '✅ Vérifiez votre boîte mail !',
+  'landing.newsletter.success.sub': 'Le guide PDF est en route. (Vérifiez vos spams si vous ne le voyez pas dans 2 min.)',
+  'landing.newsletter.error': 'Une erreur est survenue. Réessayez.',
+
   'footer.link.roadmap': 'Roadmap',
   'footer.link.docs': 'Documentation',
   'footer.link.guides': 'Guides',
