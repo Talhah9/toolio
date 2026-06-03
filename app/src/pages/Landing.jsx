@@ -869,6 +869,14 @@ function FeaturedTools({ lang, navigate, reduce }) {
 
 // ── Newsletter lead magnet ────────────────────────────────────
 
+const NL_AVATARS = [
+  { initials: 'JG', bg: '#4F46E5' },
+  { initials: 'RS', bg: '#F59E0B' },
+  { initials: 'MR', bg: '#4F46E5' },
+  { initials: 'IB', bg: '#F59E0B' },
+  { initials: 'PR', bg: '#6D28D9' },
+];
+
 function NewsletterSection({ reduce }) {
   const { t } = useLang();
   const [email, setEmail] = useState('');
@@ -892,75 +900,102 @@ function NewsletterSection({ reduce }) {
   }
 
   return (
-    <FadeUp>
-      <section style={{ background: '#FFF9F0', borderTop: '1px solid #EDE8E0', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(79,70,229,0.04) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+    <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '56px 24px' }}>
+      <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
+        <FadeUp style={{ width: '100%', maxWidth: 500 }}>
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', width: '100%', textAlign: 'center', boxShadow: 'var(--shadow-lg)' }}>
 
-        <div className="container" style={{ position: 'relative' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 620, margin: '0 auto' }}>
-
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(217,119,6,0.1)', border: '1px solid rgba(217,119,6,0.25)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
-              {t('landing.newsletter.badge')}
-            </span>
-
-            <h2 style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 18px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              {t('landing.newsletter.h2.line1')}<br />
-              <span style={{ color: '#4F46E5' }}>
-                {t('landing.newsletter.h2.line2')}
-              </span>
-            </h2>
-
-            <p style={{ fontSize: 16, color: '#6B6B8A', margin: '0 0 44px', lineHeight: 1.65, maxWidth: 500 }}>
-              {t('landing.newsletter.sub')}
-            </p>
-
-            {status === 'success' ? (
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#0F0F1A', marginBottom: 10 }}>
-                  {t('landing.newsletter.success')}
+            {/* Overlapping avatars */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+              {NL_AVATARS.map((av, i) => (
+                <div key={i} style={{ width: 44, height: 44, borderRadius: '50%', background: av.bg, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2.5px solid #fff', marginLeft: i === 0 ? 0 : -12, position: 'relative', zIndex: NL_AVATARS.length - i, boxShadow: '0 1px 4px rgba(0,0,0,0.15)', flexShrink: 0 }}>
+                  {av.initials}
                 </div>
-                <div style={{ fontSize: 14, color: '#6B6B8A' }}>
-                  {t('landing.newsletter.success.sub')}
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 480, display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder={t('landing.newsletter.placeholder')}
-                  required
-                  disabled={status === 'loading'}
-                  style={{ flex: 1, minWidth: 220, background: '#fff', border: '1px solid #D1C9BE', borderRadius: 12, padding: '14px 18px', fontSize: 14, color: '#0F0F1A', outline: 'none' }}
-                />
-                <motion.button
-                  type="submit"
-                  disabled={status === 'loading'}
-                  style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 24px', fontWeight: 800, fontSize: 14, cursor: status === 'loading' ? 'not-allowed' : 'pointer', opacity: status === 'loading' ? 0.7 : 1, whiteSpace: 'nowrap' }}
-                  whileHover={reduce || status === 'loading' ? {} : { scale: 1.03 }}
-                  whileTap={reduce || status === 'loading' ? {} : { scale: 0.97 }}
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              {status === 'success' ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
                 >
-                  {status === 'loading' ? '...' : t('landing.newsletter.cta')}
-                </motion.button>
-                {status === 'error' && (
-                  <p style={{ width: '100%', textAlign: 'center', fontSize: 13, color: '#DC2626', margin: '6px 0 0' }}>
-                    {t('landing.newsletter.error')}
+                  <div style={{ fontSize: 44, lineHeight: 1, marginBottom: 4 }}>✅</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#0F0F1A' }}>
+                    {t('landing.newsletter.success')}
+                  </div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#4F46E5' }}>
+                    {t('landing.newsletter.success.label')}
+                  </div>
+                  <div style={{ fontSize: 14, color: '#6B6B8A' }}>
+                    {t('landing.newsletter.success.sub')}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F0F1A', margin: '0 0 10px', lineHeight: 1.3 }}>
+                    {t('landing.newsletter.title')}
+                  </h2>
+                  <p style={{ fontSize: 14, color: '#6B6B8A', margin: '0 0 24px', lineHeight: 1.65 }}>
+                    {t('landing.newsletter.sub')}
                   </p>
-                )}
-              </form>
-            )}
 
-            {status !== 'success' && (
-              <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 16 }}>
-                {t('landing.newsletter.disclaimer')}
-              </p>
-            )}
+                  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ position: 'relative' }}>
+                      <svg style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }} width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        placeholder={t('landing.newsletter.placeholder')}
+                        required
+                        disabled={status === 'loading'}
+                        style={{ width: '100%', background: '#F9FAFB', border: '1.5px solid #E5E7EB', borderRadius: 100, padding: '12px 16px 12px 40px', fontSize: 14, color: '#0F0F1A', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                        onFocus={e => { e.target.style.borderColor = '#4F46E5'; }}
+                        onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
+                      />
+                    </div>
+
+                    <motion.button
+                      type="submit"
+                      disabled={status === 'loading'}
+                      style={{ width: '100%', background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 100, padding: '13px 24px', fontWeight: 700, fontSize: 14, cursor: status === 'loading' ? 'not-allowed' : 'pointer', opacity: status === 'loading' ? 0.7 : 1 }}
+                      whileHover={reduce || status === 'loading' ? {} : { background: '#4338CA' }}
+                      whileTap={reduce || status === 'loading' ? {} : { scale: 0.97 }}
+                    >
+                      {status === 'loading' ? '...' : t('landing.newsletter.cta')}
+                    </motion.button>
+
+                    {status === 'error' && (
+                      <p style={{ textAlign: 'center', fontSize: 13, color: '#DC2626', margin: 0 }}>
+                        {t('landing.newsletter.error')}
+                      </p>
+                    )}
+                  </form>
+
+                  <p style={{ fontSize: 12, color: '#9CA3AF', margin: '14px 0 0' }}>
+                    {t('landing.newsletter.disclaimer')}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           </div>
-        </div>
-      </section>
-    </FadeUp>
+        </FadeUp>
+      </div>
+    </section>
   );
 }
 
@@ -1421,6 +1456,9 @@ export function Landing() {
         </div>
       </section>
 
+      {/* ── 1b. NEWSLETTER ───────────────────────────────────── */}
+      <NewsletterSection reduce={reduce} />
+
       {/* ── NEW: "L'arme ultime" comparison ──────────────────── */}
       <UltimateSection lang={lang} navigate={navigate} reduce={reduce} />
 
@@ -1448,8 +1486,7 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── 3b. NEWSLETTER ───────────────────────────────────── */}
-      <NewsletterSection reduce={reduce} />
+
 
       {/* ── 4. SOCIAL PROOF — STATS + TESTIMONIALS ────────────── */}
       <section className="section lp-dark">

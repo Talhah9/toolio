@@ -1037,15 +1037,14 @@ export const en = {
   'landing.pricing.period': 'month',
 
   // ── Newsletter ───────────────────────────────────────────────
-  'landing.newsletter.badge': '🎁 FREE',
-  'landing.newsletter.h2.line1': '10 free resources',
-  'landing.newsletter.h2.line2': 'to launch your business',
-  'landing.newsletter.sub': 'Contract template, invoice, LinkedIn scripts, day-rate calculator… Get the complete PDF guide delivered to your inbox.',
+  'landing.newsletter.title': '10 free resources for freelancers 🎁',
+  'landing.newsletter.sub': 'Get the PDF guide + our best tips every week',
   'landing.newsletter.placeholder': 'your@email.com',
   'landing.newsletter.cta': 'Get the free guide →',
-  'landing.newsletter.disclaimer': 'Free. No spam. Unsubscribe in 1 click.',
-  'landing.newsletter.success': '✅ Check your inbox!',
-  'landing.newsletter.success.sub': 'The PDF guide is on its way. (Check your spam if you don\'t see it within 2 min.)',
+  'landing.newsletter.disclaimer': '📩 Sent instantly · No spam · Unsubscribe in 1 click',
+  'landing.newsletter.success': 'Guide sent!',
+  'landing.newsletter.success.label': 'Check your inbox 📬',
+  'landing.newsletter.success.sub': 'The PDF is on its way.',
   'landing.newsletter.error': 'Something went wrong. Please try again.',
 
   'footer.link.roadmap': 'Roadmap',
