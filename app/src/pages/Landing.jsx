@@ -814,7 +814,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
   ];
 
   return (
-    <section style={{ background: '#F5F5F7', padding: '100px 24px', borderTop: '1px solid var(--border)' }}>
+    <section style={{ background: '#F5F5F7', padding: 'clamp(48px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)' }}>
       <div className="container">
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -834,12 +834,13 @@ function FeaturedTools({ lang, navigate, reduce }) {
           {cards.map((card, i) => (
             <FadeUp key={i} delay={i * 0.1}>
               <motion.div
+                className="featured-tool-card"
                 onClick={() => navigate('/auth?mode=register')}
                 style={{ background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(15,15,60,0.06)', cursor: 'pointer', display: 'grid', gridTemplateColumns: '50% 50%', minHeight: 320, border: '1px solid rgba(0,0,0,0.05)' }}
                 whileHover={reduce ? {} : { y: -4, boxShadow: `0 16px 48px ${card.accent}20`, transition: { duration: 0.2 } }}
               >
                 {/* Left: text */}
-                <div style={{ padding: '32px 28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0, overflow: 'hidden' }}>
+                <div className="featured-tool-card-text" style={{ padding: '32px 28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0, overflow: 'hidden' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: card.badge.bg, color: card.badge.color, whiteSpace: 'nowrap' }}>
@@ -847,7 +848,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
                       </span>
                       <span style={{ fontSize: 11, color: card.accent, fontWeight: 700 }}>{card.uses} {t('landing.featured.uses')}</span>
                     </div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: '#0F0F1A', marginBottom: 12, lineHeight: 1.2 }}>{card.title}</div>
+                    <div className="featured-tool-card-title" style={{ fontSize: 22, fontWeight: 700, color: '#0F0F1A', marginBottom: 12, lineHeight: 1.2 }}>{card.title}</div>
                     <p style={{ fontSize: 15, color: '#6B7280', lineHeight: 1.6, margin: 0 }}>{card.desc}</p>
                   </div>
                   <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: card.accent }}>
@@ -855,7 +856,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
                   </div>
                 </div>
                 {/* Right: illustration */}
-                <div style={{ background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minWidth: 0, overflow: 'hidden' }}>
+                <div className="featured-tool-card-illu" style={{ background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minWidth: 0, overflow: 'hidden' }}>
                   {card.illu}
                 </div>
               </motion.div>
@@ -903,7 +904,7 @@ function NewsletterSection({ reduce }) {
     <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '56px 24px' }}>
       <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
         <FadeUp style={{ width: '100%', maxWidth: 500 }}>
-          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', width: '100%', textAlign: 'center', boxShadow: 'var(--shadow-lg)' }}>
+          <div className="newsletter-card" style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', width: '100%', textAlign: 'center', boxShadow: 'var(--shadow-lg)' }}>
 
             {/* Overlapping avatars */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
@@ -1006,7 +1007,6 @@ function CommunitySection({ lang, navigate, reduce }) {
   const stats = [
     { n: '200+', label: t('landing.community.stat1') },
     { n: '13',   label: t('landing.community.stat2') },
-    { n: '1',    label: t('landing.community.stat3') },
   ];
   return (
     <FadeUp>
@@ -1028,7 +1028,7 @@ function CommunitySection({ lang, navigate, reduce }) {
             </p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
+            <div className="community-stats" style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
               {stats.map(({ n, label }, i) => (
                 <div key={i} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: i === 1 ? '#D97706' : '#0F0F1A', lineHeight: 1 }}>{n}</div>
@@ -1080,7 +1080,7 @@ function ContainerScroll({ lang, navigate, reduce }) {
   );
 
   return (
-    <section ref={containerRef} style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px 80px' }}>
+    <section ref={containerRef} className="container-scroll-section" style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px 80px' }}>
       <div className="container">
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>

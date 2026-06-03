@@ -1813,6 +1813,54 @@ a {
 }
 
 /* ============================================================
+   Landing page — mobile responsive fixes
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Featured tools cards — single column, hide illustration */
+  .featured-tool-card {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+  .featured-tool-card-illu { display: none !important; }
+  .featured-tool-card-text { padding: 20px !important; }
+  .featured-tool-card-title { font-size: 18px !important; }
+
+  /* Container scroll section — too complex for mobile */
+  .container-scroll-section { display: none !important; }
+
+  /* Landing section padding tightened */
+  .lp-pain-section { padding: 64px 0 72px; }
+  .section { padding: 48px 0; }
+
+  /* Testimonial carousel — show only active card */
+  .tc-track { overflow: hidden; height: 320px; }
+  .tc-card:not(.tc-card--active) { display: none !important; }
+  .tc-card--active { width: calc(100vw - 64px) !important; }
+
+  /* Prevent any horizontal overflow */
+  .hero { overflow-x: hidden; }
+  body { overflow-x: hidden; }
+
+  /* Pain section clips */
+  .lp-pain-section {
+    clip-path: polygon(0 20px, 100% 0, 100% calc(100% - 20px), 0 100%);
+    margin-top: -20px;
+  }
+
+  /* Community stats: center, smaller gap */
+  .community-stats { gap: 24px !important; }
+
+  /* CTA buttons: full width on mobile for landing sections */
+  .lp-cta-btn { width: 100% !important; justify-content: center !important; }
+
+  /* Newsletter card: full padding reduction */
+  .newsletter-card { padding: 28px 20px !important; }
+
+  /* UltimateSection comparison table — overflow scroll */
+  .lp-ultimate-table { overflow-x: auto; }
+}
+
+/* ============================================================
    ≤ 480px  (small phones)
    ============================================================ */
 /* ============================================================

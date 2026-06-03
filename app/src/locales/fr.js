@@ -1020,7 +1020,6 @@ export const fr = {
   'landing.community.sub': "Trouvez des missions, partagez vos opportunités, échangez avec d'autres freelances.",
   'landing.community.stat1': 'membres actifs',
   'landing.community.stat2': 'outils IA',
-  'landing.community.stat3': 'consultation offerte aux 50 premiers',
   'landing.community.cta': 'Rejoindre la communauté →',
 
   // ── Landing – ContainerScroll (Dashboard mockup) ──────────────

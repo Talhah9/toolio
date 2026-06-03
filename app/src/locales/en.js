@@ -1020,7 +1020,6 @@ export const en = {
   'landing.community.sub': 'Find missions, share opportunities, connect with other freelancers.',
   'landing.community.stat1': 'active members',
   'landing.community.stat2': 'AI tools',
-  'landing.community.stat3': 'free consultation for first 50',
   'landing.community.cta': 'Join the community →',
 
   // ── Landing – ContainerScroll (Dashboard mockup) ──────────────
