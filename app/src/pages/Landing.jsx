@@ -871,11 +871,35 @@ function FeaturedTools({ lang, navigate, reduce }) {
 // ── Newsletter lead magnet ────────────────────────────────────
 
 const NL_AVATARS = [
-  { initials: 'JG', bg: '#4F46E5' },
-  { initials: 'RS', bg: '#F59E0B' },
-  { initials: 'MR', bg: '#4F46E5' },
-  { initials: 'IB', bg: '#F59E0B' },
-  { initials: 'PR', bg: '#6D28D9' },
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
+];
+
+// side: 'left'|'right' = which CSS property; pos = px from that edge of the 960px container
+// Card is centered: left edge at 240px, right edge at 720px. Container padding-top: 64px.
+// Positions: left=240-|userX|, right=240-userX, top=64+userY (userY can be negative → above card)
+const NL_TOOLS = [
+  // Top-left
+  { icon: '🎯', label: 'Apollo.io',  side: 'left',  pos: 120, top: 24,  rotate: -15, delay: 0 },
+  { icon: '🟠', label: 'Claude',     side: 'left',  pos: 160, top: 124, rotate: 8,   delay: 0.15 },
+  // Top-right
+  { icon: '🟢', label: 'ChatGPT',    side: 'right', pos: 130, top: 14,  rotate: 12,  delay: 0.3 },
+  { icon: '🔵', label: 'Gemini',     side: 'right', pos: 100, top: 94,  rotate: -5,  delay: 0.45 },
+  // Left side
+  { icon: '🟠', label: 'Zapier',     side: 'left',  pos: 90,  top: 184, rotate: -20, delay: 0.6 },
+  { icon: '🟣', label: 'Make',       side: 'left',  pos: 110, top: 264, rotate: 10,  delay: 0.75 },
+  // Right side
+  { icon: '🟡', label: 'Airtable',   side: 'right', pos: 120, top: 184, rotate: 15,  delay: 0.9 },
+  { icon: '🟢', label: 'Shopify',    side: 'right', pos: 90,  top: 264, rotate: -10, delay: 1.05 },
+  // Bottom-left
+  { icon: '🚀', label: 'Newsletter', side: 'left',  pos: 140, top: 344, rotate: -8,  delay: 1.2 },
+  { icon: '⬛', label: 'Notion',     side: 'left',  pos: 180, top: 394, rotate: 5,   delay: 1.35 },
+  // Bottom-right
+  { icon: '🔵', label: 'LinkedIn',   side: 'right', pos: 140, top: 354, rotate: 12,  delay: 1.5 },
+  { icon: '🌸', label: 'Instagram',  side: 'right', pos: 110, top: 414, rotate: -15, delay: 1.65 },
 ];
 
 function NewsletterSection({ reduce }) {
@@ -901,17 +925,54 @@ function NewsletterSection({ reduce }) {
   }
 
   return (
-    <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '56px 24px' }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
-        <FadeUp style={{ width: '100%', maxWidth: 500 }}>
-          <div className="newsletter-card" style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', width: '100%', textAlign: 'center', boxShadow: 'var(--shadow-lg)' }}>
+    <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '0 24px' }}>
+      {/* Wide container: gives room for floating logos on both sides */}
+      <div style={{ position: 'relative', maxWidth: 960, margin: '0 auto', padding: '64px 0 80px' }}>
 
-            {/* Overlapping avatars */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              {NL_AVATARS.map((av, i) => (
-                <div key={i} style={{ width: 44, height: 44, borderRadius: '50%', background: av.bg, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2.5px solid #fff', marginLeft: i === 0 ? 0 : -12, position: 'relative', zIndex: NL_AVATARS.length - i, boxShadow: '0 1px 4px rgba(0,0,0,0.15)', flexShrink: 0 }}>
-                  {av.initials}
-                </div>
+        {/* Floating tool logos — hidden on mobile via CSS class */}
+        {NL_TOOLS.map((tool, i) => (
+          <motion.div
+            key={i}
+            className="nl-floating-logo"
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.35, delay: reduce ? 0 : tool.delay, ease }}
+            style={{
+              position: 'absolute',
+              [tool.side]: tool.pos,
+              top: tool.top,
+              rotate: tool.rotate,
+              zIndex: 1,
+              pointerEvents: 'none',
+            }}
+          >
+            <motion.div
+              animate={reduce ? {} : { y: [0, -4, 0] }}
+              transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
+            >
+              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 12, fontWeight: 600, color: '#374151' }}>
+                <span style={{ fontSize: 14, lineHeight: 1 }}>{tool.icon}</span>
+                {tool.label}
+              </div>
+            </motion.div>
+          </motion.div>
+        ))}
+
+        {/* Card — centered within the 960px container */}
+        <FadeUp style={{ maxWidth: 480, margin: '0 auto', position: 'relative', zIndex: 2 }}>
+          <div className="newsletter-card" style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', textAlign: 'center', boxShadow: 'var(--shadow-lg)' }}>
+
+            {/* Overlapping avatar photos */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+              {NL_AVATARS.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt=""
+                  width={44}
+                  height={44}
+                  style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -12, position: 'relative', zIndex: NL_AVATARS.length - i, boxShadow: '0 1px 4px rgba(0,0,0,0.15)', flexShrink: 0 }}
+                />
               ))}
             </div>
 
@@ -926,15 +987,9 @@ function NewsletterSection({ reduce }) {
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
                 >
                   <div style={{ fontSize: 44, lineHeight: 1, marginBottom: 4 }}>✅</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: '#0F0F1A' }}>
-                    {t('landing.newsletter.success')}
-                  </div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#4F46E5' }}>
-                    {t('landing.newsletter.success.label')}
-                  </div>
-                  <div style={{ fontSize: 14, color: '#6B6B8A' }}>
-                    {t('landing.newsletter.success.sub')}
-                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#0F0F1A' }}>{t('landing.newsletter.success')}</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#4F46E5' }}>{t('landing.newsletter.success.label')}</div>
+                  <div style={{ fontSize: 14, color: '#6B6B8A' }}>{t('landing.newsletter.success.sub')}</div>
                 </motion.div>
               ) : (
                 <motion.div
@@ -944,6 +999,11 @@ function NewsletterSection({ reduce }) {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.25 }}
                 >
+                  {/* Badge */}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>
+                    {t('landing.newsletter.badge')}
+                  </div>
+
                   <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F0F1A', margin: '0 0 10px', lineHeight: 1.3 }}>
                     {t('landing.newsletter.title')}
                   </h2>
@@ -968,7 +1028,6 @@ function NewsletterSection({ reduce }) {
                         onBlur={e => { e.target.style.borderColor = '#E5E7EB'; }}
                       />
                     </div>
-
                     <motion.button
                       type="submit"
                       disabled={status === 'loading'}
@@ -978,7 +1037,6 @@ function NewsletterSection({ reduce }) {
                     >
                       {status === 'loading' ? '...' : t('landing.newsletter.cta')}
                     </motion.button>
-
                     {status === 'error' && (
                       <p style={{ textAlign: 'center', fontSize: 13, color: '#DC2626', margin: 0 }}>
                         {t('landing.newsletter.error')}
