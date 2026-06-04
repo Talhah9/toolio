@@ -885,11 +885,11 @@ const NL_TOOLS = [
   { name: 'Zapier',     logo: 'https://cdn.zapier.com/zapier/images/favicon.ico',                                                                               domain: 'zapier.com',     top:  20,  left: -280,  rotate: -20, delay: 0.2  },
   { name: 'Make',       logo: 'https://www.make.com/favicon.ico',                                                                                               domain: 'make.com',       top: 120,  left: -260,  rotate:  10, delay: 0.3  },
   { name: 'Airtable',   logo: 'https://airtable.com/favicon.ico',                                                                                               domain: 'airtable.com',   top:  30,  right: -270, rotate:  15, delay: 0.4  },
-  { name: 'Shopify',    logo: 'https://cdn.shopify.com/shopifycloud/brochure/assets/brand-assets/shopify-logo-primary-logo-456baa801ee65a48f257b8a59db39aa.svg', domain: 'shopify.com',    top: 130,  right: -280, rotate: -10, delay: 0.5  },
+  { name: 'Shopify',    logo: 'https://logo.clearbit.com/shopify.com',                                                                                               domain: 'shopify.com',    top: 130,  right: -280, rotate: -10, delay: 0.5  },
   { name: 'LinkedIn',   logo: 'https://static.licdn.com/aero-v1/sc/h/al2o9zrvru7aqj8e1x2rzsrca',                                                               domain: 'linkedin.com',   top: 230,  left: -220,  rotate:  -8, delay: 0.6  },
-  { name: 'Notion',     logo: 'https://www.notion.so/favicon.ico',                                                                                              domain: 'notion.so',      top: 250,  right: -230, rotate:   5, delay: 0.7  },
+  { name: 'Notion',     logo: 'https://www.notion.so/images/favicon.ico',                                                                                       domain: 'notion.so',      top: 250,  right: -230, rotate:   5, delay: 0.7  },
   { name: 'Apollo',     logo: 'https://www.apollo.io/favicon.ico',                                                                                              domain: 'apollo.io',      top: -30,  left: -130,  rotate:   8, delay: 0.8  },
-  { name: 'Gemini',     logo: 'https://www.gstatic.com/lamda/images/gemini_favicon_f069958c85030456e93de685481c559f160ea06.svg',                                domain: 'gemini.google.com', top: -40, right: -140, rotate: -5, delay: 0.9 },
+  { name: 'Gemini',     logo: 'https://logo.clearbit.com/gemini.google.com',                                                                                        domain: 'google.com',     top: -40,  right: -140, rotate:  -5, delay: 0.9  },
   { name: 'Instagram',  logo: 'https://static.cdninstagram.com/rsrc.php/v3/yG/r/De-Dwpd5CHc.png',                                                              domain: 'instagram.com',  top: 330,  left: -170,  rotate:  12, delay: 1.0  },
   { name: 'Newsletter', logo: null, emoji: '🚀',                                                                                                                domain: null,             top: 340,  right: -180, rotate: -12, delay: 1.1  },
 ];
@@ -947,20 +947,38 @@ function NewsletterSection({ reduce }) {
               >
                 <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 12, fontWeight: 600, color: '#374151' }}>
                   {tool.logo ? (
-                    <img
-                      src={tool.logo}
-                      alt={tool.name}
-                      width={18}
-                      height={18}
-                      style={{ width: 18, height: 18, objectFit: 'contain', flexShrink: 0 }}
-                      onError={(e) => {
-                        if (tool.domain && e.target.src !== `https://logo.clearbit.com/${tool.domain}`) {
-                          e.target.src = `https://logo.clearbit.com/${tool.domain}`;
-                        } else {
-                          e.target.style.display = 'none';
-                        }
-                      }}
-                    />
+                    <>
+                      <img
+                        src={tool.logo}
+                        alt={tool.name}
+                        width={18}
+                        height={18}
+                        style={{ width: 18, height: 18, objectFit: 'contain', flexShrink: 0 }}
+                        onError={(e) => {
+                          const cb = `https://logo.clearbit.com/${tool.domain}`;
+                          if (tool.domain && e.target.src !== cb) {
+                            e.target.onerror = (e2) => {
+                              e2.target.onerror = null;
+                              e2.target.style.display = 'none';
+                              const fb = e2.target.parentElement.querySelector('.logo-fallback');
+                              if (fb) fb.style.display = 'flex';
+                            };
+                            e.target.src = cb;
+                          } else {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                            const fb = e.target.parentElement.querySelector('.logo-fallback');
+                            if (fb) fb.style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <span
+                        className="logo-fallback"
+                        style={{ display: 'none', width: 18, height: 18, borderRadius: '50%', background: '#4F46E5', color: '#fff', fontSize: 10, fontWeight: 700, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                      >
+                        {tool.name[0]}
+                      </span>
+                    </>
                   ) : (
                     <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>{tool.emoji}</span>
                   )}
