@@ -559,13 +559,31 @@ function UltimateSection({ lang, navigate, reduce }) {
           {/* Product video */}
           <FadeUp delay={0.15}>
             <video
-              src="/video-savvly.mp4"
+              key="savvly-demo"
               autoPlay
               loop
               muted
               playsInline
-              style={{ width: '100%', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}
-            />
+              controls={false}
+              poster="/dashboard-preview.png"
+              onError={(e) => console.error('Video error:', e)}
+              onLoadedData={() => console.log('Video loaded')}
+              style={{
+                width: '100%',
+                maxWidth: 600,
+                borderRadius: 16,
+                boxShadow: '0 24px 60px rgba(79,70,229,0.2)',
+                border: '2px solid rgba(79,70,229,0.3)',
+                display: 'block',
+                backgroundColor: '#f0f0f0',
+              }}
+            >
+              <source
+                src="https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/video/Create_a_second_product_dem.mp4"
+                type="video/mp4"
+              />
+              Votre navigateur ne supporte pas la vidéo.
+            </video>
           </FadeUp>
         </div>
 
