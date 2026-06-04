@@ -556,51 +556,16 @@ function UltimateSection({ lang, navigate, reduce }) {
             </div>
           </FadeUp>
 
-          {/* CSS Laptop mockup */}
+          {/* Product video */}
           <FadeUp delay={0.15}>
-            <div style={{ position: 'relative' }}>
-              {/* Screen */}
-              <div style={{ background: '#1E1E3A', borderRadius: '14px 14px 4px 4px', padding: '28px 20px 20px', border: '6px solid #2D2D4A', boxShadow: '0 20px 60px rgba(15,15,60,0.3)', position: 'relative', overflow: 'hidden' }}>
-                {/* Browser chrome */}
-                <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-                  {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
-                </div>
-                {/* URL bar */}
-                <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: 6, padding: '6px 12px', fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  app.savvly.fr/tools/devis
-                </div>
-                {/* Content lines */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 6, background: 'linear-gradient(135deg, #4F46E5, #818CF8)', flexShrink: 0 }} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ height: 8, background: 'rgba(255,255,255,0.15)', borderRadius: 4, marginBottom: 4 }} />
-                      <div style={{ height: 6, background: 'rgba(255,255,255,0.07)', borderRadius: 4, width: '65%' }} />
-                    </div>
-                  </div>
-                  {[85, 70, 90, 55, 75].map((w, i) => (
-                    <div key={i} style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, width: `${w}%` }} />
-                  ))}
-                  <div style={{ marginTop: 8, background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', borderRadius: 8, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'blink 1s step-end infinite' }} />
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{t('landing.ultimate.generating')}</span>
-                  </div>
-                </div>
-              </div>
-              {/* Base */}
-              <div style={{ background: '#2D2D4A', height: 10, borderRadius: '0 0 6px 6px', margin: '0 8px' }} />
-              <div style={{ background: '#1E1E3A', height: 5, borderRadius: '0 0 12px 12px', width: '60%', margin: '0 auto' }} />
-
-              {/* Floating badge */}
-              <motion.div
-                animate={reduce ? {} : { y: [-4, 4, -4] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ position: 'absolute', top: -16, right: -16, background: '#fad02c', color: '#0F0F1A', borderRadius: 12, padding: '8px 14px', fontSize: 12, fontWeight: 900, boxShadow: '0 8px 24px rgba(250,208,44,0.4)', zIndex: 2 }}
-              >
-                30s ⚡
-              </motion.div>
-            </div>
+            <video
+              src="/video-savvly.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}
+            />
           </FadeUp>
         </div>
 
