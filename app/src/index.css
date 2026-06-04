@@ -1856,6 +1856,9 @@ a {
   /* Newsletter card: full padding reduction */
   .newsletter-card { padding: 28px 20px !important; }
 
+  /* Hide floating tool logos on mobile */
+  .nl-floating-logo { display: none !important; }
+
   /* UltimateSection comparison table — overflow scroll */
   .lp-ultimate-table { overflow-x: auto; }
 }

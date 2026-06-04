@@ -1036,8 +1036,9 @@ export const en = {
   'landing.pricing.period': 'month',
 
   // ── Newsletter ───────────────────────────────────────────────
-  'landing.newsletter.title': '10 free resources for freelancers 🎁',
-  'landing.newsletter.sub': 'Get the PDF guide + our best tips every week',
+  'landing.newsletter.badge': '🎁 FREE',
+  'landing.newsletter.title': 'Resources to improve or build your business',
+  'landing.newsletter.sub': '10 resources tested and approved by our team. Get the PDF guide + our best tips every week.',
   'landing.newsletter.placeholder': 'your@email.com',
   'landing.newsletter.cta': 'Get the free guide →',
   'landing.newsletter.disclaimer': '📩 Sent instantly · No spam · Unsubscribe in 1 click',
