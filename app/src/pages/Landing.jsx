@@ -878,28 +878,21 @@ const NL_AVATARS = [
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
 ];
 
-// side: 'left'|'right' = which CSS property; pos = px from that edge of the 960px container
-// Card is centered: left edge at 240px, right edge at 720px. Container padding-top: 64px.
-// Positions: left=240-|userX|, right=240-userX, top=64+userY (userY can be negative → above card)
+// Logos are positioned absolute relative to the card div (position:relative).
+// Negative left/right values place them outside the card edges.
 const NL_TOOLS = [
-  // Top-left
-  { icon: '🎯', label: 'Apollo.io',  side: 'left',  pos: 120, top: 24,  rotate: -15, delay: 0 },
-  { icon: '🟠', label: 'Claude',     side: 'left',  pos: 160, top: 124, rotate: 8,   delay: 0.15 },
-  // Top-right
-  { icon: '🟢', label: 'ChatGPT',    side: 'right', pos: 130, top: 14,  rotate: 12,  delay: 0.3 },
-  { icon: '🔵', label: 'Gemini',     side: 'right', pos: 100, top: 94,  rotate: -5,  delay: 0.45 },
-  // Left side
-  { icon: '🟠', label: 'Zapier',     side: 'left',  pos: 90,  top: 184, rotate: -20, delay: 0.6 },
-  { icon: '🟣', label: 'Make',       side: 'left',  pos: 110, top: 264, rotate: 10,  delay: 0.75 },
-  // Right side
-  { icon: '🟡', label: 'Airtable',   side: 'right', pos: 120, top: 184, rotate: 15,  delay: 0.9 },
-  { icon: '🟢', label: 'Shopify',    side: 'right', pos: 90,  top: 264, rotate: -10, delay: 1.05 },
-  // Bottom-left
-  { icon: '🚀', label: 'Newsletter', side: 'left',  pos: 140, top: 344, rotate: -8,  delay: 1.2 },
-  { icon: '⬛', label: 'Notion',     side: 'left',  pos: 180, top: 394, rotate: 5,   delay: 1.35 },
-  // Bottom-right
-  { icon: '🔵', label: 'LinkedIn',   side: 'right', pos: 140, top: 354, rotate: 12,  delay: 1.5 },
-  { icon: '🌸', label: 'Instagram',  side: 'right', pos: 110, top: 414, rotate: -15, delay: 1.65 },
+  { name: 'Claude',     emoji: '🟠', top: -50,  left: -200,  rotate: -15, delay: 0    },
+  { name: 'ChatGPT',    emoji: '🟢', top: -60,  right: -210, rotate:  12, delay: 0.1  },
+  { name: 'Zapier',     emoji: '🟠', top:  20,  left: -280,  rotate: -20, delay: 0.2  },
+  { name: 'Make',       emoji: '🟣', top: 120,  left: -260,  rotate:  10, delay: 0.3  },
+  { name: 'Airtable',   emoji: '🟡', top:  30,  right: -270, rotate:  15, delay: 0.4  },
+  { name: 'Shopify',    emoji: '🟢', top: 130,  right: -280, rotate: -10, delay: 0.5  },
+  { name: 'LinkedIn',   emoji: '🔵', top: 230,  left: -220,  rotate:  -8, delay: 0.6  },
+  { name: 'Notion',     emoji: '⬛', top: 250,  right: -230, rotate:   5, delay: 0.7  },
+  { name: 'Apollo',     emoji: '🎯', top: -30,  left: -130,  rotate:   8, delay: 0.8  },
+  { name: 'Gemini',     emoji: '💎', top: -40,  right: -140, rotate:  -5, delay: 0.9  },
+  { name: 'Instagram',  emoji: '🌸', top: 330,  left: -170,  rotate:  12, delay: 1.0  },
+  { name: 'Newsletter', emoji: '🚀', top: 340,  right: -180, rotate: -12, delay: 1.1  },
 ];
 
 function NewsletterSection({ reduce }) {
@@ -925,42 +918,45 @@ function NewsletterSection({ reduce }) {
   }
 
   return (
-    <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '0 24px' }}>
-      {/* Wide container: gives room for floating logos on both sides */}
-      <div style={{ position: 'relative', maxWidth: 960, margin: '0 auto', padding: '64px 0 80px' }}>
+    <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible' }}>
+      {/* Flex wrapper — padding provides visual clearance for floating logos */}
+      <div className="nl-wrapper" style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '100px 320px', overflow: 'visible' }}>
 
-        {/* Floating tool logos — hidden on mobile via CSS class */}
-        {NL_TOOLS.map((tool, i) => (
-          <motion.div
-            key={i}
-            className="nl-floating-logo"
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.35, delay: reduce ? 0 : tool.delay, ease }}
-            style={{
-              position: 'absolute',
-              [tool.side]: tool.pos,
-              top: tool.top,
-              rotate: tool.rotate,
-              zIndex: 1,
-              pointerEvents: 'none',
-            }}
-          >
+        {/* Card container — logos are positioned relative to this div */}
+        <div style={{ position: 'relative', maxWidth: 480, width: '100%' }}>
+
+          {/* Floating tool logos — hidden on mobile via CSS class */}
+          {NL_TOOLS.map((tool, i) => (
             <motion.div
-              animate={reduce ? {} : { y: [0, -4, 0] }}
-              transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
+              key={i}
+              className="nl-floating-logo"
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: reduce ? 0 : tool.delay, ease }}
+              style={{
+                position: 'absolute',
+                top: tool.top,
+                ...(tool.left !== undefined ? { left: tool.left } : { right: tool.right }),
+                rotate: tool.rotate,
+                zIndex: 10,
+                pointerEvents: 'none',
+              }}
             >
-              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 12, fontWeight: 600, color: '#374151' }}>
-                <span style={{ fontSize: 14, lineHeight: 1 }}>{tool.icon}</span>
-                {tool.label}
-              </div>
+              <motion.div
+                animate={reduce ? {} : { y: [0, -4, 0] }}
+                transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
+              >
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 12, fontWeight: 600, color: '#374151' }}>
+                  <span style={{ fontSize: 14, lineHeight: 1 }}>{tool.emoji}</span>
+                  {tool.name}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ))}
+          ))}
 
-        {/* Card — centered within the 960px container */}
-        <FadeUp style={{ maxWidth: 480, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <div className="newsletter-card" style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', textAlign: 'center', boxShadow: 'var(--shadow-lg)' }}>
+          {/* Card */}
+          <FadeUp>
+          <div className="newsletter-card" style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '40px 36px', textAlign: 'center', boxShadow: 'var(--shadow-lg)', position: 'relative', zIndex: 2 }}>
 
             {/* Overlapping avatar photos */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
@@ -1052,7 +1048,8 @@ function NewsletterSection({ reduce }) {
             </AnimatePresence>
 
           </div>
-        </FadeUp>
+          </FadeUp>
+        </div>
       </div>
     </section>
   );
