@@ -528,22 +528,22 @@ function UltimateSection({ lang, navigate, reduce }) {
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
             {t('landing.ultimate.badge')}
           </span>
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+          <h2 style={{ fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
             {t('landing.ultimate.h2.line1')}<br /><span style={{ color: '#4F46E5' }}>{t('landing.ultimate.h2.line2')}</span>
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 40, alignItems: 'start', maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
           {/* Comparison table */}
           <FadeUp>
             <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 32px rgba(15,15,60,0.07)', border: '1px solid #EDE9D8' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', background: '#F7F7FF', padding: '14px 20px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #EDE9D8' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', background: '#F7F7FF', padding: '10px 16px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #EDE9D8' }}>
                 <span style={{ color: '#6B6B8A' }}>{t('landing.ultimate.col.feature')}</span>
                 <span style={{ textAlign: 'center', color: '#9CA3AF' }}>{t('landing.ultimate.col.others')}</span>
                 <span style={{ textAlign: 'center', color: '#4F46E5' }}>Savvly</span>
               </div>
               {rows.map(([label, others, savvly], i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', padding: '13px 20px', borderBottom: i < rows.length - 1 ? '1px solid #F3F4F6' : 'none', alignItems: 'center' }}>
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', padding: '8px 16px', borderBottom: i < rows.length - 1 ? '1px solid #F3F4F6' : 'none', alignItems: 'center' }}>
                   <span style={{ fontSize: 13, color: '#2D2D4A', fontWeight: 500 }}>{label}</span>
                   <span style={{ textAlign: 'center', fontSize: 16 }}>
                     {others ? '✓' : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>}
@@ -609,7 +609,7 @@ function UltimateSection({ lang, navigate, reduce }) {
 // ── Bento card illustrations ─────────────────────────────────
 
 const LI_POSTS = [
-  "J'ai doublé mon TJM en 6 mois.\n\n→ J'ai arrêté de vendre du temps\n→ J'ai packagé mon offre\n→ J'ai posté 1x/jour\n\n3 nouveaux clients en 30 jours.",
+  "J'ai doublé mon TJM en 6 mois.\n\n→ J'ai arrêté de vendre du temps\n→ J'ai packagé mon offre\n→ J'ai posté 1x/jour",
   "On m'a dit que mon tarif était trop élevé.\n\nJ'ai quand même signé.\n\nLa valeur que j'apporte est réelle.",
 ];
 
@@ -928,15 +928,15 @@ function NewsletterSection({ reduce }) {
                 animate={reduce ? {} : { y: [0, -4, 0] }}
                 transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
               >
-                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '7px 12px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 12, fontWeight: 600, color: '#374151' }}>
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 15, fontWeight: 700, color: '#374151', minWidth: 100 }}>
                   {tool.logo ? (
                     <>
                       <img
                         src={tool.logo}
                         alt={tool.name}
-                        width={18}
-                        height={18}
-                        style={{ width: 18, height: 18, objectFit: 'contain', flexShrink: 0 }}
+                        width={24}
+                        height={24}
+                        style={{ width: 24, height: 24, objectFit: 'contain', flexShrink: 0 }}
                         onError={(e) => {
                           const cb = `https://logo.clearbit.com/${tool.domain}`;
                           if (tool.domain && e.target.src !== cb) {
@@ -957,7 +957,7 @@ function NewsletterSection({ reduce }) {
                       />
                       <span
                         className="logo-fallback"
-                        style={{ display: 'none', width: 18, height: 18, borderRadius: '50%', background: '#4F46E5', color: '#fff', fontSize: 10, fontWeight: 700, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                        style={{ display: 'none', width: 24, height: 24, borderRadius: '50%', background: '#4F46E5', color: '#fff', fontSize: 11, fontWeight: 700, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                       >
                         {tool.name[0]}
                       </span>
@@ -1212,11 +1212,11 @@ function ContainerScroll({ lang, navigate, reduce }) {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
                     {MOCKUP_TOOLS.map((tk, i) => (
                       <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: '14px 14px 12px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 8, background: `${tk.dot}22`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, overflow: 'hidden', gap: 4 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 8, background: `${tk.dot}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <div style={{ width: 10, height: 10, borderRadius: '50%', background: tk.dot }} />
                           </div>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 20, background: tk.badgeBg, color: tk.badgeColor, whiteSpace: 'nowrap' }}>{tk.badge}</span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '3px 10px', borderRadius: 100, background: tk.badgeBg, color: tk.badgeColor, fontSize: 9, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', minWidth: 0 }}>{tk.badge}</span>
                         </div>
                         <div style={{ fontSize: 11, fontWeight: 600, color: '#0F0F1A', lineHeight: 1.4 }}>{tk.label}</div>
                         <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 8 }}>{t('landing.dash.use')}</div>
@@ -1872,15 +1872,19 @@ export function Landing() {
             {/* Social proof */}
             <div className="lp-social-inline">
               <div className="lp-social-avatars">
-                {['ML', 'TK', 'SR', 'AB', 'CL'].map((init, i) => (
-                  <div
+                {[
+                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face',
+                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
+                  'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&h=80&fit=crop&crop=face',
+                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face',
+                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face',
+                ].map((url, i) => (
+                  <img
                     key={i}
-                    className="lp-avatar"
-                    style={{ background: ['#818CF8', '#34D399', '#F472B6', '#FB923C', '#60A5FA'][i] }}
-                    aria-hidden="true"
-                  >
-                    {init}
-                  </div>
+                    src={url}
+                    alt="user"
+                    style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -12, objectFit: 'cover', position: 'relative', zIndex: 5 - i }}
+                  />
                 ))}
               </div>
               <p style={{ fontSize: 13, color: '#9CA3AF', margin: 0 }}>{t('landing.final.social')}</p>
