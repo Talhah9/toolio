@@ -1,6 +1,21 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
+const RESEND_API = 'https://api.resend.com/emails';
+
+function resendHeaders() {
+  return { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESEND_API_KEY}` };
+}
+
+async function sendEmail(to, subject, html) {
+  if (!to) return;
+  await fetch(RESEND_API, {
+    method: 'POST',
+    headers: resendHeaders(),
+    body: JSON.stringify({ from: 'Savvly <onboarding@resend.dev>', to: [to], subject, html }),
+  }).catch(e => console.error('[stripe-webhook] email error:', subject, e.message));
+}
+
 export const config = { maxDuration: 60, api: { bodyParser: false } };
 
 async function getRawBody(req) {
@@ -92,6 +107,32 @@ export default async function handler(req, res) {
           console.error('[stripe-webhook] add_credits RPC error:', JSON.stringify(error));
         } else {
           console.log('[stripe-webhook] add_credits success, result:', JSON.stringify(data));
+          await sendEmail(
+            session.customer_email,
+            '✅ Vos crédits ont été ajoutés — Savvly',
+            `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#10B981,#059669);padding:40px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.7);margin-bottom:12px;">SAVVLY</div>
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;">✅ ${credits} crédits ajoutés</h1>
+    </div>
+    <div style="padding:36px 40px;">
+      <p style="margin:0 0 20px;font-size:15px;color:#374151;line-height:1.7;">
+        Votre achat a bien été pris en compte. <strong>${credits} crédits</strong> ont été ajoutés à votre compte Savvly.
+      </p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="https://savvly.co/dashboard" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">
+          Utiliser mes crédits →
+        </a>
+      </div>
+    </div>
+    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+    </div>
+  </div>
+</body></html>`
+          );
         }
       }
 
@@ -105,6 +146,36 @@ export default async function handler(req, res) {
           console.error('[stripe-webhook] profiles update error:', JSON.stringify(error));
         } else {
           console.log('[stripe-webhook] plan set to pro, balance set to 500 for user', userId);
+          await sendEmail(
+            session.customer_email,
+            '🚀 Bienvenue dans Savvly Pro !',
+            `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#4F46E5,#6D28D9);padding:40px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.7);margin-bottom:12px;">SAVVLY</div>
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;">Bienvenue dans Savvly Pro 🚀</h1>
+    </div>
+    <div style="padding:36px 40px;">
+      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">Votre abonnement Pro est actif. Voici ce qui est maintenant disponible :</p>
+      <ul style="margin:0 0 24px;padding-left:20px;font-size:14px;color:#374151;line-height:2.2;">
+        <li><strong>500 crédits</strong> ajoutés à votre compte</li>
+        <li>Accès à tous les outils Pro (Contrats, Audit, Mission Finder…)</li>
+        <li>Générations illimitées selon votre solde de crédits</li>
+        <li>Support prioritaire</li>
+      </ul>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="https://savvly.co/dashboard" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">
+          Accéder à mon tableau de bord →
+        </a>
+      </div>
+    </div>
+    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+    </div>
+  </div>
+</body></html>`
+          );
         }
 
         // If this was a promo checkout, create a subscription schedule so that
@@ -218,6 +289,75 @@ export default async function handler(req, res) {
             }).catch(e => console.error('[stripe-webhook] coaching confirm email error:', e.message));
           }
         }
+      }
+    }
+
+    // ── Subscription cancelled ─────────────────────────────────
+    if (event.type === 'customer.subscription.deleted') {
+      const sub = event.data.object;
+      const customerId = sub.customer;
+      console.log('[stripe-webhook] subscription.deleted | customer:', customerId);
+
+      // Find user by stripe_customer_id or via metadata
+      const userId = sub.metadata?.userId;
+      let userEmail = null;
+
+      if (userId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', userId)
+          .maybeSingle();
+        if (profile) {
+          // Downgrade to free plan
+          await supabase
+            .from('profiles')
+            .update({ plan: 'free', updated_at: new Date().toISOString() })
+            .eq('id', userId);
+          console.log('[stripe-webhook] downgraded user', userId, 'to free');
+        }
+      }
+
+      // Get customer email from Stripe
+      try {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+        const customer = await stripe.customers.retrieve(customerId);
+        if (customer && !customer.deleted) userEmail = customer.email;
+      } catch (e) {
+        console.error('[stripe-webhook] failed to retrieve customer:', e.message);
+      }
+
+      if (userEmail) {
+        await sendEmail(
+          userEmail,
+          'Votre abonnement Savvly Pro a été annulé',
+          `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:#1f2937;padding:40px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-bottom:12px;">SAVVLY</div>
+      <h1 style="margin:0;font-size:24px;font-weight:800;color:#fff;">Votre abonnement Pro est annulé</h1>
+    </div>
+    <div style="padding:36px 40px;">
+      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">
+        Votre abonnement Savvly Pro a bien été annulé. Votre compte a été repassé en offre gratuite.
+      </p>
+      <p style="margin:0 0 24px;font-size:14px;color:#6B7280;line-height:1.7;">
+        Vous conservez l'accès aux outils gratuits. Vos données et historique restent disponibles.
+        Pour toute question, contactez-nous à <a href="mailto:talhahally974@gmail.com" style="color:#4F46E5;">talhahally974@gmail.com</a>.
+      </p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="https://savvly.co/pricing" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">
+          Réactiver mon abonnement →
+        </a>
+      </div>
+    </div>
+    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+    </div>
+  </div>
+</body></html>`
+        );
       }
     }
 

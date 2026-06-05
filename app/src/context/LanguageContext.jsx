@@ -5,7 +5,7 @@ import { fr } from '../locales/fr';
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => localStorage.getItem('savvly-lang') || 'en');
+  const [lang, setLang] = useState(() => localStorage.getItem('savvly-lang') || 'fr');
 
   const toggleLang = useCallback(() => {
     setLang(l => {

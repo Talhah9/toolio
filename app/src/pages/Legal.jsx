@@ -15,11 +15,11 @@ function CGV() {
       <p>
         Les présentes Conditions Générales de Vente (« CGV ») régissent l'accès et l'utilisation du service
         Savvly, édité par Talhah Ally, micro-entrepreneur immatriculé en France sous le numéro SIRET
-        833 320 757 00036, domicilié à Saint-Paul, La Réunion (ci-après « Savvly », « nous »).
+        8333 207 570 0036, domicilié à Saint-Paul, La Réunion (ci-après « Savvly », « nous »).
       </p>
       <p>
         Toute souscription à un abonnement ou tout achat de crédits sur la plateforme{' '}
-        <strong>Savvly.fr</strong> implique l'acceptation pleine et entière des présentes CGV.
+        <strong>savvly.co</strong> implique l'acceptation pleine et entière des présentes CGV.
       </p>
 
       <h2>2. Objet du service</h2>

@@ -275,7 +275,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: 'Savvly <onboarding@resend.dev>',
         to: [normalizedEmail],
-        subject: '🎁 Vos 10 ressources freelance gratuites',
+        subject: '🎁 Vos 10 ressources gratuites pour freelances — Savvly',
         html: `
 <!DOCTYPE html>
 <html lang="fr">
@@ -314,7 +314,7 @@ export default async function handler(req, res) {
       </p>
     </div>
     <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2025 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
     </div>
   </div>
 </body>
