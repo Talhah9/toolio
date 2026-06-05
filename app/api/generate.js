@@ -1,5 +1,89 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { createClient } from '@supabase/supabase-js';
 import { applySecurityHeaders, verifyAuth, checkCredits, rateLimit } from './_security.js';
+
+const RESEND_API = 'https://api.resend.com/emails';
+const LOW_CREDITS_THRESHOLD = 20;
+const WARN_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function getAdminClient() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Supabase env vars not configured');
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+async function checkLowCreditsAndWarn(userId, costJustUsed) {
+  try {
+    const admin = getAdminClient();
+
+    // Get current balance and last warning timestamp in parallel
+    const [creditsRes, profileRes, userRes] = await Promise.all([
+      admin.from('credits').select('balance').eq('user_id', userId).single(),
+      admin.from('profiles').select('last_credits_warning').eq('id', userId).single(),
+      admin.auth.admin.getUserById(userId),
+    ]);
+
+    if (creditsRes.error || !creditsRes.data) return;
+    const postBalance = creditsRes.data.balance - costJustUsed;
+    if (postBalance >= LOW_CREDITS_THRESHOLD) return;
+
+    // Check cooldown
+    const lastWarning = profileRes.data?.last_credits_warning;
+    if (lastWarning) {
+      const elapsed = Date.now() - new Date(lastWarning).getTime();
+      if (elapsed < WARN_COOLDOWN_MS) return;
+    }
+
+    const email = userRes.data?.user?.email;
+    if (!email) return;
+
+    // Send warning email
+    await fetch(RESEND_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: 'Savvly <onboarding@resend.dev>',
+        to: [email],
+        subject: '⚠️ Il vous reste moins de 20 crédits sur Savvly',
+        html: `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:linear-gradient(135deg,#F59E0B,#EF4444);padding:40px 40px 32px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.8);margin-bottom:12px;">SAVVLY</div>
+      <h1 style="margin:0;font-size:24px;font-weight:800;color:#fff;line-height:1.3;">Votre solde est presque épuisé</h1>
+    </div>
+    <div style="padding:36px 40px;">
+      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">Il vous reste <strong>moins de ${postBalance < 0 ? 0 : postBalance} crédits</strong> sur votre compte Savvly.</p>
+      <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">Pour continuer à générer vos contrats, devis et contenus LinkedIn sans interruption, rechargez votre solde ou passez à l'offre Pro (crédits illimités).</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:28px 0;">
+        <a href="https://savvly.co/dashboard" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 28px;border-radius:10px;">Acheter des crédits</a>
+        <a href="https://savvly.co/dashboard" style="display:inline-block;background:#fff;color:#4F46E5;text-decoration:none;font-weight:700;font-size:14px;padding:13px 28px;border-radius:10px;border:2px solid #4F46E5;">Passer Pro →</a>
+      </div>
+      <p style="margin:0;font-size:13px;color:#9CA3AF;text-align:center;">L'offre Pro inclut des crédits illimités et des fonctionnalités avancées.</p>
+    </div>
+    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+    </div>
+  </div>
+</body>
+</html>`,
+      }),
+    });
+
+    // Update last_credits_warning timestamp
+    await admin.from('profiles').update({ last_credits_warning: new Date().toISOString() }).eq('id', userId);
+
+    console.log('[generate] low-credits warning sent to:', email, '| balance:', postBalance);
+  } catch (err) {
+    console.error('[generate] low-credits warning failed:', err.message);
+  }
+}
 
 export const config = { maxDuration: 60 };
 
@@ -656,6 +740,7 @@ export default async function handler(req, res) {
         }
         res.write('data: [DONE]\n\n');
         res.end();
+        checkLowCreditsAndWarn(verifiedId, cost);
         return;
       }
       // Fall through to regular streaming below
@@ -676,6 +761,7 @@ export default async function handler(req, res) {
     console.log('[generate] success | output length:', finalMsg.content[0]?.text?.length ?? 0, '| stop_reason:', finalMsg.stop_reason);
     res.write('data: [DONE]\n\n');
     res.end();
+    checkLowCreditsAndWarn(verifiedId, cost);
 
   } catch (err) {
     const status   = err.status  ?? 500;
