@@ -1233,7 +1233,6 @@ function CommunitySection({ lang, navigate, reduce }) {
   const { t } = useLang();
   const stats = [
     { n: '200+', label: t('landing.community.stat1') },
-    { n: '13',   label: t('landing.community.stat2') },
   ];
   return (
     <FadeUp>
