@@ -393,7 +393,7 @@ export const en = {
   // ── Landing page ─────────────────────────────────────────────
   'landing.eyebrow.badge': 'Savvly: the ultimate weapon for solopreneurs',
   'landing.eyebrow.text': '13 AI tools, one subscription',
-  'landing.hero.title': 'One platform, every tool for your success.',
+  'landing.hero.title': "The freelancer's toolkit.",
   'landing.hero.ai.badge': 'Powered by AI',
   'landing.hero.sub': 'Contracts, quotes, LinkedIn posts, legal docs — generated in seconds so you can focus on the work that actually pays.',
   'landing.hero.cta.primary': 'Start for free — no card',
