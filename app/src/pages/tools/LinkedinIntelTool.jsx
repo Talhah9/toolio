@@ -160,9 +160,7 @@ export function LinkedinIntelTool({ tool }) {
         },
         (text) => setRawOutput(text),
       );
-      console.log('[linkedin-intel] raw output length:', fullText.length);
       const parsed = parseSections(fullText, TABS.map(t => t.id));
-      console.log('[linkedin-intel] parsed sections:', Object.keys(parsed));
       setSections(parsed);
       setRawOutput(fullText);
       setActiveTab('PROFILE_AUDIT');

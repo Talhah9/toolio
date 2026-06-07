@@ -100,7 +100,6 @@ export function SaveButton({ generationId, initialSaved = false, toolName = '', 
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
-      console.log('[SaveButton] toggle-save ok | saved:', json.saved, '| name:', json.name);
       setSaved(json.saved);
       if (onToggle) onToggle(json.saved);
     } catch (err) {

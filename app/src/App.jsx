@@ -1,24 +1,37 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppShell } from './layouts/AppShell';
-import { Landing } from './pages/Landing';
-import { Auth } from './pages/Auth';
-import { Dashboard } from './pages/Dashboard';
-import { ToolPage } from './pages/ToolPage';
-import { Pricing } from './pages/Pricing';
-import { Account } from './pages/Account';
-import { History } from './pages/History';
-import { Legal } from './pages/Legal';
-import { Admin } from './pages/Admin';
-import { ShareResult } from './pages/ShareResult';
-import { Coaching } from './pages/Coaching';
-import { CoachingSuccess } from './pages/CoachingSuccess';
-import { ComingSoon } from './pages/ComingSoon';
 import { useApp } from './context/AppContext';
 
+const lazy1 = (fn) => lazy(() => fn().then(m => ({ default: Object.values(m)[0] })));
+
+const Landing       = lazy(() => import('./pages/Landing').then(m => ({ default: m.Landing })));
+const Auth          = lazy(() => import('./pages/Auth').then(m => ({ default: m.Auth })));
+const Dashboard     = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const ToolPage      = lazy(() => import('./pages/ToolPage').then(m => ({ default: m.ToolPage })));
+const Pricing       = lazy(() => import('./pages/Pricing').then(m => ({ default: m.Pricing })));
+const Account       = lazy(() => import('./pages/Account').then(m => ({ default: m.Account })));
+const History       = lazy(() => import('./pages/History').then(m => ({ default: m.History })));
+const Legal         = lazy(() => import('./pages/Legal').then(m => ({ default: m.Legal })));
+const Admin         = lazy(() => import('./pages/Admin').then(m => ({ default: m.Admin })));
+const ShareResult   = lazy(() => import('./pages/ShareResult').then(m => ({ default: m.ShareResult })));
+const Coaching      = lazy(() => import('./pages/Coaching').then(m => ({ default: m.Coaching })));
+const CoachingSuccess = lazy(() => import('./pages/CoachingSuccess').then(m => ({ default: m.CoachingSuccess })));
+const ComingSoon    = lazy(() => import('./pages/ComingSoon').then(m => ({ default: m.ComingSoon })));
+
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
+
+const Spinner = () => (
+  <>
+    <style>{`@keyframes _spin { to { transform: rotate(360deg); } }`}</style>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <div style={{ width: 40, height: 40, border: '3px solid #4F46E5', borderTopColor: 'transparent', borderRadius: '50%', animation: '_spin 0.8s linear infinite' }} />
+    </div>
+  </>
+);
 
 function AdminGuard() {
   const { user, loading } = useApp();
@@ -32,30 +45,32 @@ export function App() {
     <LanguageProvider>
     <AppProvider>
       <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/legal" element={<Legal />} />
-          <Route element={<ProtectedRoute />}>
-            {/* Main app — with Savvly sidebar */}
-            <Route element={<AppShell />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/tools/:toolId" element={<ToolPage />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/coaching" element={<Coaching />} />
-              <Route path="/coaching/success" element={<CoachingSuccess />} />
-              <Route path="/community" element={<ComingSoon />} />
-              <Route path="/community/*" element={<ComingSoon />} />
+        <Suspense fallback={<Spinner />}>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/legal" element={<Legal />} />
+            <Route element={<ProtectedRoute />}>
+              {/* Main app — with Savvly sidebar */}
+              <Route element={<AppShell />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/tools/:toolId" element={<ToolPage />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/coaching" element={<Coaching />} />
+                <Route path="/coaching/success" element={<CoachingSuccess />} />
+                <Route path="/community" element={<ComingSoon />} />
+                <Route path="/community/*" element={<ComingSoon />} />
+              </Route>
+              <Route element={<AdminGuard />}>
+                <Route path="/admin" element={<Admin />} />
+              </Route>
             </Route>
-            <Route element={<AdminGuard />}>
-              <Route path="/admin" element={<Admin />} />
-            </Route>
-          </Route>
-          <Route path="/share/:id" element={<ShareResult />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            <Route path="/share/:id" element={<ShareResult />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </AppProvider>
     </LanguageProvider>

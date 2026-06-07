@@ -26,8 +26,6 @@ export function History() {
       .order('created_at', { ascending: false })
       .limit(100)
       .then(({ data, error }) => {
-        console.log('[History] fetch result | rows:', data?.length, '| error:', error?.message);
-        console.log('[History] saved rows:', data?.filter(r => r.saved).length);
         if (!error && data) setRows(data);
         else if (error) console.error('[History] fetch error:', error);
         setLoading(false);

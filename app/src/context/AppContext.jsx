@@ -25,7 +25,6 @@ export function AppProvider({ children }) {
   // Never throws — always resolves, using fallback values on error.
   // Gives up after 5 s so a hanging RPC can't freeze the app.
   const fetchUserData = useCallback(async () => {
-    console.log('[AppContext] fetchUserData: calling ensure_user_data RPC');
     try {
       const { data, error } = await withTimeout(
         supabase.rpc('ensure_user_data'),
@@ -37,11 +36,9 @@ export function AppProvider({ children }) {
         throw error;
       }
 
-      console.log('[AppContext] fetchUserData: success —', data);
       setCredits(data.balance);
       setPlan(data.plan || 'free');
 
-      console.log('[onboarding] value:', data.onboarding_completed);
       if (data.onboarding_completed === false || data.onboarding_completed === null) {
         setShowOnboarding(true);
       }
@@ -79,27 +76,16 @@ export function AppProvider({ children }) {
     // regardless of whether fetchUserData succeeds or times out.
     supabase.auth.getSession().then(async ({ data: { session }, error }) => {
       if (error) console.error('[AppContext] getSession error:', error.message);
-      console.log('[AppContext] getSession: session =', session ? 'exists' : 'none');
       setSession(session);
       if (session) {
-        try {
-          await fetchUserData();
-          fetchNotifications(); // fire-and-forget
-        } finally {
-          // fetchUserData never throws, but belt-and-suspenders:
-          // loading must be cleared no matter what.
-        }
+        await fetchUserData();
+        fetchNotifications(); // fire-and-forget
       }
       setLoading(false);
-      console.log('[AppContext] loading set to false');
     });
 
-    // React to future auth events.
-    // fetchUserData is fire-and-forget here — don't await it so the
-    // auth state machine isn't blocked by a slow or failing RPC.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('[AppContext] onAuthStateChange:', event);
         setSession(session);
 
         if (event === 'SIGNED_IN') {
@@ -120,19 +106,14 @@ export function AppProvider({ children }) {
 
   // ── Auth actions ──────────────────────────────────────────────
   const signIn = async (email, password) => {
-    console.log('[AppContext] signIn: start');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       console.error('[AppContext] signIn error:', error.message);
       throw error;
     }
-    console.log('[AppContext] signIn: auth succeeded (fetchUserData will follow via onAuthStateChange)');
-    // fetchUserData is triggered by the SIGNED_IN event, not here.
-    // signIn() returns as soon as auth resolves so the UI can navigate.
   };
 
   const signUp = async (email, password, name, lang = 'en') => {
-    console.log('[AppContext] signUp: start');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -180,7 +161,6 @@ export function AppProvider({ children }) {
   const logGeneration = useCallback(async (toolId, input, output, creditsUsed) => {
     if (!session) return null;
 
-    console.log('[AppContext] logGeneration:', toolId, creditsUsed, 'credits');
     const { data, error } = await supabase.rpc('log_generation', {
       p_tool_id:      toolId,
       p_input:        input,
@@ -194,7 +174,6 @@ export function AppProvider({ children }) {
       return null;
     }
 
-    console.log('[AppContext] logGeneration: new balance =', data.balance);
     setCredits(data.balance);
 
     // Fetch the ID of the generation we just inserted.
