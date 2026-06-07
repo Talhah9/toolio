@@ -114,7 +114,7 @@ export const TOOLS = [
     features_fr: ['Recommandation personnalisée de statut juridique', 'Comparaison micro-entreprise vs SASU vs EURL', 'Analyse selon votre CA, activité et objectifs', 'Conseils sur quand changer de statut'],
     features_en: ['Personalised legal structure recommendation', 'Comparison: micro-entreprise vs SASU vs EURL', 'Analysis based on your revenue, activity, and goals', 'Advice on when to change structure'],
     accent: '#3B82F6',
-    credits: 5, plan: 'free', glyph: 'status', franceOnly: true,
+    credits: 0, plan: 'free', glyph: 'status', franceOnly: true,
   },
   {
     id: 'urssaf',
@@ -127,7 +127,7 @@ export const TOOLS = [
     features_fr: ['Calcul précis de vos cotisations URSSAF', 'Détail par régime : micro, SASU, EURL', "Calendrier de vos échéances de paiement", 'Simulation selon différents niveaux de CA'],
     features_en: ['Precise calculation of your URSSAF contributions', 'Breakdown by regime: micro, SASU, EURL', 'Calendar of your payment deadlines', 'Simulation for different revenue levels'],
     accent: '#3B82F6',
-    credits: 5, plan: 'free', glyph: 'billing', franceOnly: true,
+    credits: 0, plan: 'free', glyph: 'billing', franceOnly: true,
   },
   {
     id: 'linkedin-intel',
@@ -179,7 +179,7 @@ export const TOOLS = [
     features_fr: ['Conversion PNG/JPG vers PDF instantanée', 'Conversion DOCX vers PDF sans perte de format', 'Traitement local dans votre navigateur (privé)', 'Téléchargement immédiat'],
     features_en: ['Instant PNG/JPG to PDF conversion', 'DOCX to PDF without formatting loss', 'Local processing in your browser (private)', 'Immediate download'],
     accent: '#64748B',
-    credits: 25, plan: 'free', glyph: 'arrow-down',
+    credits: 25, plan: 'pro', glyph: 'arrow-down',
   },
 ];
 
