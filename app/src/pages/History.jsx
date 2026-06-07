@@ -19,6 +19,7 @@ export function History() {
   useEffect(() => {
     if (!session?.user?.id) return;
     setLoading(true);
+    console.log('[History] fetching generations for user:', session.user.id);
     supabase
       .from('generations')
       .select('id, tool_id, input, output, credits_used, saved, name, created_at')
@@ -26,11 +27,17 @@ export function History() {
       .order('created_at', { ascending: false })
       .limit(100)
       .then(({ data, error }) => {
-        if (!error && data) setRows(data);
-        else if (error) console.error('[History] fetch error:', error);
+        if (error) {
+          console.error('[History] fetch error:', error.message, error);
+        } else if (data) {
+          console.log('[History] fetched rows:', data.length);
+          const savedCount = data.filter(r => r.saved === true).length;
+          console.log('[History] saved rows:', savedCount, '| sample saved fields:', data.slice(0, 3).map(r => ({ id: r.id, saved: r.saved })));
+          setRows(data);
+        }
         setLoading(false);
       });
-  }, [session]);
+  }, [session?.user?.id]);
 
   const toggleSaveOptimistic = (id, newVal) => {
     setRows(rs => rs.map(r => r.id === id ? { ...r, saved: newVal } : r));
@@ -39,7 +46,7 @@ export function History() {
   const toolOptions = [...new Set(rows.map(r => r.tool_id))];
 
   const filtered = rows.filter(r => {
-    if (filter === 'saved') return r.saved;
+    if (filter === 'saved') return r.saved === true;
     if (filter === 'all') return true;
     return r.tool_id === filter;
   });

@@ -89,18 +89,20 @@ export const config = { maxDuration: 60 };
 
 // Authoritative credit costs — single source of truth server-side.
 const TOOL_CREDITS = {
-  audit:             15,
-  compete:           15,
-  legal:              0,
-  contract:           0,
-  'linkedin-content': 10,
-  devis:              5,
-  relance:            5,
-  statut:             0,
-  urssaf:             0,
-  'linkedin-intel':  35,
-  prospection:       10,
-  'mission-finder':  30,
+  audit:              10,
+  compete:            10,
+  legal:              10,
+  contract:           10,
+  'linkedin-content': 20,
+  image:              30,
+  devis:              10,
+  relance:            10,
+  statut:              5,
+  urssaf:              5,
+  'linkedin-intel':   20,
+  prospection:        10,
+  'mission-finder':   10,
+  converter:          25,
 };
 
 const KNOWN_TOOLS = new Set(Object.keys(TOOL_CREDITS));
