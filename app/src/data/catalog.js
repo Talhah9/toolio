@@ -5,7 +5,7 @@ export const TOOLS = [
     short_en: 'Audit',                  short_fr: 'Audit',
     desc_en: 'Analyse any website and surface conversion and SEO improvement opportunities.',
     desc_fr: 'Analyse votre site et identifie les leviers de conversion et de référencement.',
-    credits: 15, plan: 'pro', glyph: 'audit', disabled: true,
+    credits: 10, plan: 'pro', glyph: 'audit', disabled: true,
   },
   {
     id: 'compete',
@@ -13,7 +13,7 @@ export const TOOLS = [
     short_en: 'Competitors',            short_fr: 'Concurrents',
     desc_en: "Dissect a competitor's positioning, offer, and keyword strategy.",
     desc_fr: "Décortique le positionnement, l'offre et les mots-clés de vos concurrents.",
-    credits: 15, plan: 'pro', glyph: 'compete', disabled: true,
+    credits: 10, plan: 'pro', glyph: 'compete', disabled: true,
   },
   {
     id: 'legal',
@@ -21,7 +21,7 @@ export const TOOLS = [
     short_en: 'Legal',                  short_fr: 'CGV',
     desc_en: 'Generate terms of service, privacy policy, and legal notice for your business.',
     desc_fr: 'Génère vos CGV et mentions légales conformes au droit français.',
-    credits: 0, plan: 'pro', glyph: 'legal',
+    credits: 10, plan: 'pro', glyph: 'legal',
   },
   {
     id: 'contract',
@@ -29,7 +29,7 @@ export const TOOLS = [
     short_en: 'Contract',               short_fr: 'Contrat',
     desc_en: 'Create a personalised, professionally worded freelance service agreement.',
     desc_fr: 'Crée un contrat de prestation freelance personnalisé et sécurisé.',
-    credits: 0, plan: 'pro', glyph: 'contract',
+    credits: 10, plan: 'pro', glyph: 'contract',
   },
   {
     id: 'linkedin-content',
@@ -37,7 +37,7 @@ export const TOOLS = [
     short_en: 'LinkedIn',               short_fr: 'LinkedIn',
     desc_en: 'Write engaging LinkedIn posts tailored to your niche and tone of voice.',
     desc_fr: 'Rédige des posts LinkedIn engageants adaptés à votre niche et votre ton.',
-    credits: 10, plan: 'pro', glyph: 'linkedin-content',
+    credits: 20, plan: 'pro', glyph: 'linkedin-content',
   },
   {
     id: 'image',
@@ -45,7 +45,7 @@ export const TOOLS = [
     short_en: 'Image',                  short_fr: 'Image',
     desc_en: 'Generate visuals for LinkedIn posts, banners, and social media using AI.',
     desc_fr: "Créez des visuels pour LinkedIn, bannières et réseaux sociaux avec l'IA.",
-    credits: 20, plan: 'pro', glyph: 'image',
+    credits: 30, plan: 'pro', glyph: 'image',
   },
   {
     id: 'devis',
@@ -53,7 +53,7 @@ export const TOOLS = [
     short_en: 'Quote',                  short_fr: 'Devis',
     desc_en: 'Build a professional client quote with line items, totals, and payment terms.',
     desc_fr: 'Crée un devis professionnel avec lignes, totaux et conditions de paiement.',
-    credits: 5, plan: 'pro', glyph: 'invoice',
+    credits: 10, plan: 'pro', glyph: 'invoice',
   },
   {
     id: 'relance',
@@ -61,7 +61,7 @@ export const TOOLS = [
     short_en: 'Follow-up',              short_fr: 'Relance',
     desc_en: 'Write the perfect follow-up for unpaid invoices or ghosted proposals.',
     desc_fr: 'Rédige la relance parfaite pour impayés ou propositions sans réponse.',
-    credits: 0, plan: 'free', glyph: 'contract',
+    credits: 10, plan: 'free', glyph: 'contract',
   },
   {
     id: 'statut',
@@ -69,7 +69,7 @@ export const TOOLS = [
     short_en: 'Statut',                 short_fr: 'Statut',
     desc_en: 'Réponds à quelques questions et découvre le statut juridique le plus adapté à ta situation.',
     desc_fr: 'Réponds à quelques questions et découvre le statut juridique le plus adapté à ta situation.',
-    credits: 0, plan: 'free', glyph: 'status', franceOnly: true,
+    credits: 5, plan: 'free', glyph: 'status', franceOnly: true,
   },
   {
     id: 'urssaf',
@@ -77,7 +77,7 @@ export const TOOLS = [
     short_en: 'URSSAF',                 short_fr: 'URSSAF',
     desc_en: "Saisis ton CA et ton régime pour savoir exactement ce que tu dois payer, quand et combien.",
     desc_fr: "Saisis ton CA et ton régime pour savoir exactement ce que tu dois payer, quand et combien.",
-    credits: 0, plan: 'free', glyph: 'billing', franceOnly: true,
+    credits: 5, plan: 'free', glyph: 'billing', franceOnly: true,
   },
   {
     id: 'linkedin-intel',
@@ -85,7 +85,7 @@ export const TOOLS = [
     short_en: 'LinkedIn Intel',         short_fr: 'LinkedIn Intel',
     desc_en: 'Audit your LinkedIn profile, analyse competitors, and get a 30-day content plan with ready-to-post content.',
     desc_fr: 'Auditez votre profil LinkedIn, analysez vos concurrents et obtenez un plan de contenu 30 jours avec des posts prêts à publier.',
-    credits: 35, plan: 'pro', glyph: 'linkedin-content',
+    credits: 20, plan: 'pro', glyph: 'linkedin-content',
   },
   {
     id: 'prospection',
@@ -101,7 +101,7 @@ export const TOOLS = [
     short_en: 'Missions',               short_fr: 'Missions',
     desc_en: 'Get a personalized strategy to find freelance missions on the right platforms.',
     desc_fr: 'Obtenez une stratégie personnalisée pour trouver des missions freelance sur les bonnes plateformes.',
-    credits: 30, plan: 'pro', glyph: 'compete',
+    credits: 10, plan: 'pro', glyph: 'compete',
   },
   {
     id: 'converter',
