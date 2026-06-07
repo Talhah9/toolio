@@ -22,7 +22,8 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Savvly <onboarding@resend.dev>',
+        from: 'Savvly <hello@savvly.co>',
+        reply_to: 'hello@savvly.co',
         to: [email],
         subject: welcomeEmailSubject(lang),
         html: welcomeEmailHtml({ firstName, lang }),

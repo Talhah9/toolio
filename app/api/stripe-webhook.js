@@ -12,7 +12,7 @@ async function sendEmail(to, subject, html) {
   await fetch(RESEND_API, {
     method: 'POST',
     headers: resendHeaders(),
-    body: JSON.stringify({ from: 'Savvly <onboarding@resend.dev>', to: [to], subject, html }),
+    body: JSON.stringify({ from: 'Savvly <hello@savvly.co>', reply_to: 'hello@savvly.co', to: [to], subject, html }),
   }).catch(e => console.error('[stripe-webhook] email error:', subject, e.message));
 }
 
@@ -248,7 +248,8 @@ export default async function handler(req, res) {
             method: 'POST',
             headers,
             body: JSON.stringify({
-              from: 'Savvly <onboarding@resend.dev>',
+              from: 'Savvly <hello@savvly.co>',
+              reply_to: 'hello@savvly.co',
               to: ['talhahally974@gmail.com'],
               subject: `🎯 Nouvelle consultation réservée — ${themeLabel}`,
               html: `
@@ -270,7 +271,8 @@ export default async function handler(req, res) {
               method: 'POST',
               headers,
               body: JSON.stringify({
-                from: 'Savvly <onboarding@resend.dev>',
+                from: 'Savvly <hello@savvly.co>',
+                reply_to: 'hello@savvly.co',
                 to: [clientEmail],
                 subject: '✅ Votre consultation avec Talhah Ally est confirmée',
                 html: `

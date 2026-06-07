@@ -46,7 +46,8 @@ async function checkLowCreditsAndWarn(userId, costJustUsed) {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Savvly <onboarding@resend.dev>',
+        from: 'Savvly <hello@savvly.co>',
+        reply_to: 'hello@savvly.co',
         to: [email],
         subject: '⚠️ Il vous reste moins de 20 crédits sur Savvly',
         html: `<!DOCTYPE html>
