@@ -510,132 +510,144 @@ function TornEdge({ topColor = '#0A0A0A', bottomColor = '#fff', flip = false }) 
 // ── PDF Blueprint example section ────────────────────────────
 
 function BlueprintSection({ navigate }) {
+  const ff = "'Segoe UI', system-ui, sans-serif";
   return (
-    <section style={{ background: '#FFF9F0', padding: '80px 24px' }}>
-      <div style={{ textAlign: 'center', marginBottom: 48 }}>
+    <section style={{ background: '#F1F5F9', padding: '80px 24px' }}>
+      <div style={{ textAlign: 'center', marginBottom: 52 }}>
         <span style={{ background: '#4F46E5', color: 'white', borderRadius: 100, padding: '4px 14px', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em' }}>EXEMPLE RÉEL</span>
         <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, margin: '16px 0 8px' }}>Voici ce que Savvly génère pour vous</h2>
         <p style={{ color: '#666', fontSize: 16 }}>Un rendu professionnel, prêt à envoyer à vos clients.</p>
       </div>
 
-      {/* Blueprint SVG */}
-      <div style={{ maxWidth: 900, margin: '0 auto 48px' }}>
-        <svg viewBox="0 0 900 600" width="100%" style={{ borderRadius: 16, boxShadow: '0 24px 60px rgba(0,0,0,0.15)' }} xmlns="http://www.w3.org/2000/svg">
-          {/* Background */}
-          <rect width="900" height="600" fill="#1a237e"/>
-          {/* Grid dots */}
-          {Array.from({length: 30}).map((_, i) =>
-            Array.from({length: 20}).map((_, j) => (
-              <circle key={`${i}-${j}`} cx={15 + i*30} cy={15 + j*30} r="1" fill="rgba(255,255,255,0.15)"/>
-            ))
-          )}
-          {/* Outer border */}
-          <rect x="20" y="20" width="860" height="560" fill="none" stroke="white" strokeWidth="1.5"/>
-          {/* Corner marks */}
-          <line x1="20" y1="40" x2="20" y2="20" stroke="white" strokeWidth="2"/>
-          <line x1="20" y1="20" x2="40" y2="20" stroke="white" strokeWidth="2"/>
-          <line x1="880" y1="40" x2="880" y2="20" stroke="white" strokeWidth="2"/>
-          <line x1="880" y1="20" x2="860" y2="20" stroke="white" strokeWidth="2"/>
-          <line x1="20" y1="560" x2="20" y2="580" stroke="white" strokeWidth="2"/>
-          <line x1="20" y1="580" x2="40" y2="580" stroke="white" strokeWidth="2"/>
-          <line x1="880" y1="560" x2="880" y2="580" stroke="white" strokeWidth="2"/>
-          <line x1="880" y1="580" x2="860" y2="580" stroke="white" strokeWidth="2"/>
-          {/* Title block */}
-          <rect x="20" y="20" width="860" height="60" fill="rgba(255,255,255,0.05)" stroke="white" strokeWidth="1"/>
-          <text x="450" y="58" textAnchor="middle" fill="white" fontSize="24" fontWeight="bold" fontFamily="monospace">CONTRAT DE PRESTATION FREELANCE</text>
-          {/* Info boxes top right */}
-          <rect x="650" y="85" width="230" height="25" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5"/>
-          <text x="660" y="102" fill="rgba(255,255,255,0.6)" fontSize="9" fontFamily="monospace">CLIENT : Marie Dupont — DesignHub</text>
-          <rect x="650" y="110" width="230" height="25" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5"/>
-          <text x="660" y="127" fill="rgba(255,255,255,0.6)" fontSize="9" fontFamily="monospace">PRESTATAIRE : Talhah Ally — Savvly</text>
-          <rect x="650" y="135" width="115" height="25" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5"/>
-          <text x="660" y="152" fill="rgba(255,255,255,0.6)" fontSize="9" fontFamily="monospace">DATE : 07/06/2026</text>
-          <rect x="765" y="135" width="115" height="25" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5"/>
-          <text x="775" y="152" fill="rgba(255,255,255,0.6)" fontSize="9" fontFamily="monospace">RÉF : SAV-2026-042</text>
-          {/* Divider */}
-          <line x1="20" y1="165" x2="880" y2="165" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" strokeDasharray="4,4"/>
-          {/* Article 1 */}
-          <text x="40" y="190" fill="white" fontSize="11" fontWeight="bold" fontFamily="monospace">ARTICLE 1 — PARTIES CONTRACTANTES</text>
-          <line x1="40" y1="195" x2="300" y2="195" stroke="#fad02c" strokeWidth="1"/>
-          <rect x="40" y="202" width="380" height="8" fill="rgba(255,255,255,0.15)" rx="2"/>
-          <rect x="40" y="215" width="340" height="8" fill="rgba(255,255,255,0.1)" rx="2"/>
-          <rect x="40" y="228" width="360" height="8" fill="rgba(255,255,255,0.1)" rx="2"/>
-          {/* Article 2 */}
-          <text x="40" y="258" fill="white" fontSize="11" fontWeight="bold" fontFamily="monospace">ARTICLE 2 — OBJET DE LA MISSION</text>
-          <line x1="40" y1="263" x2="290" y2="263" stroke="#fad02c" strokeWidth="1"/>
-          <rect x="40" y="270" width="360" height="8" fill="rgba(255,255,255,0.15)" rx="2"/>
-          <rect x="40" y="283" width="320" height="8" fill="rgba(255,255,255,0.1)" rx="2"/>
-          <rect x="40" y="296" width="350" height="8" fill="rgba(255,255,255,0.1)" rx="2"/>
-          {/* Article 3 — payment table */}
-          <text x="40" y="326" fill="white" fontSize="11" fontWeight="bold" fontFamily="monospace">ARTICLE 3 — RÉMUNÉRATION</text>
-          <line x1="40" y1="331" x2="260" y2="331" stroke="#fad02c" strokeWidth="1"/>
-          <rect x="40" y="338" width="380" height="25" fill="rgba(79,70,229,0.3)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5"/>
-          <text x="50" y="355" fill="white" fontSize="9" fontFamily="monospace">Prestation de développement web</text>
-          <text x="340" y="355" fill="#fad02c" fontSize="9" fontFamily="monospace" fontWeight="bold">2 400 EUR HT</text>
-          <rect x="40" y="363" width="380" height="20" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.5"/>
-          <text x="50" y="377" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="monospace">Acompte 30% à la signature</text>
-          <text x="340" y="377" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="monospace">720 EUR</text>
-          {/* Signature block */}
-          <text x="40" y="420" fill="white" fontSize="11" fontWeight="bold" fontFamily="monospace">SIGNATURES</text>
-          <line x1="40" y1="425" x2="160" y2="425" stroke="#fad02c" strokeWidth="1"/>
-          <rect x="40" y="435" width="180" height="60" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" strokeDasharray="4,2"/>
-          <text x="130" y="470" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="monospace">Le Prestataire</text>
-          <rect x="260" y="435" width="180" height="60" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" strokeDasharray="4,2"/>
-          <text x="350" y="470" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="monospace">Le Client</text>
-          {/* Detail inset top right */}
-          <rect x="460" y="185" width="200" height="120" fill="rgba(0,0,0,0.2)" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
-          <text x="560" y="202" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontFamily="monospace">DÉTAIL — Clause confidentialité</text>
-          <line x1="470" y1="207" x2="650" y2="207" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5"/>
-          <rect x="470" y="213" width="180" height="6" fill="rgba(255,255,255,0.12)" rx="1"/>
-          <rect x="470" y="224" width="160" height="6" fill="rgba(255,255,255,0.08)" rx="1"/>
-          <rect x="470" y="235" width="170" height="6" fill="rgba(255,255,255,0.08)" rx="1"/>
-          <rect x="470" y="246" width="140" height="6" fill="rgba(255,255,255,0.08)" rx="1"/>
-          <rect x="470" y="257" width="165" height="6" fill="rgba(255,255,255,0.08)" rx="1"/>
-          <rect x="470" y="268" width="150" height="6" fill="rgba(255,255,255,0.08)" rx="1"/>
-          <rect x="470" y="279" width="155" height="6" fill="rgba(255,255,255,0.08)" rx="1"/>
-          {/* Detail inset bottom right */}
-          <rect x="460" y="320" width="200" height="120" fill="rgba(0,0,0,0.2)" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
-          <text x="560" y="337" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="8" fontFamily="monospace">DÉTAIL — Échéancier de paiement</text>
-          <line x1="470" y1="342" x2="650" y2="342" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5"/>
-          <rect x="470" y="348" width="180" height="16" fill="rgba(79,70,229,0.4)" rx="1"/>
-          <text x="480" y="360" fill="white" fontSize="8" fontFamily="monospace">Acompte 30% · 720€ · À la signature</text>
-          <rect x="470" y="369" width="180" height="16" fill="rgba(255,255,255,0.05)" rx="1"/>
-          <text x="480" y="381" fill="rgba(255,255,255,0.6)" fontSize="8" fontFamily="monospace">Solde 70% · 1680€ · À la livraison</text>
-          <rect x="470" y="390" width="180" height="16" fill="rgba(250,208,44,0.15)" rx="1"/>
-          <text x="480" y="402" fill="#fad02c" fontSize="8" fontFamily="monospace">TOTAL : 2 400 EUR HT</text>
-          <rect x="470" y="411" width="180" height="16" fill="rgba(255,255,255,0.03)" rx="1"/>
-          <text x="480" y="423" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="monospace">TVA non applicable — Art. 293B CGI</text>
-          {/* Measurement arrows */}
-          <line x1="430" y1="185" x2="430" y2="440" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" strokeDasharray="2,2"/>
-          <line x1="425" y1="185" x2="435" y2="185" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5"/>
-          <line x1="425" y1="440" x2="435" y2="440" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5"/>
-          <text x="418" y="315" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="8" fontFamily="monospace" transform="rotate(-90, 418, 315)">CORPS DU CONTRAT</text>
-          {/* CONFIDENTIEL watermark */}
-          <text x="450" y="320" textAnchor="middle" fill="rgba(255,255,255,0.04)" fontSize="60" fontWeight="bold" fontFamily="monospace" transform="rotate(-30, 450, 320)">CONFIDENTIEL</text>
-          {/* Footer bar */}
-          <rect x="20" y="555" width="860" height="25" fill="rgba(255,255,255,0.05)" stroke="white" strokeWidth="0.5"/>
-          <text x="30" y="572" fill="rgba(255,255,255,0.5)" fontSize="8" fontFamily="monospace">savvly.co · Document généré automatiquement</text>
-          <text x="450" y="572" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="8" fontFamily="monospace">SAV-2026-042 · Contrat de prestation</text>
-          <text x="870" y="572" textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize="8" fontFamily="monospace">Page 1/3</text>
+      {/* A4 PDF mockup */}
+      <div style={{ maxWidth: 560, margin: '0 auto 52px' }}>
+        <svg viewBox="0 0 794 1020" width="100%" style={{ borderRadius: 4, boxShadow: '0 8px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)', display: 'block' }} xmlns="http://www.w3.org/2000/svg">
+
+          {/* White page */}
+          <rect width="794" height="1020" fill="white"/>
+
+          {/* ── HEADER BAND ── */}
+          <rect x="0" y="0" width="794" height="80" fill="#4F46E5"/>
+          <text x="50" y="51" fill="white" fontSize="26" fontWeight="bold" fontFamily={ff}>Savvly</text>
+          <text x="126" y="51" fill="#fad02c" fontSize="26" fontWeight="bold" fontFamily={ff}>.</text>
+          <text x="744" y="44" textAnchor="end" fill="rgba(255,255,255,0.9)" fontSize="10" letterSpacing="0.18em" fontFamily={ff}>CONTRAT DE PRESTATION</text>
+          <text x="744" y="61" textAnchor="end" fill="rgba(255,255,255,0.55)" fontSize="9" letterSpacing="0.1em" fontFamily={ff}>FREELANCE · 2026</text>
+
+          {/* ── PARTIES ── */}
+          <text x="397" y="108" textAnchor="middle" fill="#9CA3AF" fontSize="10" fontFamily={ff}>Paris, le 7 juin 2026</text>
+          <text x="397" y="128" textAnchor="middle" fill="#4F46E5" fontSize="12" fontWeight="bold" fontFamily={ff}>N° SAV-2026-042</text>
+
+          {/* Prestataire box */}
+          <rect x="50" y="142" width="310" height="110" fill="white" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
+          <rect x="50" y="142" width="310" height="24" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
+          <rect x="50" y="154" width="310" height="12" fill="#F9FAFB"/>
+          <text x="66" y="159" fill="#9CA3AF" fontSize="8" fontWeight="bold" letterSpacing="0.1em" fontFamily={ff}>PRESTATAIRE</text>
+          <text x="66" y="180" fill="#111827" fontSize="13" fontWeight="bold" fontFamily={ff}>Talhah Ally</text>
+          <text x="66" y="197" fill="#6B7280" fontSize="10" fontFamily={ff}>Micro-entrepreneur</text>
+          <text x="66" y="212" fill="#6B7280" fontSize="10" fontFamily={ff}>talhahally974@gmail.com</text>
+          <text x="66" y="227" fill="#6B7280" fontSize="10" fontFamily={ff}>savvly.co</text>
+
+          {/* Client box */}
+          <rect x="434" y="142" width="310" height="110" fill="white" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
+          <rect x="434" y="142" width="310" height="24" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
+          <rect x="434" y="154" width="310" height="12" fill="#F9FAFB"/>
+          <text x="450" y="159" fill="#9CA3AF" fontSize="8" fontWeight="bold" letterSpacing="0.1em" fontFamily={ff}>CLIENT</text>
+          <text x="450" y="180" fill="#111827" fontSize="13" fontWeight="bold" fontFamily={ff}>Marie Dupont</text>
+          <text x="450" y="197" fill="#6B7280" fontSize="10" fontFamily={ff}>DesignHub Studio</text>
+          <text x="450" y="212" fill="#6B7280" fontSize="10" fontFamily={ff}>marie@designhub.fr</text>
+
+          {/* ── PURPLE ACCENT LINE ── */}
+          <rect x="0" y="268" width="794" height="3" fill="#4F46E5"/>
+
+          {/* ── ARTICLE 1 ── */}
+          <rect x="50" y="288" width="3" height="22" fill="#4F46E5"/>
+          <text x="62" y="304" fill="#111827" fontSize="12" fontWeight="bold" fontFamily={ff}>Article 1 — Objet de la mission</text>
+          <rect x="62" y="314" width="578" height="7" fill="#E5E7EB" rx="2"/>
+          <rect x="62" y="327" width="536" height="7" fill="#E5E7EB" rx="2"/>
+          <rect x="62" y="340" width="558" height="7" fill="#E5E7EB" rx="2"/>
+
+          {/* ── ARTICLE 2 ── */}
+          <rect x="50" y="366" width="3" height="22" fill="#4F46E5"/>
+          <text x="62" y="382" fill="#111827" fontSize="12" fontWeight="bold" fontFamily={ff}>Article 2 — Durée et calendrier</text>
+          <rect x="62" y="392" width="560" height="7" fill="#E5E7EB" rx="2"/>
+          <rect x="62" y="405" width="504" height="7" fill="#E5E7EB" rx="2"/>
+
+          {/* ── ARTICLE 3 ── */}
+          <rect x="50" y="430" width="3" height="22" fill="#4F46E5"/>
+          <text x="62" y="446" fill="#111827" fontSize="12" fontWeight="bold" fontFamily={ff}>Article 3 — Rémunération</text>
+
+          {/* Table */}
+          <rect x="50" y="458" width="694" height="28" fill="#4F46E5"/>
+          <line x1="280" y1="458" x2="280" y2="486" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+          <line x1="410" y1="458" x2="410" y2="486" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+          <line x1="570" y1="458" x2="570" y2="486" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+          <text x="165" y="476" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily={ff}>PRESTATION</text>
+          <text x="345" y="476" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily={ff}>QTÉ</text>
+          <text x="490" y="476" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily={ff}>PRIX UNITAIRE</text>
+          <text x="632" y="476" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily={ff}>TOTAL</text>
+
+          <rect x="50" y="486" width="694" height="28" fill="white"/>
+          <line x1="280" y1="486" x2="280" y2="514" stroke="#E5E7EB" strokeWidth="1"/>
+          <line x1="410" y1="486" x2="410" y2="514" stroke="#E5E7EB" strokeWidth="1"/>
+          <line x1="570" y1="486" x2="570" y2="514" stroke="#E5E7EB" strokeWidth="1"/>
+          <text x="62" y="504" fill="#374151" fontSize="10" fontFamily={ff}>Développement web</text>
+          <text x="345" y="504" textAnchor="middle" fill="#374151" fontSize="10" fontFamily={ff}>1</text>
+          <text x="490" y="504" textAnchor="middle" fill="#374151" fontSize="10" fontFamily={ff}>2 400 €</text>
+          <text x="632" y="504" textAnchor="middle" fill="#111827" fontSize="10" fontWeight="bold" fontFamily={ff}>2 400 €</text>
+
+          <rect x="50" y="514" width="694" height="28" fill="#F9FAFB"/>
+          <line x1="280" y1="514" x2="280" y2="542" stroke="#E5E7EB" strokeWidth="1"/>
+          <line x1="410" y1="514" x2="410" y2="542" stroke="#E5E7EB" strokeWidth="1"/>
+          <line x1="570" y1="514" x2="570" y2="542" stroke="#E5E7EB" strokeWidth="1"/>
+          <text x="62" y="532" fill="#374151" fontSize="10" fontFamily={ff}>Acompte (30%)</text>
+          <text x="632" y="532" textAnchor="middle" fill="#4F46E5" fontSize="10" fontWeight="bold" fontFamily={ff}>720 €</text>
+
+          <rect x="50" y="458" width="694" height="84" fill="none" stroke="#E5E7EB" strokeWidth="1"/>
+
+          {/* ── ARTICLE 4 ── */}
+          <rect x="50" y="562" width="3" height="22" fill="#4F46E5"/>
+          <text x="62" y="578" fill="#111827" fontSize="12" fontWeight="bold" fontFamily={ff}>Article 4 — Conditions de paiement</text>
+          <rect x="62" y="588" width="558" height="7" fill="#E5E7EB" rx="2"/>
+          <rect x="62" y="601" width="496" height="7" fill="#E5E7EB" rx="2"/>
+
+          {/* ── SIGNATURES ── */}
+          <rect x="50" y="638" width="694" height="1" fill="#E5E7EB"/>
+          <text x="50" y="662" fill="#9CA3AF" fontSize="9" fontWeight="bold" letterSpacing="0.1em" fontFamily={ff}>SIGNATURES</text>
+
+          {/* Left */}
+          <text x="62" y="686" fill="#374151" fontSize="10" fontFamily={ff}>Signature du Prestataire</text>
+          <rect x="62" y="694" width="220" height="65" fill="none" stroke="#9CA3AF" strokeWidth="1" strokeDasharray="5,3" rx="2"/>
+          <text x="62" y="776" fill="#374151" fontSize="10" fontFamily={ff}>Talhah Ally</text>
+          <text x="62" y="792" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Date : ___________</text>
+
+          {/* Right */}
+          <text x="512" y="686" fill="#374151" fontSize="10" fontFamily={ff}>Signature du Client</text>
+          <rect x="512" y="694" width="220" height="65" fill="none" stroke="#9CA3AF" strokeWidth="1" strokeDasharray="5,3" rx="2"/>
+          <text x="512" y="776" fill="#374151" fontSize="10" fontFamily={ff}>Marie Dupont</text>
+          <text x="512" y="792" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Date : ___________</text>
+
+          {/* ── FOOTER ── */}
+          <rect x="50" y="820" width="694" height="1" fill="#E5E7EB"/>
+          <text x="397" y="841" textAnchor="middle" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Savvly · savvly.co · SIRET 833 320 757 00036</text>
+          <text x="744" y="841" textAnchor="end" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Page 1 sur 3</text>
+
         </svg>
       </div>
 
-      {/* 3 smaller previews */}
-      <div style={{ display: 'flex', gap: 24, maxWidth: 900, margin: '0 auto 48px', justifyContent: 'center', flexWrap: 'wrap' }}>
+      {/* 3 document preview cards */}
+      <div style={{ display: 'flex', gap: 20, maxWidth: 860, margin: '0 auto 52px', justifyContent: 'center', flexWrap: 'wrap' }}>
         {[
-          { label: 'CGV Complètes', color: '#4F46E5' },
-          { label: 'Devis Professionnel', color: '#059669' },
-          { label: 'Mentions Légales', color: '#7C3AED' },
+          { label: 'CGV Complètes', sub: '12 articles · Conforme droit FR', color: '#4F46E5' },
+          { label: 'Devis Professionnel', sub: 'Lignes détaillées · PDF', color: '#059669' },
+          { label: 'Mentions Légales', sub: 'Conformes LCEN · RGPD', color: '#7C3AED' },
         ].map((doc) => (
-          <div key={doc.label} style={{ flex: 1, minWidth: 200, maxWidth: 260, background: '#1a237e', borderRadius: 12, padding: 20, border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ borderBottom: `2px solid ${doc.color}`, paddingBottom: 8, marginBottom: 12 }}>
-              <div style={{ background: 'rgba(255,255,255,0.15)', height: 8, borderRadius: 4, marginBottom: 6 }}/>
-              <div style={{ background: 'rgba(255,255,255,0.08)', height: 8, borderRadius: 4, width: '70%' }}/>
-            </div>
-            {[100, 80, 90, 60, 75, 85, 65].map((w, i) => (
-              <div key={i} style={{ background: 'rgba(255,255,255,0.07)', height: 6, borderRadius: 3, width: `${w}%`, marginBottom: 8 }}/>
+          <div key={doc.label} style={{ flex: 1, minWidth: 200, maxWidth: 260, background: 'white', borderRadius: 12, padding: '20px 20px 16px', border: '1px solid #E5E7EB', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+            <div style={{ height: 4, borderRadius: 2, background: doc.color, marginBottom: 16 }}/>
+            {[100, 70, 88, 55, 78, 82, 60].map((w, i) => (
+              <div key={i} style={{ background: i === 0 ? '#D1D5DB' : '#F3F4F6', height: i === 0 ? 9 : 6, borderRadius: 3, width: `${w}%`, marginBottom: 9 }}/>
             ))}
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, textAlign: 'center', marginTop: 16 }}>{doc.label}</p>
+            <p style={{ color: '#111827', fontSize: 13, fontWeight: 600, margin: '16px 0 3px' }}>{doc.label}</p>
+            <p style={{ color: '#9CA3AF', fontSize: 11, margin: 0 }}>{doc.sub}</p>
           </div>
         ))}
       </div>
