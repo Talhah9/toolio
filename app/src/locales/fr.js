@@ -13,14 +13,14 @@ export const fr = {
   'nav.section.general': 'Général',
   'nav.section.tools': 'Outils',
   'nav.section.account': 'Compte',
-  'nav.section.community': 'Communauté',
-  'nav.community': 'Communauté',
+  'nav.section.community': 'Le Club',
+  'nav.community': 'Le Club',
 
   // ── Mobile bottom nav ────────────────────────────────────────
   'mobile.tools': 'Outils',
   'mobile.plan': 'Plan',
   'mobile.account': 'Compte',
-  'mobile.community': 'Réseau',
+  'mobile.community': 'Le Club',
 
   // ── Header ───────────────────────────────────────────────────
   'header.hello': 'Bonjour,',
@@ -544,10 +544,10 @@ export const fr = {
   'landing.packs.no-expiry': 'Sans expiration · Ajoutés instantanément',
 
   // ── Community landing teaser ─────────────────────────────────
-  'landing.community.badge': 'NOUVEAU — Communauté',
-  'landing.community.title': 'Connecte-toi avec d\'autres entrepreneurs',
-  'landing.community.sub': 'Publie des missions, trouve des freelances, construis ton réseau. XP, badges, classement.',
-  'landing.community.cta': 'Découvrir le réseau →',
+  'landing.community.badge': 'NOUVEAU — Le Club',
+  'landing.community.title': 'Rejoins le club des entrepreneurs',
+  'landing.community.sub': 'Publie des missions, trouve des freelances, construis ton réseau.',
+  'landing.community.cta': 'Rejoindre le club →',
   'landing.community.stat1.value': '247', 'landing.community.stat1.label': 'missions actives',
   'landing.community.stat2.value': '1 200+', 'landing.community.stat2.label': 'entrepreneurs',
   'landing.community.stat3.value': '∞', 'landing.community.stat3.label': 'XP à gagner',
@@ -559,7 +559,7 @@ export const fr = {
   'community.home.stats.members': 'entrepreneurs',
   'community.home.stats.rating': 'satisfaction',
   'community.home.card.post.title': 'Poster une mission',
-  'community.home.card.post.sub': 'Partage une opportunité avec la communauté',
+  'community.home.card.post.sub': 'Partage une opportunité avec le club',
   'community.home.card.post.action': 'Publier',
   'community.home.card.find.title': 'Trouver une mission',
   'community.home.card.find.sub': 'Parcours les missions disponibles',
@@ -837,7 +837,7 @@ export const fr = {
   // ── Community layout ─────────────────────────────────────────
   'community.layout.back':              '← Savvly',
   'community.layout.back.mobile':       '← Retour Savvly',
-  'community.layout.title':            'Community',
+  'community.layout.title':            'Le Club',
   'community.layout.nav.home':         'Accueil',
   'community.layout.nav.feed':         'Feed',
   'community.layout.nav.channels':     'Channels',
@@ -1016,13 +1016,13 @@ export const fr = {
   'landing.featured.legal.desc': 'CGV, mentions légales, politique de confidentialité en 30 secondes.',
 
   // ── Landing – CommunitySection ────────────────────────────────
-  'landing.community.badge': 'Communauté',
-  'landing.community.h2.line1': 'Rejoignez la communauté',
-  'landing.community.h2.line2': 'des entrepreneurs',
+  'landing.community.badge': 'Le Club',
+  'landing.community.h2.line1': 'Rejoins le ',
+  'landing.community.h2.line2': 'club des entrepreneurs',
   'landing.community.sub': "Trouvez des missions, partagez vos opportunités, échangez avec d'autres freelances.",
   'landing.community.stat1': 'membres actifs',
   'landing.community.stat2': 'outils IA',
-  'landing.community.cta': 'Rejoindre la communauté →',
+  'landing.community.cta': 'Rejoindre le club →',
 
   // ── Landing – ContainerScroll (Dashboard mockup) ──────────────
   'landing.dash.badge': 'Votre espace de travail',
@@ -1039,8 +1039,8 @@ export const fr = {
 
   // ── Newsletter ───────────────────────────────────────────────
   'landing.newsletter.badge': '🎁 GRATUIT',
-  'landing.newsletter.title': 'Les ressources pour améliorer ou construire votre business',
-  'landing.newsletter.sub': '10 ressources testées et approuvées par notre équipe. Reçois le guide PDF + nos meilleurs conseils chaque semaine.',
+  'landing.newsletter.title': 'Rejoins le club des entrepreneurs',
+  'landing.newsletter.sub': 'et reçois les ressources pour améliorer ou construire votre business',
   'landing.newsletter.placeholder': 'ton@email.fr',
   'landing.newsletter.cta': 'Recevoir le guide gratuitement →',
   'landing.newsletter.disclaimer': '📩 Envoyé instantanément · Pas de spam · Désabonnement en 1 clic',

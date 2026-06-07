@@ -13,14 +13,14 @@ export const en = {
   'nav.section.general': 'General',
   'nav.section.tools': 'Tools',
   'nav.section.account': 'Account',
-  'nav.section.community': 'Community',
-  'nav.community': 'Community',
+  'nav.section.community': 'The Club',
+  'nav.community': 'The Club',
 
   // ── Mobile bottom nav ────────────────────────────────────────
   'mobile.tools': 'Tools',
   'mobile.plan': 'Plan',
   'mobile.account': 'Account',
-  'mobile.community': 'Community',
+  'mobile.community': 'The Club',
 
   // ── Header ───────────────────────────────────────────────────
   'header.hello': 'Hello,',
@@ -544,10 +544,10 @@ export const en = {
   'landing.packs.no-expiry': 'No expiry · Added instantly',
 
   // ── Community landing teaser ─────────────────────────────────
-  'landing.community.badge': 'NEW — Community',
-  'landing.community.title': 'Connect with other entrepreneurs',
-  'landing.community.sub': 'Post missions, find freelancers, build your network. XP, badges, leaderboard.',
-  'landing.community.cta': 'Discover the network →',
+  'landing.community.badge': 'NEW — The Club',
+  'landing.community.title': 'Join the entrepreneurs club',
+  'landing.community.sub': 'Post missions, find freelancers, build your network.',
+  'landing.community.cta': 'Join the club →',
   'landing.community.stat1.value': '247', 'landing.community.stat1.label': 'active missions',
   'landing.community.stat2.value': '1,200+', 'landing.community.stat2.label': 'entrepreneurs',
   'landing.community.stat3.value': '∞', 'landing.community.stat3.label': 'XP to earn',
@@ -837,7 +837,7 @@ export const en = {
   // ── Community layout ─────────────────────────────────────────
   'community.layout.back':              '← Savvly',
   'community.layout.back.mobile':       '← Return to Savvly',
-  'community.layout.title':            'Community',
+  'community.layout.title':            'The Club',
   'community.layout.nav.home':         'Home',
   'community.layout.nav.feed':         'Feed',
   'community.layout.nav.channels':     'Channels',
@@ -1016,13 +1016,13 @@ export const en = {
   'landing.featured.legal.desc': 'Terms, legal notice, and privacy policy in 30 seconds.',
 
   // ── Landing – CommunitySection ────────────────────────────────
-  'landing.community.badge': 'Community',
-  'landing.community.h2.line1': 'Join the community',
-  'landing.community.h2.line2': 'of entrepreneurs',
+  'landing.community.badge': 'The Club',
+  'landing.community.h2.line1': 'Join the ',
+  'landing.community.h2.line2': 'entrepreneurs club',
   'landing.community.sub': 'Find missions, share opportunities, connect with other freelancers.',
   'landing.community.stat1': 'active members',
   'landing.community.stat2': 'AI tools',
-  'landing.community.cta': 'Join the community →',
+  'landing.community.cta': 'Join the club →',
 
   // ── Landing – ContainerScroll (Dashboard mockup) ──────────────
   'landing.dash.badge': 'Your workspace',
@@ -1039,8 +1039,8 @@ export const en = {
 
   // ── Newsletter ───────────────────────────────────────────────
   'landing.newsletter.badge': '🎁 FREE',
-  'landing.newsletter.title': 'Resources to improve or build your business',
-  'landing.newsletter.sub': '10 resources tested and approved by our team. Get the PDF guide + our best tips every week.',
+  'landing.newsletter.title': 'Join the entrepreneurs club',
+  'landing.newsletter.sub': 'and receive resources to improve or build your business',
   'landing.newsletter.placeholder': 'your@email.com',
   'landing.newsletter.cta': 'Get the free guide →',
   'landing.newsletter.disclaimer': '📩 Sent instantly · No spam · Unsubscribe in 1 click',

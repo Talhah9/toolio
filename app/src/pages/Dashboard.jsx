@@ -154,7 +154,7 @@ export function Dashboard() {
                     </span>
                   </div>
                   <h3 className="tool-card-title">{t('nav.community')}</h3>
-                  <p className="tool-card-desc">Entraide, partage et opportunités entre freelances et solopreneurs.</p>
+                  <p className="tool-card-desc">Entraide, partage et opportunités entre les membres du club.</p>
                   <div className="tool-card-foot">
                     <span style={{ color: 'var(--fg-4)', fontWeight: 500, fontSize: 13 }}>En cours de développement</span>
                   </div>

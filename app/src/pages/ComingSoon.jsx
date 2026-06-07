@@ -18,7 +18,7 @@ export function ComingSoon() {
             Bientôt disponible
           </h1>
           <p style={{ fontSize: 16, color: 'var(--fg-2)', lineHeight: 1.65, margin: '0 0 36px' }}>
-            La communauté des entrepreneurs arrive très bientôt.
+            Le club des entrepreneurs arrive très bientôt.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
             <a
