@@ -2,6 +2,16 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
+
+const LINKEDIN_URL = 'https://www.linkedin.com/in/talhah-ally-75b0b1175/';
+
+function LinkedInIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" style={{ flexShrink: 0 }}>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
@@ -97,24 +107,32 @@ export function Coaching() {
 
           {/* ── Header ── */}
           <div className="coaching-header-row" style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 28 }}>
-            <a href="https://talhahally.com/" target="_blank" rel="noreferrer" style={{ flexShrink: 0 }}>
+            <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" style={{ flexShrink: 0 }}>
               <div
-                style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #818CF8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900, color: '#fff', cursor: 'pointer', transition: 'opacity 0.15s' }}
+                style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #4F46E5, #818CF8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 900, color: '#fff', cursor: 'pointer', transition: 'opacity 0.15s', letterSpacing: '-0.02em' }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
               >
-                T
+                TA
               </div>
             </a>
             <div>
               <h1 style={{ fontSize: 21, fontWeight: 900, margin: '0 0 4px', letterSpacing: '-0.02em', lineHeight: 1.3 }}>
                 {t('coaching.page.title')}
               </h1>
-              <p style={{ margin: '0 0 6px', color: 'var(--fg-2)', fontSize: 14 }}>
+              <p style={{ margin: '0 0 10px', color: 'var(--fg-2)', fontSize: 14 }}>
                 {t('coaching.page.tagline')}
               </p>
-              <a href="https://talhahally.com/" target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                {t('coaching.page.profile-link')}
+              <a
+                href={LINKEDIN_URL}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0A66C2', color: '#fff', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 700, textDecoration: 'none', transition: 'opacity 0.15s' }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              >
+                <LinkedInIcon />
+                Voir le profil LinkedIn →
               </a>
             </div>
           </div>
@@ -244,7 +262,19 @@ export function Coaching() {
               {loading ? t('coaching.form.submitting') : t('coaching.form.submit')}
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)', marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', marginTop: 10, padding: '12px', border: '2px solid #4F46E5', borderRadius: 10, color: '#4F46E5', fontWeight: 700, fontSize: 14, textDecoration: 'none', transition: 'background 0.15s', background: 'transparent', boxSizing: 'border-box' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(79,70,229,0.06)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <LinkedInIcon />
+              Contacter directement sur LinkedIn
+            </a>
+
+            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--fg-3)', marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
               <Glyph name="lock" size={12} /> {t('coaching.form.secure')}
             </p>
           </div>

@@ -143,6 +143,22 @@ export function Dashboard() {
                     <span className="row" style={{ gap: 4 }}>{t('dashboard.use')} <Glyph name="arrow-right" size={12} /></span>
                   </div>
                 </div>
+              ), (
+                <div key="community-card" className="tool-card" style={{ opacity: 0.55, cursor: 'default', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 2, background: '#6B7280', color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20, letterSpacing: '0.04em' }}>
+                    Bientôt
+                  </div>
+                  <div className="tool-card-head">
+                    <span className="glyph glyph-lg">
+                      <Glyph name="community" size={20} />
+                    </span>
+                  </div>
+                  <h3 className="tool-card-title">{t('nav.community')}</h3>
+                  <p className="tool-card-desc">Entraide, partage et opportunités entre freelances et solopreneurs.</p>
+                  <div className="tool-card-foot">
+                    <span style={{ color: 'var(--fg-4)', fontWeight: 500, fontSize: 13 }}>En cours de développement</span>
+                  </div>
+                </div>
               )];
             }
 

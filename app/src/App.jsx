@@ -3,7 +3,6 @@ import { AppProvider } from './context/AppContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppShell } from './layouts/AppShell';
-import { CommunityLayout } from './layouts/CommunityLayout';
 import { Landing } from './pages/Landing';
 import { Auth } from './pages/Auth';
 import { Dashboard } from './pages/Dashboard';
@@ -16,14 +15,7 @@ import { Admin } from './pages/Admin';
 import { ShareResult } from './pages/ShareResult';
 import { Coaching } from './pages/Coaching';
 import { CoachingSuccess } from './pages/CoachingSuccess';
-import { CommunityHome } from './pages/community/CommunityHome';
-import { PostMission } from './pages/community/PostMission';
-import { FindMission } from './pages/community/FindMission';
-import { MissionDetail } from './pages/community/MissionDetail';
-import { Feed } from './pages/community/Feed';
-import { Channels } from './pages/community/Channels';
-import { PostDetail } from './pages/community/PostDetail';
-import { CreatePost } from './pages/community/CreatePost';
+import { ComingSoon } from './pages/ComingSoon';
 import { useApp } from './context/AppContext';
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
@@ -54,17 +46,8 @@ export function App() {
               <Route path="/history" element={<History />} />
               <Route path="/coaching" element={<Coaching />} />
               <Route path="/coaching/success" element={<CoachingSuccess />} />
-            </Route>
-            {/* Community — standalone layout, no Savvly sidebar */}
-            <Route element={<CommunityLayout />}>
-              <Route path="/community" element={<CommunityHome />} />
-              <Route path="/community/post" element={<PostMission />} />
-              <Route path="/community/find" element={<FindMission />} />
-              <Route path="/community/mission/:id" element={<MissionDetail />} />
-              <Route path="/community/feed" element={<Feed />} />
-              <Route path="/community/feed/:postId" element={<PostDetail />} />
-              <Route path="/community/channels" element={<Channels />} />
-              <Route path="/community/create" element={<CreatePost />} />
+              <Route path="/community" element={<ComingSoon />} />
+              <Route path="/community/*" element={<ComingSoon />} />
             </Route>
             <Route element={<AdminGuard />}>
               <Route path="/admin" element={<Admin />} />

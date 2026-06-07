@@ -54,15 +54,15 @@ export function Sidebar() {
 
       <div style={{ flex: 1 }} />
 
-      {/* Community entry point — navigates into standalone CommunityLayout */}
+      {/* Community — coming soon */}
       <div
         className="sidebar-item"
         onClick={() => navigate('/community')}
-        style={{ color: 'var(--fg-2)', borderTop: '1px solid var(--border)', paddingTop: 12, marginTop: 4 }}
+        style={{ color: 'var(--fg-3)', borderTop: '1px solid var(--border)', paddingTop: 12, marginTop: 4, opacity: 0.65, cursor: 'default' }}
       >
         <Glyph name="community" />
         <span>{t('nav.community')}</span>
-        <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, background: '#4F46E5', color: '#fff', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>NEW</span>
+        <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, background: '#6B7280', color: '#fff', borderRadius: 4, padding: '1px 5px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Bientôt</span>
       </div>
 
       <div className="sidebar-section">{t('nav.section.account')}</div>
