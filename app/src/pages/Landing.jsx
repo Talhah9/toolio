@@ -512,7 +512,7 @@ function TornEdge({ topColor = '#0A0A0A', bottomColor = '#fff', flip = false }) 
 function BlueprintSection({ navigate }) {
   const ff = "'Segoe UI', system-ui, sans-serif";
   return (
-    <section style={{ background: '#F1F5F9', padding: '80px 24px' }}>
+    <section style={{ background: '#FAFAFA', padding: '80px 24px', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       <div style={{ textAlign: 'center', marginBottom: 52 }}>
         <span style={{ background: '#4F46E5', color: 'white', borderRadius: 100, padding: '4px 14px', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em' }}>EXEMPLE RÉEL</span>
         <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, margin: '16px 0 8px' }}>Voici ce que Savvly génère pour vous</h2>
@@ -1055,7 +1055,7 @@ function NewsletterSection({ reduce }) {
   }
 
   return (
-    <section style={{ background: '#fff', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible' }}>
+    <section style={{ background: '#FAFAFA', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       {/* Flex wrapper — padding provides visual clearance for floating logos */}
       <div className="nl-wrapper" style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '100px 320px', overflow: 'visible' }}>
 
