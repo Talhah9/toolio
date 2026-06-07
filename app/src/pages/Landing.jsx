@@ -1236,6 +1236,20 @@ function NewsletterSection({ reduce }) {
 
   return (
     <section style={{ background: '#FAFAFA', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+      <style>{`
+        .nl-success { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .nl-success-icon { font-size: 44px; line-height: 1; margin-bottom: 4px; }
+        .nl-success-title { font-size: 20px; font-weight: 800; color: #0F0F1A; }
+        .nl-success-label { font-size: 15px; font-weight: 600; color: #4F46E5; }
+        .nl-success-sub { font-size: 14px; color: #6B6B8A; }
+        @media (max-width: 768px) {
+          .nl-success { flex-direction: row; align-items: center; gap: 8px; flex-wrap: nowrap; }
+          .nl-success-icon { font-size: 20px; margin-bottom: 0; }
+          .nl-success-title { font-size: clamp(14px, 3vw, 18px); }
+          .nl-success-label { font-size: 14px; }
+          .nl-success-sub { font-size: 13px; }
+        }
+      `}</style>
       {/* Flex wrapper — padding provides visual clearance for floating logos */}
       <div className="nl-wrapper" style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '100px 320px', overflow: 'visible' }}>
 
@@ -1299,12 +1313,14 @@ function NewsletterSection({ reduce }) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.25 }}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+                  className="nl-success"
                 >
-                  <div style={{ fontSize: 44, lineHeight: 1, marginBottom: 4 }}>✅</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: '#0F0F1A' }}>{t('landing.newsletter.success')}</div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#4F46E5' }}>{t('landing.newsletter.success.label')}</div>
-                  <div style={{ fontSize: 14, color: '#6B6B8A' }}>{t('landing.newsletter.success.sub')}</div>
+                  <span className="nl-success-icon">✅</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div className="nl-success-title">{t('landing.newsletter.success')}</div>
+                    <div className="nl-success-label">{t('landing.newsletter.success.label')}</div>
+                    <div className="nl-success-sub">{t('landing.newsletter.success.sub')}</div>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div
