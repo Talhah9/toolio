@@ -914,18 +914,34 @@ function IlluLegal() {
 
 function IlluImage() {
   return (
-    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', borderRadius: 16, padding: '18px 16px', width: '100%', maxWidth: 186, boxShadow: '0 10px 28px rgba(79,70,229,0.35)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -24, right: -24, width: 88, height: 88, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
-        <div style={{ position: 'absolute', bottom: -18, left: -18, width: 64, height: 64, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
-        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.22)', marginBottom: 10, border: '2px solid rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, color: '#fff', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 280, background: 'linear-gradient(160deg, #4F46E5 0%, #7C3AED 55%, #6D28D9 100%)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Cover band with geometric pattern */}
+      <div style={{ height: 82, position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+        <svg width="100%" height="82" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0 }}>
+          <line x1="0" y1="25" x2="300" y2="65" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
+          <line x1="0" y1="55" x2="300" y2="15" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+          <line x1="30" y1="0" x2="30" y2="82" stroke="rgba(255,255,255,0.09)" strokeWidth="1" />
+          <line x1="80" y1="0" x2="80" y2="82" stroke="rgba(255,255,255,0.09)" strokeWidth="1" />
+          <line x1="130" y1="0" x2="130" y2="82" stroke="rgba(255,255,255,0.09)" strokeWidth="1" />
+          <circle cx="220" cy="18" r="32" fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth="1.5" />
+          <circle cx="240" cy="68" r="22" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+          <rect x="8" y="8" width="28" height="28" rx="5" fill="none" stroke="rgba(255,255,255,0.11)" strokeWidth="1" transform="rotate(18 22 22)" />
+        </svg>
+      </div>
+      {/* Profile content */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 16px 22px' }}>
+        {/* Avatar overlapping cover */}
+        <div style={{ width: 54, height: 54, borderRadius: '50%', background: '#5B21B6', border: '2.5px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 900, color: '#fff', marginTop: -27, marginBottom: 10, flexShrink: 0, boxShadow: '0 2px 10px rgba(0,0,0,0.25)' }}>
           BM
         </div>
-        <div style={{ fontWeight: 800, fontSize: 13, color: '#fff', marginBottom: 2, position: 'relative' }}>Baptiste Moreau</div>
-        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', marginBottom: 12, position: 'relative' }}>Web Designer Freelance</div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.14)', borderRadius: 20, padding: '3px 10px', position: 'relative' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34D399', flexShrink: 0 }} />
-          <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.92)', fontWeight: 600 }}>Disponible pour missions</span>
+        <div style={{ fontWeight: 800, fontSize: 14, color: '#fff', marginBottom: 3, textAlign: 'center' }}>Baptiste Moreau</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.76)', marginBottom: 14, textAlign: 'center', lineHeight: 1.4 }}>Web Designer Freelance</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#10B981', borderRadius: 20, padding: '4px 12px', marginBottom: 16 }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', flexShrink: 0 }} />
+          <span style={{ fontSize: 9.5, color: '#fff', fontWeight: 700 }}>Disponible pour missions</span>
+        </div>
+        <div style={{ border: '1.5px solid rgba(255,255,255,0.55)', borderRadius: 8, padding: '6px 20px', fontSize: 11, fontWeight: 700, color: '#fff', textAlign: 'center', cursor: 'default' }}>
+          Me contacter
         </div>
       </div>
     </div>
@@ -953,6 +969,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
       accent: '#7C3AED',
       illu: <IlluImage />,
       link: '/tools/image',
+      bleed: true,
     },
     {
       title: t('landing.featured.devis.title'),
@@ -1015,7 +1032,10 @@ function FeaturedTools({ lang, navigate, reduce }) {
                   </div>
                 </div>
                 {/* Right: illustration */}
-                <div className="featured-tool-card-illu" style={{ background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minWidth: 0, overflow: 'hidden' }}>
+                <div className="featured-tool-card-illu" style={card.bleed
+                  ? { display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }
+                  : { background: `${card.accent}08`, padding: '24px 20px', display: 'flex', flexDirection: 'column', borderLeft: `1px solid ${card.accent}15`, minWidth: 0, overflow: 'hidden' }
+                }>
                   {card.illu}
                 </div>
               </motion.div>
@@ -1029,33 +1049,22 @@ function FeaturedTools({ lang, navigate, reduce }) {
 
 // ── LinkedIn Content showcase ────────────────────────────────
 
-const LI_SHOWCASE_CARDS = [
-  { text: "L'image que les gens ont du freelance.\n\nSe lever à 9h. Travailler en pyjama. Être son propre patron.", likes: 43,  impressions: '5 438',   rotate: -2, y: -20 },
-  { text: "La prochaine fois que vous dites qu'un TJM est trop cher :\n\nOubliez pas que vous payez rien à côté.", likes: 114, impressions: '8 665',   rotate: -1, y: 20  },
-  { text: "Ma mère m'a sorti un truc la semaine dernière.\n\n\"Si t'es à 500€ par jour tu gagnes genre 10 000€ par mois ?!\"", likes: 171, impressions: '115 898', rotate: 2,  y: -30 },
-  { text: "Y'a un truc qu'il faut remettre au clair.\n\nLe salaire moyen d'un freelance en France c'est entre 2 500€ et 4 000€", likes: 457, impressions: '53 219',  rotate: 1,  y: 10  },
+const LI_POST_SRCS = [
+  'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Image/post1.png.png',
+  'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Image/post2.png.png',
+  'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Image/post3.png.png',
+  'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Image/post4.png.png',
 ];
 
-function LIPostCard({ text, likes, impressions, rotate, y, side, inView, delay }) {
+function LIImageCard({ src, rotate, y, side, inView, delay }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: side === 'left' ? -28 : 28 }}
+      initial={{ opacity: 0, x: side === 'left' ? -40 : 40 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.5, delay }}
-      style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 14, padding: '14px 16px', maxWidth: 240, boxShadow: '0 2px 14px rgba(0,0,0,0.06)', transform: `rotate(${rotate}deg) translateY(${y}px)`, fontSize: 12, color: '#1D1D1F', lineHeight: 1.65 }}
+      style={{ maxWidth: 220, borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', transform: `rotate(${rotate}deg) translateY(${y}px)`, flexShrink: 0 }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#4F46E5,#818CF8)', flexShrink: 0 }} />
-        <div>
-          <div style={{ fontWeight: 700, fontSize: 11, color: '#0F0F1A' }}>Talhah Ally</div>
-          <div style={{ fontSize: 9.5, color: '#9CA3AF' }}>Freelance & Coach</div>
-        </div>
-      </div>
-      <p style={{ margin: '0 0 10px', whiteSpace: 'pre-line', fontSize: 11.5 }}>{text}</p>
-      <div style={{ fontSize: 10, color: '#9CA3AF', display: 'flex', gap: 8 }}>
-        <span>👍 {likes}</span>
-        <span>· {impressions} impressions</span>
-      </div>
+      <img src={src} alt="Post LinkedIn" loading="lazy" style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'cover' }} />
     </motion.div>
   );
 }
@@ -1108,8 +1117,8 @@ function LinkedInShowcaseSection({ navigate, reduce }) {
 
           {/* Left cards */}
           <div className="li-showcase-side" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-end' }}>
-            <LIPostCard {...LI_SHOWCASE_CARDS[0]} side="left" inView={inView} delay={0.1} />
-            <LIPostCard {...LI_SHOWCASE_CARDS[1]} side="left" inView={inView} delay={0.2} />
+            <LIImageCard src={LI_POST_SRCS[0]} rotate={-2} y={-20} side="left" inView={inView} delay={0.1} />
+            <LIImageCard src={LI_POST_SRCS[2]} rotate={-1} y={20}  side="left" inView={inView} delay={0.25} />
           </div>
 
           {/* Center demo */}
@@ -1158,8 +1167,8 @@ function LinkedInShowcaseSection({ navigate, reduce }) {
 
           {/* Right cards */}
           <div className="li-showcase-side" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
-            <LIPostCard {...LI_SHOWCASE_CARDS[2]} side="right" inView={inView} delay={0.15} />
-            <LIPostCard {...LI_SHOWCASE_CARDS[3]} side="right" inView={inView} delay={0.25} />
+            <LIImageCard src={LI_POST_SRCS[1]} rotate={2}  y={-30} side="right" inView={inView} delay={0.15} />
+            <LIImageCard src={LI_POST_SRCS[3]} rotate={1}  y={10}  side="right" inView={inView} delay={0.3} />
           </div>
         </div>
       </div>
