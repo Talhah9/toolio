@@ -1891,7 +1891,7 @@ export function Landing() {
           <FadeUp>
             <div className="stat-bar">
               <AnimatedStat end={1200} suffix="+" duration={1.5} label={t('landing.stats.users.label')} />
-              <AnimatedStat end={13}   suffix=""  duration={0.8} label={t('landing.stats.tools.label')} />
+              <AnimatedStat end={14}   suffix=""  duration={0.8} label={t('landing.stats.tools.label')} />
               <AnimatedStat end={50}   suffix=""  duration={1.0} label={t('landing.stats.credits.label')} />
               <AnimatedStat end={99}   suffix="%" duration={1.2} label={t('landing.stats.hosting.label')} />
             </div>

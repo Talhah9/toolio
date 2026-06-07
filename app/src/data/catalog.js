@@ -179,7 +179,7 @@ export const TOOLS = [
     features_fr: ['Conversion PNG/JPG vers PDF instantanée', 'Conversion DOCX vers PDF sans perte de format', 'Traitement local dans votre navigateur (privé)', 'Téléchargement immédiat'],
     features_en: ['Instant PNG/JPG to PDF conversion', 'DOCX to PDF without formatting loss', 'Local processing in your browser (private)', 'Immediate download'],
     accent: '#64748B',
-    credits: 25, plan: 'pro', glyph: 'arrow-down',
+    credits: 25, plan: 'free', glyph: 'arrow-down',
   },
 ];
 
