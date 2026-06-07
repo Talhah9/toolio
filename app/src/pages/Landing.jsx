@@ -1186,20 +1186,20 @@ const NL_AVATARS = [
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face&q=60&auto=format',
 ];
 
-// Logos positioned absolute relative to the card div. Negative values go outside card edges.
+// No external image requests — all icons are inline colored badges.
 const NL_TOOLS = [
-  { name: 'Claude',     logo: 'https://www.anthropic.com/favicon.ico',                                                                                          domain: 'anthropic.com',  top: -50,  left: -200,  rotate: -15, delay: 0    },
-  { name: 'ChatGPT',    logo: 'https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg',                                                                          domain: 'openai.com',     top: -60,  right: -210, rotate:  12, delay: 0.1  },
-  { name: 'Zapier',     logo: 'https://cdn.zapier.com/zapier/images/favicon.ico',                                                                               domain: 'zapier.com',     top:  20,  left: -280,  rotate: -20, delay: 0.2  },
-  { name: 'Make',       logo: 'https://www.make.com/favicon.ico',                                                                                               domain: 'make.com',       top: 120,  left: -260,  rotate:  10, delay: 0.3  },
-  { name: 'Airtable',   logo: 'https://airtable.com/favicon.ico',                                                                                               domain: 'airtable.com',   top:  30,  right: -270, rotate:  15, delay: 0.4  },
-  { name: 'Shopify',    logo: 'https://logo.clearbit.com/shopify.com',                                                                                               domain: 'shopify.com',    top: 130,  right: -280, rotate: -10, delay: 0.5  },
-  { name: 'LinkedIn',   logo: 'https://static.licdn.com/aero-v1/sc/h/al2o9zrvru7aqj8e1x2rzsrca',                                                               domain: 'linkedin.com',   top: 230,  left: -220,  rotate:  -8, delay: 0.6  },
-  { name: 'Notion',     logo: 'https://www.notion.so/images/favicon.ico',                                                                                       domain: 'notion.so',      top: 250,  right: -230, rotate:   5, delay: 0.7  },
-  { name: 'Apollo',     logo: 'https://www.apollo.io/favicon.ico',                                                                                              domain: 'apollo.io',      top: -30,  left: -130,  rotate:   8, delay: 0.8  },
-  { name: 'Gemini',     logo: 'https://logo.clearbit.com/gemini.google.com',                                                                                        domain: 'google.com',     top: -40,  right: -140, rotate:  -5, delay: 0.9  },
-  { name: 'Instagram',  logo: 'https://static.cdninstagram.com/rsrc.php/v3/yG/r/De-Dwpd5CHc.png',                                                              domain: 'instagram.com',  top: 330,  left: -170,  rotate:  12, delay: 1.0  },
-  { name: 'Newsletter', logo: null, emoji: '🚀',                                                                                                                domain: null,             top: 340,  right: -180, rotate: -12, delay: 1.1  },
+  { name: 'Claude',     bg: '#FF6B35', color: '#fff', label: 'C',   top: -50,  left: -200,  rotate: -15, delay: 0    },
+  { name: 'ChatGPT',    bg: '#10A37F', color: '#fff', label: 'G',   top: -60,  right: -210, rotate:  12, delay: 0.1  },
+  { name: 'Zapier',     bg: '#FF4A00', color: '#fff', label: 'Z',   top:  20,  left: -280,  rotate: -20, delay: 0.2  },
+  { name: 'Make',       bg: '#6D00A8', color: '#fff', label: 'M',   top: 120,  left: -260,  rotate:  10, delay: 0.3  },
+  { name: 'Airtable',   bg: '#18BFFF', color: '#fff', label: 'A',   top:  30,  right: -270, rotate:  15, delay: 0.4  },
+  { name: 'Shopify',    bg: '#5A8A3B', color: '#fff', label: 'S',   top: 130,  right: -280, rotate: -10, delay: 0.5  },
+  { name: 'LinkedIn',   bg: '#0A66C2', color: '#fff', label: 'in',  top: 230,  left: -220,  rotate:  -8, delay: 0.6  },
+  { name: 'Notion',     bg: '#1A1A1A', color: '#fff', label: 'N',   top: 250,  right: -230, rotate:   5, delay: 0.7  },
+  { name: 'Apollo',     bg: '#7C3AED', color: '#fff', label: 'A',   top: -30,  left: -130,  rotate:   8, delay: 0.8  },
+  { name: 'Gemini',     bg: '#4285F4', color: '#fff', label: 'G',   top: -40,  right: -140, rotate:  -5, delay: 0.9  },
+  { name: 'Instagram',  bg: '#E1306C', color: '#fff', label: 'IG',  top: 330,  left: -170,  rotate:  12, delay: 1.0  },
+  { name: 'Newsletter', bg: '#F59E0B', color: '#fff', label: '🚀',  top: 340,  right: -180, rotate: -12, delay: 1.1  },
 ];
 
 function NewsletterSection({ reduce }) {
@@ -1254,42 +1254,9 @@ function NewsletterSection({ reduce }) {
                 transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
               >
                 <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 15, fontWeight: 700, color: '#374151', minWidth: 100 }}>
-                  {tool.logo ? (
-                    <>
-                      <img
-                        src={tool.logo}
-                        alt={tool.name}
-                        width={24}
-                        height={24}
-                        style={{ width: 24, height: 24, objectFit: 'contain', flexShrink: 0 }}
-                        onError={(e) => {
-                          const cb = `https://logo.clearbit.com/${tool.domain}`;
-                          if (tool.domain && e.target.src !== cb) {
-                            e.target.onerror = (e2) => {
-                              e2.target.onerror = null;
-                              e2.target.style.display = 'none';
-                              const fb = e2.target.parentElement.querySelector('.logo-fallback');
-                              if (fb) fb.style.display = 'flex';
-                            };
-                            e.target.src = cb;
-                          } else {
-                            e.target.onerror = null;
-                            e.target.style.display = 'none';
-                            const fb = e.target.parentElement.querySelector('.logo-fallback');
-                            if (fb) fb.style.display = 'flex';
-                          }
-                        }}
-                      />
-                      <span
-                        className="logo-fallback"
-                        style={{ display: 'none', width: 24, height: 24, borderRadius: '50%', background: '#4F46E5', color: '#fff', fontSize: 11, fontWeight: 700, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                      >
-                        {tool.name[0]}
-                      </span>
-                    </>
-                  ) : (
-                    <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>{tool.emoji}</span>
-                  )}
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: tool.bg, color: tool.color, fontSize: tool.label.length > 1 ? 9 : 11, fontWeight: 800, flexShrink: 0, letterSpacing: '-0.02em' }}>
+                    {tool.label}
+                  </span>
                   {tool.name}
                 </div>
               </motion.div>
