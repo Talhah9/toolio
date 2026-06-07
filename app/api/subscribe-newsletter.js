@@ -12,10 +12,15 @@ function getAdminClient() {
 }
 
 export default async function handler(req, res) {
+  // ── Env debug (visible in Vercel function logs) ─────────────
+  console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
+  console.log('SUPABASE_URL exists:', !!process.env.SUPABASE_URL);
+  console.log('SUPABASE_SERVICE_ROLE_KEY exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   if (!process.env.RESEND_API_KEY) {
-    console.error('[subscribe-newsletter] Missing RESEND_API_KEY');
+    console.error('NEWSLETTER ERROR: Missing RESEND_API_KEY');
     return res.status(500).json({ error: 'Missing RESEND_API_KEY' });
   }
 
@@ -34,13 +39,22 @@ export default async function handler(req, res) {
       .insert({ email: normalizedEmail, source: 'landing' });
 
     if (error && error.code !== '23505') {
-      console.error('[subscribe-newsletter] DB insert error:', error.message, error);
-      return res.status(500).json({ error: 'Failed to save subscriber' });
+      console.error('NEWSLETTER ERROR (DB insert):', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      return res.status(500).json({ error: 'Failed to save subscriber: ' + error.message });
     }
     // 23505 = unique violation (already subscribed) — still send the email
   } catch (err) {
-    console.error('[subscribe-newsletter] DB error:', err.message, err.stack);
-    return res.status(500).json({ error: 'Database error' });
+    console.error('NEWSLETTER ERROR (DB catch):', {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+    });
+    return res.status(500).json({ error: err.message });
   }
 
   // ── 2. Send confirmation email via Resend ───────────────────
@@ -93,14 +107,21 @@ export default async function handler(req, res) {
 
     const json = await response.json();
     if (!response.ok) {
-      console.error('[subscribe-newsletter] Resend error:', json);
+      console.error('NEWSLETTER ERROR (Resend):', {
+        status: response.status,
+        body: json,
+      });
       return res.status(500).json({ error: json.message || 'Failed to send email' });
     }
 
     console.log('[subscribe-newsletter] sent to:', normalizedEmail, '| id:', json.id);
     res.json({ ok: true });
   } catch (err) {
-    console.error('[subscribe-newsletter] fetch error:', err.message, err.stack);
+    console.error('NEWSLETTER ERROR (Resend catch):', {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+    });
     res.status(500).json({ error: err.message });
   }
 }
