@@ -507,6 +507,337 @@ function TornEdge({ topColor = '#0A0A0A', bottomColor = '#fff', flip = false }) 
   );
 }
 
+// ── PDF Blueprint example section ────────────────────────────
+
+function BlueprintSection({ navigate, reduce }) {
+  return (
+    <section style={{ background: '#FFF9F0', borderTop: '1px solid #EDE0CC', borderBottom: '1px solid #EDE0CC', padding: '80px 0' }}>
+      <div className="container" style={{ maxWidth: 980 }}>
+
+        {/* Header */}
+        <FadeUp>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <span style={{ display: 'inline-block', background: '#4F46E5', color: '#fff', fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', padding: '4px 14px', borderRadius: 20, marginBottom: 16, textTransform: 'uppercase' }}>
+              Exemple réel
+            </span>
+            <h2 className="h1" style={{ marginBottom: 14 }}>Voici ce que Savvly génère pour vous</h2>
+            <p className="muted" style={{ fontSize: 16 }}>Un rendu professionnel, prêt à envoyer à vos clients.</p>
+          </div>
+        </FadeUp>
+
+        {/* Main blueprint */}
+        <FadeUp delay={0.1}>
+          <div style={{ maxWidth: 900, margin: '0 auto 36px', borderRadius: 14, overflow: 'hidden', boxShadow: '0 28px 80px rgba(26,35,126,0.38), 0 2px 0 rgba(79,70,229,0.4)', border: '1px solid rgba(79,70,229,0.3)' }}>
+            <svg viewBox="0 0 900 600" width="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+              <defs>
+                <pattern id="bp-grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+                  <circle cx="0" cy="0" r="0.65" fill="rgba(255,255,255,0.18)" />
+                  <circle cx="24" cy="0" r="0.65" fill="rgba(255,255,255,0.18)" />
+                  <circle cx="0" cy="24" r="0.65" fill="rgba(255,255,255,0.18)" />
+                  <circle cx="24" cy="24" r="0.65" fill="rgba(255,255,255,0.18)" />
+                </pattern>
+                <marker id="bp-arr-e" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="4" markerHeight="4" orient="auto">
+                  <path d="M0 0 L8 4 L0 8z" fill="rgba(255,255,255,0.5)" />
+                </marker>
+                <marker id="bp-arr-w" viewBox="0 0 8 8" refX="0" refY="4" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                  <path d="M8 0 L0 4 L8 8z" fill="rgba(255,255,255,0.5)" />
+                </marker>
+              </defs>
+
+              {/* Background */}
+              <rect width="900" height="600" fill="#1a237e" />
+              <rect width="900" height="600" fill="url(#bp-grid)" />
+
+              {/* ── CONFIDENTIEL watermark (below all content) ── */}
+              <text x="450" y="305" fontSize="56" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.04)"
+                fontWeight="bold" textAnchor="middle" transform="rotate(-22 450 305)" letterSpacing="0.06em">CONFIDENTIEL</text>
+
+              {/* Outer frame */}
+              <rect x="22" y="14" width="856" height="572" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.9" />
+
+              {/* Corner brackets */}
+              <polyline points="22,38 22,14 46,14" fill="none" stroke="white" strokeWidth="2" />
+              <polyline points="854,14 878,14 878,38" fill="none" stroke="white" strokeWidth="2" />
+              <polyline points="22,548 22,586 46,586" fill="none" stroke="white" strokeWidth="2" />
+              <polyline points="854,586 878,586 878,548" fill="none" stroke="white" strokeWidth="2" />
+
+              {/* Centre registration cross marks */}
+              <line x1="4" y1="300" x2="18" y2="300" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <line x1="11" y1="293" x2="11" y2="307" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <circle cx="11" cy="300" r="3.5" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="0.6" />
+              <line x1="882" y1="300" x2="896" y2="300" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <line x1="889" y1="293" x2="889" y2="307" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <circle cx="889" cy="300" r="3.5" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="0.6" />
+
+              {/* ── TITLE BLOCK ── */}
+              <line x1="22" y1="96" x2="878" y2="96" stroke="rgba(255,255,255,0.5)" strokeWidth="0.9" />
+
+              {/* Top-right info table */}
+              <rect x="614" y="14" width="264" height="82" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.38)" strokeWidth="0.7" />
+              <line x1="746" y1="14" x2="746" y2="96" stroke="rgba(255,255,255,0.32)" strokeWidth="0.7" />
+              <line x1="614" y1="55" x2="878" y2="55" stroke="rgba(255,255,255,0.32)" strokeWidth="0.7" />
+              <text x="622" y="29" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.45)" fontWeight="bold" letterSpacing="0.1em">CLIENT</text>
+              <text x="754" y="29" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.45)" fontWeight="bold" letterSpacing="0.1em">PRESTATAIRE</text>
+              <text x="622" y="68" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.45)" fontWeight="bold" letterSpacing="0.1em">DATE</text>
+              <text x="754" y="68" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.45)" fontWeight="bold" letterSpacing="0.1em">RÉFÉRENCE</text>
+              <text x="622" y="46" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)">Acme Corp SARL</text>
+              <text x="754" y="46" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)">Léa Marchand</text>
+              <text x="622" y="86" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)">07/06/2026</text>
+              <text x="754" y="86" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)">REF-2026-018</text>
+
+              {/* Title left */}
+              <text x="46" y="34" fontSize="7.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.38)" letterSpacing="0.16em">SAVVLY</text>
+              <text x="46" y="62" fontSize="21" fontFamily="'Courier New', monospace" fill="white" fontWeight="bold" letterSpacing="0.03em">CONTRAT DE PRESTATION</text>
+              <text x="46" y="81" fontSize="10.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" letterSpacing="0.06em">FREELANCE · Généré automatiquement par Savvly</text>
+
+              {/* ── CONTENT SECTIONS ── */}
+
+              {/* Vertical divider col1 | col2 */}
+              <line x1="460" y1="96" x2="460" y2="250" stroke="rgba(255,255,255,0.32)" strokeWidth="0.7" />
+
+              {/* Section boundary lines */}
+              <line x1="22" y1="250" x2="878" y2="250" stroke="rgba(255,255,255,0.42)" strokeWidth="0.9" />
+              <line x1="22" y1="372" x2="878" y2="372" stroke="rgba(255,255,255,0.42)" strokeWidth="0.9" />
+              <line x1="22" y1="482" x2="878" y2="482" stroke="rgba(255,255,255,0.38)" strokeWidth="0.7" />
+
+              {/* Dimension annotation — right margin */}
+              <line x1="884" y1="14" x2="884" y2="96" stroke="rgba(255,255,255,0.35)" strokeWidth="0.7" markerStart="url(#bp-arr-w)" markerEnd="url(#bp-arr-e)" />
+              <text x="884" y="59" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)" transform="rotate(90 884 59)" textAnchor="middle">EN-TÊTE</text>
+              <line x1="884" y1="96" x2="884" y2="250" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" markerStart="url(#bp-arr-w)" markerEnd="url(#bp-arr-e)" />
+              <text x="884" y="178" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.28)" transform="rotate(90 884 178)" textAnchor="middle">PARTIES / MISSION</text>
+
+              {/* ── ARTICLE 1 — PARTIES ── */}
+              <text x="36" y="113" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.42)" letterSpacing="0.14em">ARTICLE 01</text>
+              <text x="36" y="128" fontSize="10" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" fontWeight="bold" letterSpacing="0.07em">— PARTIES CONTRACTANTES</text>
+              <text x="36" y="147" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)">LE PRESTATAIRE :</text>
+              <line x1="36" y1="158" x2="220" y2="158" stroke="rgba(255,255,255,0.38)" strokeWidth="1.2" />
+              <line x1="36" y1="167" x2="260" y2="167" stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
+              <line x1="36" y1="176" x2="195" y2="176" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+              <text x="36" y="194" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)">LE CLIENT :</text>
+              <line x1="36" y1="205" x2="230" y2="205" stroke="rgba(255,255,255,0.38)" strokeWidth="1.2" />
+              <line x1="36" y1="214" x2="200" y2="214" stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
+              <line x1="36" y1="223" x2="240" y2="223" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+              <line x1="36" y1="236" x2="180" y2="236" stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
+
+              {/* ── ARTICLE 2 — MISSION ── */}
+              <text x="474" y="113" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.42)" letterSpacing="0.14em">ARTICLE 02</text>
+              <text x="474" y="128" fontSize="10" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" fontWeight="bold" letterSpacing="0.07em">— OBJET DE LA MISSION</text>
+              <text x="474" y="147" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)">NATURE :</text>
+              <line x1="474" y1="158" x2="680" y2="158" stroke="rgba(255,255,255,0.35)" strokeWidth="1.2" />
+              <line x1="474" y1="167" x2="720" y2="167" stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
+              <text x="474" y="185" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)">LIVRABLES :</text>
+              <line x1="474" y1="196" x2="700" y2="196" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
+              <line x1="474" y1="205" x2="660" y2="205" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+              <text x="474" y="222" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)">DURÉE :</text>
+              <line x1="474" y1="233" x2="620" y2="233" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+              <text x="474" y="248" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.25)">DÉMARRAGE :</text>
+
+              {/* ── Inset box 1 — ART.2 detail view ── */}
+              <rect x="640" y="142" width="225" height="97" fill="#0d1854" stroke="rgba(255,255,255,0.48)" strokeWidth="0.8" strokeDasharray="3.5 2" />
+              <rect x="640" y="142" width="225" height="14" fill="rgba(255,255,255,0.1)" />
+              <text x="648" y="152" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.7)" fontWeight="bold" letterSpacing="0.08em">▶ VUE DÉTAIL — CLAUSE CONFIDENTIALITÉ</text>
+              <line x1="648" y1="165" x2="852" y2="165" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+              <line x1="648" y1="174" x2="840" y2="174" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+              <line x1="648" y1="183" x2="855" y2="183" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+              <line x1="648" y1="192" x2="820" y2="192" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+              <line x1="648" y1="201" x2="845" y2="201" stroke="rgba(255,255,255,0.13)" strokeWidth="1" />
+              <line x1="648" y1="210" x2="800" y2="210" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+              <line x1="648" y1="219" x2="835" y2="219" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              <circle cx="640" cy="196" r="2.5" fill="rgba(255,255,255,0.45)" />
+              <line x1="620" y1="196" x2="640" y2="196" stroke="rgba(255,255,255,0.3)" strokeWidth="0.7" strokeDasharray="2 2" />
+
+              {/* ── ARTICLE 3 — RÉMUNÉRATION ── */}
+              <text x="36" y="267" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.42)" letterSpacing="0.14em">ARTICLE 03</text>
+              <text x="36" y="282" fontSize="10" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" fontWeight="bold" letterSpacing="0.07em">— RÉMUNÉRATION ET CONDITIONS DE PAIEMENT</text>
+
+              {/* Payment table */}
+              <rect x="36" y="292" width="380" height="22" fill="rgba(255,255,255,0.12)" />
+              <rect x="36" y="314" width="380" height="22" fill="rgba(255,255,255,0.04)" />
+              <rect x="36" y="292" width="380" height="44" fill="none" stroke="rgba(255,255,255,0.38)" strokeWidth="0.8" />
+              <line x1="172" y1="292" x2="172" y2="336" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <line x1="284" y1="292" x2="284" y2="336" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <line x1="36" y1="314" x2="416" y2="314" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" />
+              <text x="104" y="307" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.72)" textAnchor="middle" fontWeight="bold">FORFAIT HT</text>
+              <text x="228" y="307" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.72)" textAnchor="middle" fontWeight="bold">ACOMPTE (40%)</text>
+              <text x="350" y="307" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.72)" textAnchor="middle" fontWeight="bold">SOLDE (60%)</text>
+              <text x="104" y="328" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" textAnchor="middle">5 000 €</text>
+              <text x="228" y="328" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" textAnchor="middle">2 000 €</text>
+              <text x="350" y="328" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" textAnchor="middle">3 000 €</text>
+
+              <text x="36" y="352" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.32)">CONDITIONS : Virement bancaire · Délai 30 jours · Pénalités de retard applicables</text>
+              <line x1="36" y1="365" x2="520" y2="365" stroke="rgba(255,255,255,0.18)" strokeWidth="0.8" />
+
+              {/* ── Inset box 2 — Échéancier detail ── */}
+              <rect x="452" y="256" width="210" height="104" fill="#0d1854" stroke="rgba(255,255,255,0.48)" strokeWidth="0.8" strokeDasharray="3.5 2" />
+              <rect x="452" y="256" width="210" height="14" fill="rgba(255,255,255,0.1)" />
+              <text x="460" y="266" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.7)" fontWeight="bold" letterSpacing="0.06em">▶ VUE DÉTAIL — ÉCHÉANCIER</text>
+              <rect x="460" y="275" width="192" height="16" fill="rgba(255,255,255,0.1)" />
+              <line x1="460" y1="291" x2="652" y2="291" stroke="rgba(255,255,255,0.22)" strokeWidth="0.6" />
+              <rect x="460" y="291" width="192" height="14" fill="rgba(255,255,255,0.04)" />
+              <line x1="460" y1="305" x2="652" y2="305" stroke="rgba(255,255,255,0.22)" strokeWidth="0.6" />
+              <rect x="460" y="305" width="192" height="14" fill="rgba(255,255,255,0.04)" />
+              <rect x="460" y="275" width="192" height="44" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6" />
+              <line x1="516" y1="275" x2="516" y2="319" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
+              <line x1="572" y1="275" x2="572" y2="319" stroke="rgba(255,255,255,0.2)" strokeWidth="0.6" />
+              <text x="488" y="285" fontSize="5.8" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.55)" textAnchor="middle">DATE</text>
+              <text x="544" y="285" fontSize="5.8" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.55)" textAnchor="middle">MONTANT</text>
+              <text x="612" y="285" fontSize="5.8" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.55)" textAnchor="middle">STATUT</text>
+              <text x="488" y="300" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)" textAnchor="middle">07/06/2026</text>
+              <text x="544" y="300" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)" textAnchor="middle">2 000 €</text>
+              <text x="612" y="300" fontSize="6" fontFamily="'Courier New', monospace" fill="#90CAF9" textAnchor="middle">EN ATTENTE</text>
+              <text x="488" y="314" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)" textAnchor="middle">07/09/2026</text>
+              <text x="544" y="314" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.78)" textAnchor="middle">3 000 €</text>
+              <text x="612" y="314" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.4)" textAnchor="middle">SOLDE</text>
+              <text x="460" y="334" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.38)">* Pénalités : 3× taux légal en vigueur</text>
+              <text x="460" y="348" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.28)">Droit applicable : droit français</text>
+              <circle cx="452" cy="310" r="2.5" fill="rgba(255,255,255,0.42)" />
+              <line x1="416" y1="310" x2="452" y2="310" stroke="rgba(255,255,255,0.28)" strokeWidth="0.7" strokeDasharray="2 2" />
+
+              {/* ── ARTICLE 4 — SIGNATURES ── */}
+              <text x="36" y="387" fontSize="7" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.42)" letterSpacing="0.14em">ARTICLE 04</text>
+              <text x="36" y="402" fontSize="10" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.88)" fontWeight="bold" letterSpacing="0.07em">— SIGNATURES</text>
+
+              {/* Left signature block */}
+              <rect x="42" y="414" width="245" height="58" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8" strokeDasharray="4 2.5" />
+              <text x="54" y="430" fontSize="7.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.58)" fontWeight="bold">LE PRESTATAIRE</text>
+              <text x="54" y="444" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.28)">Signature précédée de « Bon pour accord »</text>
+              <line x1="54" y1="460" x2="245" y2="460" stroke="rgba(255,255,255,0.24)" strokeWidth="0.8" />
+
+              {/* Right signature block */}
+              <rect x="484" y="414" width="245" height="58" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8" strokeDasharray="4 2.5" />
+              <text x="496" y="430" fontSize="7.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.58)" fontWeight="bold">LE CLIENT</text>
+              <text x="496" y="444" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.28)">Signature précédée de « Bon pour accord »</text>
+              <line x1="496" y1="460" x2="687" y2="460" stroke="rgba(255,255,255,0.24)" strokeWidth="0.8" />
+
+              {/* ── BOTTOM BAR ── */}
+              <rect x="22" y="482" width="856" height="26" fill="rgba(255,255,255,0.055)" />
+              <text x="36" y="498" fontSize="7.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.48)">REF-2026-018</text>
+              <text x="450" y="498" fontSize="7.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.48)" textAnchor="middle">SAVVLY · Document confidentiel · Tous droits réservés</text>
+              <text x="864" y="498" fontSize="7.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.48)" textAnchor="end">PAGE 1 / 3</text>
+
+              {/* Sub-label strip */}
+              <text x="36" y="520" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.18)">CLAUSE-01 · OBJET</text>
+              <text x="220" y="520" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.18)">ART.01 → ART.12</text>
+              <text x="450" y="520" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.18)" textAnchor="middle">DROIT FRANÇAIS · CODE CIVIL · CODE DE COMMERCE</text>
+              <text x="864" y="520" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.18)" textAnchor="end">RÉVISION : 001</text>
+
+              {/* Outer dimension line */}
+              <line x1="22" y1="554" x2="878" y2="554" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" strokeDasharray="2 5" />
+              <line x1="22" y1="558" x2="22" y2="550" stroke="rgba(255,255,255,0.2)" strokeWidth="0.7" />
+              <line x1="878" y1="558" x2="878" y2="550" stroke="rgba(255,255,255,0.2)" strokeWidth="0.7" />
+              <text x="450" y="570" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.2)" textAnchor="middle">← 856 mm →</text>
+            </svg>
+          </div>
+        </FadeUp>
+
+        {/* 3 small document previews */}
+        <FadeUp delay={0.2}>
+          <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
+
+            {/* CGV preview */}
+            <div style={{ flex: '1 1 240px', maxWidth: 280, textAlign: 'center' }}>
+              <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(79,70,229,0.2)', boxShadow: '0 8px 28px rgba(26,35,126,0.18)', marginBottom: 10 }}>
+                <svg viewBox="0 0 280 172" width="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                  <rect width="280" height="172" fill="#0f1466" />
+                  <rect x="0" y="0" width="280" height="28" fill="rgba(255,255,255,0.08)" />
+                  <text x="12" y="11" fontSize="5.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.35)" letterSpacing="0.12em">SAVVLY</text>
+                  <text x="12" y="22" fontSize="9" fontFamily="'Courier New', monospace" fill="white" fontWeight="bold" letterSpacing="0.04em">CONDITIONS GÉNÉRALES DE VENTE</text>
+                  <line x1="0" y1="28" x2="280" y2="28" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6" />
+                  {[38,48,58,70,79,89,101,110,120,130,140,150,160].map((y, i) => (
+                    <line key={i} x1="12" y1={y} x2={[200,240,180,220,200,240,185,220,195,230,210,185,225][i]} y2={y}
+                      stroke={`rgba(255,255,255,${[0.5,0.35,0.28,0.45,0.3,0.22,0.42,0.28,0.22,0.2,0.18,0.16,0.18][i]})`}
+                      strokeWidth={[1.8,1.2,1,1.8,1.2,1,1.8,1.2,1,0.9,0.9,0.8,0.8][i]} />
+                  ))}
+                  <text x="12" y="37" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" fontWeight="bold">ARTICLE 1 —</text>
+                  <text x="12" y="69" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" fontWeight="bold">ARTICLE 2 —</text>
+                  <text x="12" y="100" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" fontWeight="bold">ARTICLE 3 —</text>
+                  <line x1="8" y1="4" x2="8" y2="168" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
+                </svg>
+              </div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', margin: '0 0 3px' }}>CGV Complètes</p>
+              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>12 articles · Conforme droit FR</p>
+            </div>
+
+            {/* Devis preview */}
+            <div style={{ flex: '1 1 240px', maxWidth: 280, textAlign: 'center' }}>
+              <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(79,70,229,0.2)', boxShadow: '0 8px 28px rgba(26,35,126,0.18)', marginBottom: 10 }}>
+                <svg viewBox="0 0 280 172" width="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                  <rect width="280" height="172" fill="#0f1466" />
+                  <rect x="0" y="0" width="280" height="28" fill="rgba(255,255,255,0.08)" />
+                  <text x="12" y="11" fontSize="5.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.35)" letterSpacing="0.12em">SAVVLY</text>
+                  <text x="12" y="22" fontSize="9" fontFamily="'Courier New', monospace" fill="white" fontWeight="bold" letterSpacing="0.04em">DEVIS N° DV-2026-042</text>
+                  <line x1="0" y1="28" x2="280" y2="28" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6" />
+                  {/* Table header */}
+                  <rect x="12" y="36" width="256" height="16" fill="rgba(255,255,255,0.12)" />
+                  <line x1="12" y1="52" x2="268" y2="52" stroke="rgba(255,255,255,0.22)" strokeWidth="0.5" />
+                  {[52,68,84,100,116].map((y, i) => (
+                    <rect key={i} x="12" y={y} width="256" height="16" fill={`rgba(255,255,255,${i % 2 === 0 ? 0.04 : 0})`} />
+                  ))}
+                  {/* Column lines */}
+                  {[118, 168, 218].map((x, i) => (
+                    <line key={i} x1={x} y1="36" x2={x} y2="132" stroke="rgba(255,255,255,0.18)" strokeWidth="0.5" />
+                  ))}
+                  <rect x="12" y="36" width="256" height="96" fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="0.6" />
+                  {['PRESTATION', 'QTÉ', 'P.U.', 'TOTAL'].map((h, i) => (
+                    <text key={i} x={[30, 135, 183, 233][i]} y="47" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.65)" fontWeight="bold" textAnchor="middle">{h}</text>
+                  ))}
+                  {/* Totals */}
+                  <rect x="172" y="136" width="96" height="26" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.22)" strokeWidth="0.5" />
+                  <text x="178" y="147" fontSize="6" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.45)">TOTAL HT</text>
+                  <text x="178" y="157" fontSize="8.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.85)" fontWeight="bold">5 000 €</text>
+                  <line x1="8" y1="4" x2="8" y2="168" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
+                </svg>
+              </div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', margin: '0 0 3px' }}>Devis Professionnel</p>
+              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>Lignes détaillées · PDF téléchargeable</p>
+            </div>
+
+            {/* Mentions légales preview */}
+            <div style={{ flex: '1 1 240px', maxWidth: 280, textAlign: 'center' }}>
+              <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(79,70,229,0.2)', boxShadow: '0 8px 28px rgba(26,35,126,0.18)', marginBottom: 10 }}>
+                <svg viewBox="0 0 280 172" width="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                  <rect width="280" height="172" fill="#0f1466" />
+                  <rect x="0" y="0" width="280" height="28" fill="rgba(255,255,255,0.08)" />
+                  <text x="12" y="11" fontSize="5.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.35)" letterSpacing="0.12em">SAVVLY</text>
+                  <text x="12" y="22" fontSize="9" fontFamily="'Courier New', monospace" fill="white" fontWeight="bold" letterSpacing="0.04em">MENTIONS LÉGALES</text>
+                  <line x1="0" y1="28" x2="280" y2="28" stroke="rgba(255,255,255,0.25)" strokeWidth="0.6" />
+                  {[38,46,55,63,72,84,92,100,109,117,128,136,144,153,161].map((y, i) => (
+                    <line key={i} x1="12" y1={y} x2={[220,240,200,255,185,210,235,195,255,200,215,230,195,245,180][i]} y2={y}
+                      stroke={`rgba(255,255,255,${[0.55,0.28,0.22,0.2,0.18,0.5,0.28,0.22,0.2,0.18,0.48,0.28,0.22,0.2,0.15][i]})`}
+                      strokeWidth={[1.8,1,1,1,0.9,1.8,1,1,1,0.9,1.8,1,1,1,0.8][i]} />
+                  ))}
+                  <text x="12" y="37" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" fontWeight="bold">1. ÉDITEUR DU SITE —</text>
+                  <text x="12" y="83" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" fontWeight="bold">2. HÉBERGEUR —</text>
+                  <text x="12" y="127" fontSize="6.5" fontFamily="'Courier New', monospace" fill="rgba(255,255,255,0.52)" fontWeight="bold">3. PROPRIÉTÉ INTELLECTUELLE —</text>
+                  <line x1="8" y1="4" x2="8" y2="168" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
+                </svg>
+              </div>
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', margin: '0 0 3px' }}>Mentions Légales</p>
+              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: 0 }}>Conformes LCEN · RGPD</p>
+            </div>
+          </div>
+        </FadeUp>
+
+        {/* CTA */}
+        <FadeUp delay={0.3}>
+          <div style={{ textAlign: 'center' }}>
+            <motion.button
+              className="btn btn-accent btn-lg"
+              style={{ fontSize: 15, padding: '14px 36px', borderRadius: 12 }}
+              onClick={() => navigate('/auth?mode=register')}
+              whileHover={reduce ? {} : { scale: 1.04, boxShadow: '0 12px 40px rgba(79,70,229,0.45)' }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+            >
+              Générer mes documents →
+            </motion.button>
+          </div>
+        </FadeUp>
+
+      </div>
+    </section>
+  );
+}
+
 // ── "L'arme ultime" comparison section ───────────────────────
 
 function UltimateSection({ lang, navigate, reduce }) {

@@ -109,7 +109,7 @@ export const TOOLS = [
     short_en: 'Converter',              short_fr: 'Convertisseur',
     desc_en: 'Convert images and documents (PNG, JPG, DOCX) to PDF instantly in your browser.',
     desc_fr: 'Convertissez images et documents (PNG, JPG, DOCX) en PDF instantanément dans votre navigateur.',
-    credits: 0, plan: 'free', glyph: 'arrow-down',
+    credits: 25, plan: 'pro', glyph: 'arrow-down',
   },
 ];
 

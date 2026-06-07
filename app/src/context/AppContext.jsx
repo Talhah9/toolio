@@ -131,7 +131,7 @@ export function AppProvider({ children }) {
     // signIn() returns as soon as auth resolves so the UI can navigate.
   };
 
-  const signUp = async (email, password, name, lang = 'en', phone = '') => {
+  const signUp = async (email, password, name, lang = 'en') => {
     console.log('[AppContext] signUp: start');
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -141,11 +141,6 @@ export function AppProvider({ children }) {
     if (error) {
       console.error('[AppContext] signUp error:', error.message);
       throw error;
-    }
-    // Save phone to profiles if provided
-    if (phone.trim() && data.user) {
-      supabase.from('profiles').update({ phone: phone.trim() }).eq('id', data.user.id)
-        .then(({ error: pErr }) => { if (pErr) console.error('[AppContext] phone update error:', pErr.message); });
     }
     // Fire welcome email — don't await so signup flow isn't blocked
     fetch('/api/send-welcome-email', {
