@@ -20,7 +20,14 @@
       "Bash(Start-Sleep -Seconds 4)",
       "Bash(Write-Output \"Server started\")",
       "Bash(git -C . ls-files app/src/)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npm list *)",
+      "Bash(findstr \"openai\\\\|anthropic\")",
+      "PowerShell(npm install *)",
+      "Bash(python3 *)",
+      "Bash(Read \"C:\\\\Users\\\\gazou\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-gazou-Desktop-Toolio\\\\2e510e78-665e-4d78-9fcd-658922f19ad7\\\\tasks\\\\bm618p9hq.output\")",
+      "Bash(python \"C:\\\\Users\\\\gazou\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"freelance SaaS landing page bento grid\" --design-system -p \"Savvly\")",
+      "Bash(python \"C:\\\\Users\\\\gazou\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"bento grid animation card illustration\" --domain style -n 3)"
     ]
   }
 }

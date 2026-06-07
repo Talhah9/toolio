@@ -1648,24 +1648,37 @@ export function Landing() {
                   key={tool.id}
                   className="tool-card"
                   variants={cardVariants}
-                  onClick={() => navigate('/auth?mode=register')}
-                  whileHover={reduce ? {} : { y: -2, transition: { duration: 0.15 } }}
-                  style={{ cursor: 'pointer', borderColor: 'var(--accent-soft)', background: 'var(--accent-soft)' }}
+                  onClick={() => !tool.disabled && navigate('/auth?mode=register')}
+                  whileHover={reduce || tool.disabled ? {} : { y: -2, transition: { duration: 0.15 } }}
+                  style={{
+                    cursor: tool.disabled ? 'default' : 'pointer',
+                    borderColor: tool.disabled ? 'var(--border)' : 'var(--accent-soft)',
+                    background: tool.disabled ? 'var(--bg)' : 'var(--accent-soft)',
+                    opacity: tool.disabled ? 0.55 : 1,
+                    position: 'relative', overflow: 'hidden',
+                  }}
                 >
+                  {tool.disabled && (
+                    <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 2, background: '#6B7280', color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20 }}>
+                      Bientôt disponible
+                    </div>
+                  )}
                   <div className="tool-card-head">
                     <ToolIcon tool={tool} size="lg" />
-                    <PlanBadge plan={tool.plan} />
+                    {!tool.disabled && <PlanBadge plan={tool.plan} />}
                   </div>
                   <h3 className="tool-card-title">{name}</h3>
                   <p className="tool-card-desc">{desc}</p>
                   <div className="tool-card-foot">
-                    {tool.credits === 0
+                    {tool.disabled ? (
+                      <span style={{ color: 'var(--fg-4)', fontSize: 13 }}>En développement</span>
+                    ) : tool.credits === 0
                       ? <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: 13 }}>{t('landing.tools.free')}</span>
                       : <span className="tabular">{tool.credits} {t('landing.tools.credits')}</span>
                     }
                     <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-                      <span className="tool-pro-badge">Pro ★</span>
-                      <Glyph name="arrow-right" size={14} />
+                      {!tool.disabled && <span className="tool-pro-badge">Pro ★</span>}
+                      {!tool.disabled && <Glyph name="arrow-right" size={14} />}
                     </div>
                   </div>
                 </motion.div>

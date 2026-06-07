@@ -16,9 +16,7 @@ import GeneratingIndicator from '../../components/GeneratingIndicator';
 import StreamingBanner from '../../components/StreamingBanner';
 
 const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
-const DURATION_UNIT_KEYS = ['days', 'weeks', 'months'];
 const DEPOSIT_OPTIONS = ['30', '40', '50'];
-const REVISION_OPTIONS = ['1', '2', '3', 'illimité'];
 const LS_KEY = 'savvly_prestataire_info';
 
 function loadPrest() {
@@ -51,11 +49,9 @@ export function ContratTool({ tool, initialData }) {
   const [deliverables, setDeliverables] = useState(initialData?.deliverables ?? '');
   const [rate, setRate] = useState('');
   const [rateType, setRateType] = useState(initialData?.rateType ?? 'total');
-  const [duration, setDuration] = useState('');
-  const [durationUnit, setDurationUnit] = useState(initialData?.durationUnit ?? 'weeks');
+  const [duration, setDuration] = useState(initialData?.duration ?? '');
   const [startDate, setStartDate] = useState('');
   const [depositPercent, setDepositPercent] = useState('40');
-  const [revisions, setRevisions] = useState('2');
   const [vatSubject, setVatSubject] = useState(false);
 
   const [output, setOutput] = useState('');
@@ -107,7 +103,6 @@ export function ContratTool({ tool, initialData }) {
       const balPct = 100 - depPct;
 
       const rateLabels = { total: lang === 'fr' ? 'forfait total' : 'total fee', daily: lang === 'fr' ? '/ jour' : '/ day', hourly: lang === 'fr' ? '/ heure' : '/ hour' };
-      const durationLabels = { days: lang === 'fr' ? 'jours' : 'days', weeks: lang === 'fr' ? 'semaines' : 'weeks', months: lang === 'fr' ? 'mois' : 'months' };
 
       const rateDisplay = rate
         ? `${parseFloat(rate).toLocaleString('fr-FR')} €${vatSubject ? ' HT' : ''} ${rateLabels[rateType] || rateType}`
@@ -118,7 +113,9 @@ export function ContratTool({ tool, initialData }) {
         : (lang === 'fr' ? 'Prestataire soumis à la franchise en base de TVA — aucune TVA facturée.' : 'Service provider exempt from VAT — no VAT will be charged.');
 
       const today2 = new Date();
-      const defaultStart = startDate || today2.toLocaleDateString('fr-FR');
+      const defaultStart = startDate
+        ? new Date(startDate).toLocaleDateString('fr-FR')
+        : today2.toLocaleDateString('fr-FR');
 
       const delivBlock = deliverables.trim()
         ? deliverables.trim().split(/[,\n]/).map(d => d.trim()).filter(Boolean).map(d => `- ${d}`).join('\n')
@@ -135,14 +132,14 @@ export function ContratTool({ tool, initialData }) {
         CLIENT_ADDRESS_LINE: clientAddress.trim() || (lang === 'fr' ? 'Adresse à compléter' : 'Address to complete'),
         MISSION_DESC: reformulatedMission,
         START_DATE: defaultStart,
-        DURATION: duration || (lang === 'fr' ? 'à définir' : 'TBD'),
-        DURATION_UNIT: durationLabels[durationUnit] || durationUnit,
+        DURATION: duration.trim() || (lang === 'fr' ? 'à définir' : 'TBD'),
+        DURATION_UNIT: '',
         DELIVERABLES_BLOCK: delivBlock,
         RATE_DISPLAY: rateDisplay,
         VAT_MENTION: vatMention,
         DEPOSIT_PERCENT: String(depPct),
         BALANCE_PERCENT: String(balPct),
-        REVISIONS: revisions,
+        REVISIONS: '2',
         DATE: today,
       };
 
@@ -163,6 +160,7 @@ export function ContratTool({ tool, initialData }) {
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
 
   const downloadPdf = () => exportPdf({
+    toolId: 'contract',
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
     output,
@@ -258,32 +256,19 @@ export function ContratTool({ tool, initialData }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div className="field" style={{ margin: 0 }}>
               <label className="label">{t('tool.contract.duration.label')}</label>
-              <div className="row" style={{ gap: 8 }}>
-                <input className="input" value={duration} onChange={e => setDuration(e.target.value)} placeholder="6" type="number" style={{ flex: 1 }} />
-                <select className="select" value={durationUnit} onChange={e => setDurationUnit(e.target.value)} style={{ width: 'auto' }}>
-                  {DURATION_UNIT_KEYS.map(k => <option key={k} value={k}>{t(`tool.contract.duration.${k}`)}</option>)}
-                </select>
-              </div>
+              <input className="input" value={duration} onChange={e => setDuration(e.target.value)} placeholder={lang === 'fr' ? 'ex : 3 mois, 6 semaines' : 'e.g. 3 months, 6 weeks'} />
             </div>
             <div className="field" style={{ margin: 0 }}>
               <label className="label">{t('tool.contract.startdate.label')}</label>
-              <input className="input" type="date" value={startDate} onChange={e => setStartDate(e.target.value ? new Date(e.target.value).toLocaleDateString('fr-FR') : '')} />
+              <input className="input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.contract.deposit.label')}</label>
-              <select className="select" value={depositPercent} onChange={e => setDepositPercent(e.target.value)}>
-                {DEPOSIT_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
-              </select>
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.contract.revisions.label')}</label>
-              <select className="select" value={revisions} onChange={e => setRevisions(e.target.value)}>
-                {REVISION_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
-              </select>
-            </div>
+          <div className="field" style={{ margin: 0 }}>
+            <label className="label">{t('tool.contract.deposit.label')}</label>
+            <select className="select" value={depositPercent} onChange={e => setDepositPercent(e.target.value)}>
+              {DEPOSIT_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
+            </select>
           </div>
 
           <div className="field">

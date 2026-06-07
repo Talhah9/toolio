@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { Glyph } from '../components/Glyph';
@@ -24,12 +24,18 @@ export function Auth() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState('');
   const [confirmSent, setConfirmSent] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
+  const [phoneOtpPending, setPhoneOtpPending] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const otpInputRef = useRef(null);
 
   // Fallback: catch PASSWORD_RECOVERY if it fires after mount
   // Also handles SIGNED_IN (covers OAuth redirect back to /auth instead of /dashboard)
@@ -62,9 +68,19 @@ export function Auth() {
         setSigningIn(true);
         setTimeout(() => navigate('/dashboard'), 1200);
       } else if (mode === 'register') {
-        const needsConfirmation = await signUp(email, password, name, lang);
+        const needsConfirmation = await signUp(email, password, name, lang, phone);
         if (needsConfirmation) {
           setConfirmSent(true);
+        } else if (phone.trim()) {
+          // Trigger phone OTP verification
+          const normalizedPhone = phone.trim().startsWith('+') ? phone.trim() : `+${phone.trim()}`;
+          const { error: otpErr } = await supabase.auth.signInWithOtp({ phone: normalizedPhone });
+          if (!otpErr) {
+            setPhoneOtpPending(true);
+            setTimeout(() => otpInputRef.current?.focus(), 100);
+          } else {
+            navigate('/dashboard');
+          }
         } else {
           navigate('/dashboard');
         }
@@ -240,6 +256,69 @@ export function Auth() {
     );
   }
 
+  // ── Phone OTP verification ────────────────────────────────────
+  if (phoneOtpPending) {
+    const normalizedPhone = phone.trim().startsWith('+') ? phone.trim() : `+${phone.trim()}`;
+    const verifyOtp = async (e) => {
+      e.preventDefault();
+      if (otpCode.length !== 6) return;
+      setOtpLoading(true);
+      setOtpError('');
+      try {
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          phone: normalizedPhone, token: otpCode, type: 'sms',
+        });
+        if (verifyErr) throw verifyErr;
+        navigate('/dashboard');
+      } catch (err) {
+        setOtpError(err.message || 'Code invalide. Veuillez réessayer.');
+      } finally {
+        setOtpLoading(false);
+      }
+    };
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <a onClick={() => navigate('/')} style={{ cursor: 'pointer' }}><Logo size={20} /></a>
+          </div>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>📱</div>
+          <h2 className="h2" style={{ marginBottom: 8 }}>Vérification du téléphone</h2>
+          <p className="muted" style={{ fontSize: 14, marginBottom: 24 }}>
+            Nous avons envoyé un code à 6 chiffres au<br /><strong>{phone}</strong>
+          </p>
+          <form onSubmit={verifyOtp}>
+            <div className="field">
+              <input
+                ref={otpInputRef}
+                className="input"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={otpCode}
+                onChange={e => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="123456"
+                style={{ textAlign: 'center', letterSpacing: '0.3em', fontSize: 24, fontWeight: 700 }}
+                required
+              />
+            </div>
+            {otpError && (
+              <div style={{ color: 'var(--warn-fg)', background: 'var(--warn-bg)', border: '1px solid var(--warn-border)', borderRadius: 'var(--radius)', padding: '10px 12px', fontSize: 13, marginBottom: 16 }}>
+                {otpError}
+              </div>
+            )}
+            <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={otpLoading || otpCode.length !== 6}>
+              {otpLoading ? '…' : 'Vérifier'}
+            </button>
+          </form>
+          <button className="btn btn-ghost btn-sm" style={{ marginTop: 16, width: '100%' }} onClick={() => navigate('/dashboard')}>
+            Passer cette étape →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ── Login / Register ─────────────────────────────────────────
   return (
     <div className="auth-page">
@@ -278,10 +357,16 @@ export function Auth() {
 
         <form onSubmit={submit}>
           {mode === 'register' && (
-            <div className="field">
-              <label className="label">{t('auth.name')}</label>
-              <input className="input" placeholder="Léa Marchand" value={name} onChange={e => setName(e.target.value)} />
-            </div>
+            <>
+              <div className="field">
+                <label className="label">{t('auth.name')}</label>
+                <input className="input" placeholder="Léa Marchand" value={name} onChange={e => setName(e.target.value)} />
+              </div>
+              <div className="field">
+                <label className="label">Téléphone <span style={{ color: 'var(--fg-4)', fontWeight: 400, fontSize: 11 }}>(optionnel — pour votre sécurité)</span></label>
+                <input className="input" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={e => setPhone(e.target.value)} />
+              </div>
+            </>
           )}
           <div className="field">
             <label className="label">{t('auth.email')}</label>

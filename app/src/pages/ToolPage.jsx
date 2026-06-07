@@ -21,6 +21,7 @@ import { URSSAFTool } from './tools/URSSAFTool';
 import { LinkedinIntelTool } from './tools/LinkedinIntelTool';
 import { ProspectionTool } from './tools/ProspectionTool';
 import { MissionFinderTool } from './tools/MissionFinderTool';
+import { ConverterTool } from './tools/ConverterTool';
 
 const TOOL_COMPONENTS = {
   audit: AuditTool,
@@ -36,6 +37,7 @@ const TOOL_COMPONENTS = {
   'linkedin-intel': LinkedinIntelTool,
   prospection: ProspectionTool,
   'mission-finder': MissionFinderTool,
+  converter: ConverterTool,
 };
 
 export function ToolPage() {
@@ -57,6 +59,28 @@ export function ToolPage() {
   if (!session) {
     navigate('/auth', { replace: true });
     return null;
+  }
+
+  // Disabled gate: coming soon
+  if (tool.disabled) {
+    const { name } = getToolText(tool, lang);
+    return (
+      <>
+        <AppHeader />
+        <div className="page-pad" style={{ display: 'flex', justifyContent: 'center', paddingTop: 64 }}>
+          <div className="card card-pad" style={{ maxWidth: 420, width: '100%', textAlign: 'center' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🚧</div>
+            <h2 className="h2" style={{ marginBottom: 8 }}>{name}</h2>
+            <p className="muted" style={{ fontSize: 15, marginBottom: 24 }}>
+              Cet outil est en cours de développement et sera disponible très prochainement.
+            </p>
+            <button className="btn btn-accent btn-lg btn-block" onClick={() => navigate('/dashboard')}>
+              ← Retour au dashboard
+            </button>
+          </div>
+        </div>
+      </>
+    );
   }
 
   // Pro gate: render inline wall instead of redirecting to avoid blank pages.

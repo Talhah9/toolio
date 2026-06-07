@@ -69,9 +69,20 @@ export function Dashboard() {
               <div
                 key={tool.id}
                 className="tool-card"
-                style={locked ? { opacity: 0.55, cursor: 'default' } : undefined}
-                onClick={() => locked ? navigate('/pricing') : navigate(`/tools/${tool.id}`)}
+                style={{
+                  ...(locked ? { opacity: 0.55, cursor: 'default' } : undefined),
+                  ...(tool.disabled ? { opacity: 0.6, cursor: 'default', position: 'relative', overflow: 'hidden' } : undefined),
+                }}
+                onClick={() => {
+                  if (tool.disabled) return;
+                  locked ? navigate('/pricing') : navigate(`/tools/${tool.id}`);
+                }}
               >
+                {tool.disabled && (
+                  <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 2, background: '#6B7280', color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20, letterSpacing: '0.04em' }}>
+                    Bientôt disponible
+                  </div>
+                )}
                 <div className="tool-card-head">
                   <ToolIcon tool={tool} size="lg" />
                   <div className="row" style={{ gap: 6 }}>
@@ -88,13 +99,15 @@ export function Dashboard() {
                         🇫🇷 France
                       </span>
                     )}
-                    <PlanBadge plan={tool.plan} />
+                    {!tool.disabled && <PlanBadge plan={tool.plan} />}
                   </div>
                 </div>
                 <h3 className="tool-card-title">{name}</h3>
                 <p className="tool-card-desc">{desc}</p>
                 <div className="tool-card-foot">
-                  {locked ? (
+                  {tool.disabled ? (
+                    <span style={{ color: 'var(--fg-4)', fontWeight: 500, fontSize: 13 }}>En cours de développement</span>
+                  ) : locked ? (
                     <span className="row" style={{ gap: 6, color: 'var(--accent)', fontWeight: 600, fontSize: 13 }}>
                       <Glyph name="lock" size={12} />
                       {t('dashboard.lock.cta')}

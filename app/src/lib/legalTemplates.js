@@ -97,9 +97,7 @@ Les présentes CGV sont soumises au droit français. En cas de litige, les parti
 
 À défaut de résolution amiable, le litige sera porté devant les juridictions compétentes du ressort du siège social de {{COMPANY_NAME}}.
 
----
-
-*Document généré le {{DATE}} via Savvly — À titre informatif. Consultez un professionnel du droit pour valider votre situation spécifique.*`;
+---`;
 
 export const MENTIONS_TEMPLATE = `# MENTIONS LÉGALES
 
@@ -155,9 +153,7 @@ Le site peut utiliser des cookies techniques nécessaires à son bon fonctionnem
 
 Les présentes mentions légales sont régies par le droit français. Tout litige relatif au site et à son utilisation sera soumis à la compétence exclusive des tribunaux français.
 
----
-
-*Document généré le {{DATE}} via Savvly — À titre informatif. Consultez un professionnel du droit pour valider votre situation spécifique.*`;
+---`;
 
 export const PRIVACY_TEMPLATE = `# POLITIQUE DE CONFIDENTIALITÉ
 
@@ -267,9 +263,7 @@ Vos données ne sont pas vendues à des tiers. {{COMPANY_NAME}} peut faire appel
 {{ADDRESS}}
 Email : {{EMAIL}}
 
----
-
-*Document généré le {{DATE}} via Savvly — À titre informatif. Consultez un professionnel du droit pour valider votre situation spécifique.*`;
+---`;
 
 export const CONTRAT_TEMPLATE = `# CONTRAT DE PRESTATION DE SERVICES
 
@@ -376,6 +370,4 @@ Le présent contrat est soumis au droit français. En cas de litige, les Parties
 | Signature : | Signature : |
 | *Lu et approuvé* | *Lu et approuvé* |
 
----
-
-*Document généré le {{DATE}} via Savvly — À titre informatif. Consultez un professionnel du droit pour valider votre situation spécifique.*`;
+---`;

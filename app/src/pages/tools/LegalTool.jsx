@@ -16,8 +16,6 @@ import GeneratingIndicator from '../../components/GeneratingIndicator';
 import StreamingBanner from '../../components/StreamingBanner';
 
 const LEGAL_TYPES = ['EI', 'Micro-entreprise', 'EURL', 'SASU', 'SARL', 'SAS', 'SA', 'Autre'];
-const DEPOSIT_OPTIONS = ['30', '40', '50'];
-const PAYMENT_OPTIONS = ['30', '45', '60'];
 
 const F = { marginBottom: 20 };
 const LBL = { display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 6 };
@@ -37,10 +35,6 @@ export function LegalTool({ tool, initialData }) {
   const [website, setWebsite] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
   const [vatSubject, setVatSubject] = useState(false);
-
-  const [clientType, setClientType] = useState('B2B');
-  const [depositPercent, setDepositPercent] = useState('40');
-  const [paymentDelay, setPaymentDelay] = useState('30');
 
   const [hostingProvider, setHostingProvider] = useState('');
   const [hostingAddress, setHostingAddress] = useState('');
@@ -74,17 +68,15 @@ export function LegalTool({ tool, initialData }) {
       VAT_MENTION: vatSubject
         ? 'Les prix sont indiqués hors taxes (HT). La TVA sera facturée au taux en vigueur à la date de facturation.'
         : `${company.trim()} bénéficie du régime de franchise en base de TVA (article 293 B du CGI). Aucune TVA ne sera facturée.`,
-      DEPOSIT_PERCENT: depositPercent,
-      PAYMENT_DELAY: paymentDelay,
+      DEPOSIT_PERCENT: '40',
+      PAYMENT_DELAY: '30',
       DATE: today,
       DIRECTOR_NAME: company.trim(),
       HOSTING_PROVIDER: hostingProvider.trim() || 'Hébergeur à préciser',
       HOSTING_ADDRESS: hostingAddress.trim() || 'Adresse à compléter',
       ACTIVITY_DESC: activity.trim(),
-      RETRACTATION: clientType === 'B2C' ? 'true' : '',
-      MEDIATION_CLAUSE: clientType === 'B2C'
-        ? 'Le client consommateur peut recourir à un médiateur de la consommation conformément aux articles L.616-1 et R.616-1 du Code de la consommation. La liste des médiateurs agréés est disponible sur www.economie.gouv.fr.'
-        : '',
+      RETRACTATION: '',
+      MEDIATION_CLAUSE: '',
       CUSTOM_CLAUSE_TITLE: 'Dispositions spécifiques',
       CUSTOM_CLAUSE_CONTENT: 'Les présentes conditions spécifiques complètent les dispositions générales ci-dessus. Pour toute question ou demande particulière, les parties conviennent de se contacter préalablement afin de trouver une solution adaptée dans le respect des intérêts mutuels.',
     };
@@ -149,13 +141,13 @@ export function LegalTool({ tool, initialData }) {
   const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
 
   const downloadPdf = () => exportPdf({
+    toolId: 'legal',
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
     output,
     filename: `savvly-${tool.id}-${new Date().toISOString().slice(0, 10)}.pdf`,
   });
 
-  const showCgvOptions = docType === 'tos' || docType === 'all';
   const showHosting = docType === 'notice' || docType === 'all';
 
   return (
@@ -239,44 +231,18 @@ export function LegalTool({ tool, initialData }) {
             </div>
           </div>
 
-          {/* CGV options */}
-          {showCgvOptions && (
-            <>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, ...F }}>
-                <div>
-                  <label style={LBL}>{t('tool.legal.clienttype.label')}</label>
-                  <select className="select" style={SEL} value={clientType} onChange={e => setClientType(e.target.value)}>
-                    <option value="B2B">{t('tool.legal.clienttype.b2b')}</option>
-                    <option value="B2C">{t('tool.legal.clienttype.b2c')}</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={LBL}>{t('tool.legal.deposit.label')}</label>
-                  <select className="select" style={SEL} value={depositPercent} onChange={e => setDepositPercent(e.target.value)}>
-                    {DEPOSIT_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={LBL}>{t('tool.legal.payment.label')}</label>
-                  <select className="select" style={SEL} value={paymentDelay} onChange={e => setPaymentDelay(e.target.value)}>
-                    {PAYMENT_OPTIONS.map(v => <option key={v} value={v}>{v} {lang === 'fr' ? 'jours' : 'days'}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ ...F, marginTop: -4 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>
-                  <input
-                    type="checkbox"
-                    checked={vatSubject}
-                    onChange={e => setVatSubject(e.target.checked)}
-                    style={{ width: 16, height: 16, accentColor: 'var(--accent)', cursor: 'pointer' }}
-                  />
-                  {t('tool.legal.vat.label')}
-                </label>
-              </div>
-            </>
-          )}
+          {/* VAT option */}
+          <div style={{ ...F, marginTop: -4 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)' }}>
+              <input
+                type="checkbox"
+                checked={vatSubject}
+                onChange={e => setVatSubject(e.target.checked)}
+                style={{ width: 16, height: 16, accentColor: 'var(--accent)', cursor: 'pointer' }}
+              />
+              {t('tool.legal.vat.label')}
+            </label>
+          </div>
 
           {/* Hébergeur (mentions légales) */}
           {showHosting && (

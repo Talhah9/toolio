@@ -276,10 +276,12 @@ const AUDIT_CHECK_LABELS = {
   'tool.audit.check.schema':   'Schema markup & structured data',
 };
 
+const DISABLED_TOOLS = new Set(['audit', 'compete']);
+
 const MAX_TOKENS = {
   audit:              4000,
   compete:            4000,
-  legal:              2000,
+  legal:              1200,
   contract:           4000,
   'linkedin-content': 2000,
   devis:              2000,
@@ -616,9 +618,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing toolId, input, or userId' });
   }
 
-  // ── 2. toolId whitelist ───────────────────────────────────────
+  // ── 2. toolId whitelist + disabled check ─────────────────────
   if (!KNOWN_TOOLS.has(toolId)) {
     return res.status(400).json({ error: `Unknown tool: ${toolId}` });
+  }
+  if (DISABLED_TOOLS.has(toolId)) {
+    return res.status(503).json({ error: 'This tool is coming soon and is not yet available.' });
   }
 
   // ── 3. Input field validation ─────────────────────────────────
@@ -661,7 +666,7 @@ export default async function handler(req, res) {
 
   let userMessage;
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 2 });
     userMessage = buildUserMessage(toolId, input);
 
     console.log('[generate] toolId:', toolId, '| userId:', userId, '| max_tokens:', maxTokens, '| templateMode:', templateMode, '| prompt length:', userMessage.length);

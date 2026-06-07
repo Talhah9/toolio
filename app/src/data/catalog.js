@@ -5,7 +5,7 @@ export const TOOLS = [
     short_en: 'Audit',                  short_fr: 'Audit',
     desc_en: 'Analyse any website and surface conversion and SEO improvement opportunities.',
     desc_fr: 'Analyse votre site et identifie les leviers de conversion et de référencement.',
-    credits: 15, plan: 'pro', glyph: 'audit',
+    credits: 15, plan: 'pro', glyph: 'audit', disabled: true,
   },
   {
     id: 'compete',
@@ -13,7 +13,7 @@ export const TOOLS = [
     short_en: 'Competitors',            short_fr: 'Concurrents',
     desc_en: "Dissect a competitor's positioning, offer, and keyword strategy.",
     desc_fr: "Décortique le positionnement, l'offre et les mots-clés de vos concurrents.",
-    credits: 15, plan: 'pro', glyph: 'compete',
+    credits: 15, plan: 'pro', glyph: 'compete', disabled: true,
   },
   {
     id: 'legal',
@@ -102,6 +102,14 @@ export const TOOLS = [
     desc_en: 'Get a personalized strategy to find freelance missions on the right platforms.',
     desc_fr: 'Obtenez une stratégie personnalisée pour trouver des missions freelance sur les bonnes plateformes.',
     credits: 30, plan: 'pro', glyph: 'compete',
+  },
+  {
+    id: 'converter',
+    name_en: 'File Converter',          name_fr: 'Convertisseur de fichiers',
+    short_en: 'Converter',              short_fr: 'Convertisseur',
+    desc_en: 'Convert images and documents (PNG, JPG, DOCX) to PDF instantly in your browser.',
+    desc_fr: 'Convertissez images et documents (PNG, JPG, DOCX) en PDF instantanément dans votre navigateur.',
+    credits: 0, plan: 'free', glyph: 'arrow-down',
   },
 ];
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -17,24 +17,62 @@ const TONES = [
   { id: 'urgent',  labelKey: 'tool.relance.tone.urgent.label',  descKey: 'tool.relance.tone.urgent.desc',  color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
 ];
 
+function calcDaysLate(dueDateStr) {
+  if (!dueDateStr) return '';
+  const due = new Date(dueDateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.floor((today - due) / (1000 * 60 * 60 * 24));
+  return diff > 0 ? String(diff) : '0';
+}
+
 export function RelanceTool({ tool }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
-  const [context, setContext] = useState('');
+
+  const [invoiceAmount, setInvoiceAmount] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [daysLate, setDaysLate] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [projectNature, setProjectNature] = useState('');
+  const [previousReminders, setPreviousReminders] = useState('0');
+  const [additionalContext, setAdditionalContext] = useState('');
   const [tone, setTone] = useState('cordial');
+
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
+  useEffect(() => {
+    if (dueDate) setDaysLate(calcDaysLate(dueDate));
+  }, [dueDate]);
+
+  const buildContext = () => {
+    const parts = [];
+    if (clientName) parts.push(`Client : ${clientName}`);
+    if (invoiceNumber) parts.push(`Facture n° ${invoiceNumber}`);
+    if (invoiceAmount) parts.push(`Montant : ${invoiceAmount} €`);
+    if (dueDate) parts.push(`Date d'échéance : ${new Date(dueDate).toLocaleDateString('fr-FR')}`);
+    if (daysLate && Number(daysLate) > 0) parts.push(`Retard : ${daysLate} jour(s)`);
+    if (projectNature) parts.push(`Nature du projet : ${projectNature}`);
+    if (Number(previousReminders) > 0) parts.push(`Relances précédentes : ${previousReminders}`);
+    if (additionalContext.trim()) parts.push(`Contexte : ${additionalContext.trim()}`);
+    return parts.join('\n');
+  };
+
   const generate = async () => {
-    if (!context.trim()) { toast(t('tool.relance.error.context')); return; }
+    if (!clientName.trim()) { toast('Veuillez renseigner le nom du client'); return; }
+    if (!invoiceAmount) { toast('Veuillez renseigner le montant de la facture'); return; }
+    if (!projectNature.trim()) { toast('Veuillez renseigner la nature du projet'); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
     try {
+      const context = buildContext();
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { context, tone }, session, lang },
         (chunk) => setOutput(chunk),
@@ -54,53 +92,104 @@ export function RelanceTool({ tool }) {
     toast(t('tool.copied'));
   };
 
-  const activeTone = TONES.find(t => t.id === tone);
+  const activeTone = TONES.find(to => to.id === tone);
+  const F = { marginBottom: 16 };
+  const LBL = { display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-3)', marginBottom: 6 };
+  const REQ = { color: 'var(--accent)', marginLeft: 2 };
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
         <div className="card card-pad">
-          <h3 className="h3" style={{ marginBottom: 16, fontSize: 15 }}>{t('tool.relance.context.label')}</h3>
 
-          <div className="field">
-            <label className="label">{t('tool.relance.context.label')} <span style={{ color: 'var(--accent)' }}>*</span></label>
+          {/* Row 1: Montant + Numéro */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, ...F }}>
+            <div>
+              <label style={LBL}>Montant de la facture<span style={REQ}>*</span></label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  className="input"
+                  type="number"
+                  value={invoiceAmount}
+                  onChange={e => setInvoiceAmount(e.target.value)}
+                  placeholder="2 500"
+                  style={{ paddingRight: 36 }}
+                />
+                <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', fontWeight: 600 }}>€</span>
+              </div>
+            </div>
+            <div>
+              <label style={LBL}>Numéro de facture</label>
+              <input className="input" value={invoiceNumber} onChange={e => setInvoiceNumber(e.target.value)} placeholder="FA-2024-042" />
+            </div>
+          </div>
+
+          {/* Row 2: Échéance + Jours de retard */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, ...F }}>
+            <div>
+              <label style={LBL}>Date d'échéance</label>
+              <input className="input" type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+            </div>
+            <div>
+              <label style={LBL}>Jours de retard</label>
+              <input
+                className="input"
+                type="number"
+                value={daysLate}
+                onChange={e => setDaysLate(e.target.value)}
+                placeholder="15"
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Client + Projet */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, ...F }}>
+            <div>
+              <label style={LBL}>Nom du client / entreprise<span style={REQ}>*</span></label>
+              <input className="input" value={clientName} onChange={e => setClientName(e.target.value)} placeholder="Acme Corp" />
+            </div>
+            <div>
+              <label style={LBL}>Nature du projet<span style={REQ}>*</span></label>
+              <input className="input" value={projectNature} onChange={e => setProjectNature(e.target.value)} placeholder="Développement web, design..." />
+            </div>
+          </div>
+
+          {/* Row 4: Relances précédentes */}
+          <div style={F}>
+            <label style={LBL}>Relances précédentes</label>
+            <input className="input" type="number" min="0" value={previousReminders} onChange={e => setPreviousReminders(e.target.value)} placeholder="0" style={{ maxWidth: 120 }} />
+          </div>
+
+          {/* Row 5: Contexte additionnel */}
+          <div style={F}>
+            <label style={LBL}>Contexte additionnel <span style={{ color: 'var(--fg-4)', fontWeight: 400 }}>(optionnel)</span></label>
             <textarea
               className="textarea"
-              value={context}
-              onChange={e => setContext(e.target.value)}
-              placeholder={t('tool.relance.context.placeholder')}
-              rows={5}
+              value={additionalContext}
+              onChange={e => setAdditionalContext(e.target.value)}
+              placeholder="Informations supplémentaires utiles pour la relance..."
+              rows={3}
             />
           </div>
 
-          <div className="field">
-            <label className="label">{t('tool.relance.tone.label')}</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {/* Tone selector */}
+          <div style={F}>
+            <label style={LBL}>{t('tool.relance.tone.label')}</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {TONES.map(t_item => (
                 <button
                   key={t_item.id}
                   type="button"
                   onClick={() => setTone(t_item.id)}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 14,
-                    padding: '14px 16px',
+                    display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px',
                     borderRadius: 10,
                     border: `2px solid ${tone === t_item.id ? t_item.color : 'var(--border)'}`,
                     background: tone === t_item.id ? t_item.bg : 'var(--bg)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'all 0.15s',
+                    cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
                   }}
                 >
-                  <span style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    background: t_item.color,
-                    flexShrink: 0,
-                  }} />
+                  <span style={{ width: 10, height: 10, borderRadius: '50%', background: t_item.color, flexShrink: 0 }} />
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 14, color: tone === t_item.id ? t_item.color : 'var(--fg)' }}>{t(t_item.labelKey)}</div>
                     <div style={{ fontSize: 12, color: 'var(--fg-4)', marginTop: 1 }}>{t(t_item.descKey)}</div>
@@ -124,11 +213,7 @@ export function RelanceTool({ tool }) {
             className="btn btn-lg btn-block"
             onClick={generate}
             disabled={loading}
-            style={{
-              background: activeTone?.color || 'var(--accent)',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={{ background: activeTone?.color || 'var(--accent)', color: '#fff', border: 'none' }}
           >
             {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.relance.btn')}</>}
           </button>

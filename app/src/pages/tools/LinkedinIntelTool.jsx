@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
@@ -72,15 +72,10 @@ function parseSections(output, keys) {
 export function LinkedinIntelTool({ tool }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
-  const fileRef = useRef(null);
-
   const [profileUrl, setProfileUrl] = useState('');
   const [niche, setNiche] = useState('');
   const [goal, setGoal] = useState('visibility');
   const [competitors, setCompetitors] = useState(['']);
-  const [imageBase64, setImageBase64] = useState('');
-  const [imageMediaType, setImageMediaType] = useState('image/jpeg');
-  const [imagePreview, setImagePreview] = useState('');
   const [sections, setSections] = useState({});
   const [rawOutput, setRawOutput] = useState('');
   const [activeTab, setActiveTab] = useState('PROFILE_AUDIT');
@@ -93,19 +88,6 @@ export function LinkedinIntelTool({ tool }) {
   const navigate = useNavigate();
 
   const hasOutput = Object.keys(sections).length > 0;
-
-  const handleImage = (file) => {
-    if (!file) return;
-    setImageMediaType(file.type || 'image/jpeg');
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target.result;
-      setImagePreview(dataUrl);
-      const base64 = dataUrl.split(',')[1];
-      setImageBase64(base64);
-    };
-    reader.readAsDataURL(file);
-  };
 
   const addCompetitor = () => {
     if (competitors.length < 3) setCompetitors([...competitors, '']);
@@ -133,14 +115,7 @@ export function LinkedinIntelTool({ tool }) {
       const fullText = await streamGenerate(
         {
           toolId: tool.id,
-          input: {
-            profileUrl,
-            niche,
-            goal,
-            competitors: competitors.filter(Boolean),
-            imageBase64: imageBase64 || undefined,
-            imageMediaType: imageBase64 ? imageMediaType : undefined,
-          },
+          input: { profileUrl, niche, goal, competitors: competitors.filter(Boolean) },
           session,
           lang,
         },
@@ -218,30 +193,6 @@ export function LinkedinIntelTool({ tool }) {
               rows={3}
               style={{ resize: 'vertical' }}
             />
-          </div>
-
-          <div className="field">
-            <label className="label">{t('tool.linkedin-intel.screenshot.label')}</label>
-            <p className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('tool.linkedin-intel.screenshot.hint')}</p>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={e => handleImage(e.target.files[0])}
-            />
-            {imagePreview ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <img src={imagePreview} alt="profile screenshot" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
-                <button className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
-                  {t('tool.linkedin-intel.screenshot.change')}
-                </button>
-              </div>
-            ) : (
-              <button className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
-                <Glyph name="image" size={14} /> {t('tool.linkedin-intel.screenshot.cta')}
-              </button>
-            )}
           </div>
 
           <div className="field">
