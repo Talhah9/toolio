@@ -912,6 +912,26 @@ function IlluLegal() {
   );
 }
 
+function IlluImage() {
+  return (
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', borderRadius: 16, padding: '18px 16px', width: '100%', maxWidth: 186, boxShadow: '0 10px 28px rgba(79,70,229,0.35)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: -24, right: -24, width: 88, height: 88, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
+        <div style={{ position: 'absolute', bottom: -18, left: -18, width: 64, height: 64, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+        <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.22)', marginBottom: 10, border: '2px solid rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, color: '#fff', position: 'relative' }}>
+          BM
+        </div>
+        <div style={{ fontWeight: 800, fontSize: 13, color: '#fff', marginBottom: 2, position: 'relative' }}>Baptiste Moreau</div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.72)', marginBottom: 12, position: 'relative' }}>Web Designer Freelance</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.14)', borderRadius: 20, padding: '3px 10px', position: 'relative' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34D399', flexShrink: 0 }} />
+          <span style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.92)', fontWeight: 600 }}>Disponible pour missions</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Bento featured tools grid ─────────────────────────────────
 
 function FeaturedTools({ lang, navigate, reduce }) {
@@ -926,12 +946,13 @@ function FeaturedTools({ lang, navigate, reduce }) {
       illu: <IlluLinkedIn reduce={reduce} />,
     },
     {
-      title: t('landing.featured.audit.title'),
+      title: t('landing.featured.image.title'),
       badge: { text: 'Pro', bg: 'rgba(79,70,229,0.1)', color: '#4F46E5' },
-      desc: t('landing.featured.audit.desc'),
-      uses: '1 247',
-      accent: '#10B981',
-      illu: <IlluAudit reduce={reduce} />,
+      desc: t('landing.featured.image.desc'),
+      uses: '892',
+      accent: '#7C3AED',
+      illu: <IlluImage />,
+      link: '/tools/image',
     },
     {
       title: t('landing.featured.devis.title'),
@@ -1000,6 +1021,146 @@ function FeaturedTools({ lang, navigate, reduce }) {
               </motion.div>
             </FadeUp>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── LinkedIn Content showcase ────────────────────────────────
+
+const LI_SHOWCASE_CARDS = [
+  { text: "L'image que les gens ont du freelance.\n\nSe lever à 9h. Travailler en pyjama. Être son propre patron.", likes: 43,  impressions: '5 438',   rotate: -2, y: -20 },
+  { text: "La prochaine fois que vous dites qu'un TJM est trop cher :\n\nOubliez pas que vous payez rien à côté.", likes: 114, impressions: '8 665',   rotate: -1, y: 20  },
+  { text: "Ma mère m'a sorti un truc la semaine dernière.\n\n\"Si t'es à 500€ par jour tu gagnes genre 10 000€ par mois ?!\"", likes: 171, impressions: '115 898', rotate: 2,  y: -30 },
+  { text: "Y'a un truc qu'il faut remettre au clair.\n\nLe salaire moyen d'un freelance en France c'est entre 2 500€ et 4 000€", likes: 457, impressions: '53 219',  rotate: 1,  y: 10  },
+];
+
+function LIPostCard({ text, likes, impressions, rotate, y, side, inView, delay }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: side === 'left' ? -28 : 28 }}
+      animate={inView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.5, delay }}
+      style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 14, padding: '14px 16px', maxWidth: 240, boxShadow: '0 2px 14px rgba(0,0,0,0.06)', transform: `rotate(${rotate}deg) translateY(${y}px)`, fontSize: 12, color: '#1D1D1F', lineHeight: 1.65 }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#4F46E5,#818CF8)', flexShrink: 0 }} />
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 11, color: '#0F0F1A' }}>Talhah Ally</div>
+          <div style={{ fontSize: 9.5, color: '#9CA3AF' }}>Freelance & Coach</div>
+        </div>
+      </div>
+      <p style={{ margin: '0 0 10px', whiteSpace: 'pre-line', fontSize: 11.5 }}>{text}</p>
+      <div style={{ fontSize: 10, color: '#9CA3AF', display: 'flex', gap: 8 }}>
+        <span>👍 {likes}</span>
+        <span>· {impressions} impressions</span>
+      </div>
+    </motion.div>
+  );
+}
+
+function LinkedInShowcaseSection({ navigate, reduce }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+
+  return (
+    <section ref={ref} style={{ background: '#FAFAFA', padding: 'clamp(60px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)', backgroundImage: 'linear-gradient(rgba(79,70,229,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.045) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+      <style>{`
+        @media (max-width: 860px) {
+          .li-showcase-grid { grid-template-columns: 1fr !important; }
+          .li-showcase-side { display: none !important; }
+        }
+      `}</style>
+      <div className="container">
+        {/* Header */}
+        <FadeUp>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(250,208,44,0.15)', border: '1px solid rgba(250,208,44,0.4)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#B45309', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 20 }}>
+              ⭐ BEST SELLER · #1 outil le plus utilisé
+            </span>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+              Générez des posts LinkedIn qui <span style={{ color: '#4F46E5' }}>convertissent</span>
+            </h2>
+            <p style={{ fontSize: 16, color: '#6B6B8A', maxWidth: 500, margin: '0 auto 24px', lineHeight: 1.65 }}>
+              Adapté à votre niche, votre style, votre audience. En 30 secondes.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 28 }}>
+              {["Adapté à votre ton d'écriture", 'Hooks qui accrochent', 'Formats viraux testés'].map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#374151', fontWeight: 600 }}>
+                  <span style={{ color: '#10B981', fontWeight: 800 }}>✓</span> {f}
+                </div>
+              ))}
+            </div>
+            <motion.button
+              onClick={() => navigate('/auth?mode=register')}
+              style={{ background: '#4F46E5', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 28px', fontWeight: 800, fontSize: 15, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 4px 20px rgba(79,70,229,0.35)' }}
+              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 8px 28px rgba(79,70,229,0.45)' }}
+              whileTap={reduce ? {} : { scale: 0.97 }}
+            >
+              Essayer l'outil →
+            </motion.button>
+          </div>
+        </FadeUp>
+
+        {/* 3-column layout */}
+        <div className="li-showcase-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 420px 1fr', gap: 28, alignItems: 'center', maxWidth: 1080, margin: '0 auto' }}>
+
+          {/* Left cards */}
+          <div className="li-showcase-side" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-end' }}>
+            <LIPostCard {...LI_SHOWCASE_CARDS[0]} side="left" inView={inView} delay={0.1} />
+            <LIPostCard {...LI_SHOWCASE_CARDS[1]} side="left" inView={inView} delay={0.2} />
+          </div>
+
+          {/* Center demo */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0 }}
+            style={{ background: '#fff', borderRadius: 20, boxShadow: '0 4px 32px rgba(15,15,60,0.1)', padding: '24px', border: '1px solid rgba(0,0,0,0.06)' }}
+          >
+            {/* Tool header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+              <svg viewBox="0 0 24 24" fill="#0A66C2" width="20" height="20" style={{ flexShrink: 0 }}>
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              <span style={{ fontWeight: 800, fontSize: 15, color: '#0F0F1A' }}>LinkedIn Content</span>
+              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 20, background: '#fad02c', color: '#78350F', whiteSpace: 'nowrap' }}>⭐ BEST SELLER</span>
+            </div>
+
+            {/* Simulated textarea */}
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 10, padding: '11px 14px', fontSize: 13, color: '#9CA3AF', marginBottom: 10, minHeight: 54 }}>
+              Décrivez votre idée de post...
+            </div>
+
+            {/* Generate button */}
+            <div style={{ background: '#4F46E5', color: '#fff', borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 700, marginBottom: 16, textAlign: 'center', cursor: 'default' }}>
+              Générer →
+            </div>
+
+            {/* Result area */}
+            <div style={{ background: '#F0F4FF', border: '1px solid rgba(79,70,229,0.15)', borderRadius: 12, padding: '14px 16px', fontSize: 12.5, color: '#1D1D1F', lineHeight: 1.75, minHeight: 160 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+                <span style={{ fontSize: 10, color: '#4F46E5', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Génération en cours…</span>
+              </div>
+              <p style={{ margin: 0, whiteSpace: 'pre-line', fontSize: 12 }}>
+                {"Y'a un truc qu'il faut remettre au clair.\n\nLe salaire moyen d'un freelance en France c'est entre 2 500€ et 4 000€ net par mois.\n\nPas 800€.\nPas 1 200€.\n\nCeux qui te disent que le freelance ça paye pas ont juste mal négocié."}
+                <span style={{ color: '#4F46E5', fontWeight: 900 }}> ▌</span>
+              </p>
+            </div>
+
+            {/* Counter */}
+            <div style={{ marginTop: 14, textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 600 }}>
+              3 421 utilisations · <span style={{ color: '#4F46E5', fontWeight: 700 }}>#1 outil le plus utilisé</span>
+            </div>
+          </motion.div>
+
+          {/* Right cards */}
+          <div className="li-showcase-side" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
+            <LIPostCard {...LI_SHOWCASE_CARDS[2]} side="right" inView={inView} delay={0.15} />
+            <LIPostCard {...LI_SHOWCASE_CARDS[3]} side="right" inView={inView} delay={0.25} />
+          </div>
         </div>
       </div>
     </section>
@@ -1711,6 +1872,9 @@ export function Landing() {
 
       {/* ── NEW: 4 outils qui changent tout ──────────────────── */}
       <FeaturedTools lang={lang} navigate={navigate} reduce={reduce} />
+
+      {/* ── LinkedIn Content showcase ────────────────────────── */}
+      <LinkedInShowcaseSection navigate={navigate} reduce={reduce} />
 
       {/* ── NEW: Dashboard scroll animation ──────────────────── */}
       <ContainerScroll lang={lang} navigate={navigate} reduce={reduce} />
