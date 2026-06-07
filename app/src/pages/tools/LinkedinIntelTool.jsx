@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
@@ -76,6 +76,10 @@ export function LinkedinIntelTool({ tool }) {
   const [niche, setNiche] = useState('');
   const [goal, setGoal] = useState('visibility');
   const [competitors, setCompetitors] = useState(['']);
+  const [profileImage, setProfileImage] = useState('');
+  const [profileMediaType, setProfileMediaType] = useState('image/jpeg');
+  const [imageError, setImageError] = useState('');
+  const [imageAnalyzing, setImageAnalyzing] = useState(false);
   const [sections, setSections] = useState({});
   const [rawOutput, setRawOutput] = useState('');
   const [activeTab, setActiveTab] = useState('PROFILE_AUDIT');
@@ -85,9 +89,23 @@ export function LinkedinIntelTool({ tool }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
+  const fileRef = useRef(null);
   const navigate = useNavigate();
 
   const hasOutput = Object.keys(sections).length > 0;
+
+  const handleImageUpload = (file) => {
+    if (!file) return;
+    if (file.size > 4 * 1024 * 1024) {
+      setImageError(t('tool.linkedin-intel.screenshot.error.size'));
+      return;
+    }
+    setImageError('');
+    setProfileMediaType(file.type || 'image/jpeg');
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => setProfileImage(reader.result);
+  };
 
   const addCompetitor = () => {
     if (competitors.length < 3) setCompetitors([...competitors, '']);
@@ -108,14 +126,35 @@ export function LinkedinIntelTool({ tool }) {
     if (!niche.trim()) { toast(t('tool.linkedin-intel.error.niche')); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
-    setLoading(true);
     setSections({});
     setRawOutput('');
+
+    let profileSummary = '';
+    if (profileImage) {
+      setImageAnalyzing(true);
+      try {
+        const resp = await fetch('/api/analyze-profile-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+          body: JSON.stringify({ userId: session?.user?.id, imageBase64: profileImage.split(',')[1], mediaType: profileMediaType }),
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          profileSummary = data.profileSummary || '';
+        }
+      } catch (_) {
+        // non-fatal: proceed without summary
+      } finally {
+        setImageAnalyzing(false);
+      }
+    }
+
+    setLoading(true);
     try {
       const fullText = await streamGenerate(
         {
           toolId: tool.id,
-          input: { profileUrl, niche, goal, competitors: competitors.filter(Boolean) },
+          input: { profileUrl, niche, goal, competitors: competitors.filter(Boolean), profileSummary },
           session,
           lang,
         },
@@ -245,14 +284,69 @@ export function LinkedinIntelTool({ tool }) {
             </div>
           </div>
 
+          <div className="field">
+            <label className="label">{t('tool.linkedin-intel.screenshot.label')}</label>
+            <p className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('tool.linkedin-intel.screenshot.hint')}</p>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={e => handleImageUpload(e.target.files?.[0])}
+            />
+            {profileImage ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <img
+                  src={profileImage}
+                  alt="LinkedIn profile screenshot"
+                  style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }}
+                />
+                <div style={{ flex: 1, fontSize: 12, color: 'var(--fg-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {profileMediaType}
+                </div>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => { setProfileImage(''); setProfileMediaType('image/jpeg'); if (fileRef.current) fileRef.current.value = ''; }}
+                  style={{ flexShrink: 0 }}
+                >
+                  {t('tool.linkedin-intel.screenshot.change')}
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileRef.current?.click()}
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => { e.preventDefault(); handleImageUpload(e.dataTransfer.files?.[0]); }}
+                style={{
+                  border: '1.5px dashed var(--border)',
+                  borderRadius: 10,
+                  padding: '18px 16px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  color: 'var(--fg-3)',
+                  transition: 'border-color 0.15s',
+                }}
+              >
+                {t('tool.linkedin-intel.screenshot.cta')}
+              </div>
+            )}
+            {imageError && <p style={{ color: 'var(--warn-fg, #dc2626)', fontSize: 12, marginTop: 4 }}>{imageError}</p>}
+          </div>
+
           <div className="hr" style={{ margin: '20px 0' }} />
           <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12, fontSize: 13 }}>
             <span className="muted">{t('tool.cost')}</span>
             <span className="tabular"><b>{tool.credits}</b> {t('tool.credits')}</span>
           </div>
           <CreditGate cost={tool.credits}>
-            <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-              {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.linkedin-intel.btn')}</>}
+            <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading || imageAnalyzing}>
+              {imageAnalyzing
+                ? t('tool.linkedin-intel.screenshot.analyzing')
+                : loading
+                  ? t('tool.generating')
+                  : <><Glyph name="sparkle" size={14} /> {t('tool.linkedin-intel.btn')}</>
+              }
             </button>
           </CreditGate>
         </div>

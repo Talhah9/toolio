@@ -487,7 +487,7 @@ Niche / activity: ${input.niche || 'not specified'}
 Main goal on LinkedIn: ${input.goal || 'increase visibility'}
 ${competitors}
 
-${input.imageBase64 ? 'A screenshot of the LinkedIn profile has been attached.' : 'No profile screenshot provided.'}
+${input.profileSummary ? `Profile screenshot analysis:\n${input.profileSummary}` : 'No profile screenshot provided.'}
 
 Perform a complete LinkedIn intelligence analysis.`;
     }
@@ -680,13 +680,7 @@ export default async function handler(req, res) {
       console.log('[generate] linkedin-intel max_tokens:', MAX_TOKENS[toolId]);
     }
 
-    // Vision support for linkedin-intel: attach image when screenshot is provided
-    let userContent = (toolId === 'linkedin-intel' && input.imageBase64)
-      ? [
-          { type: 'image', source: { type: 'base64', media_type: input.imageMediaType || 'image/jpeg', data: input.imageBase64 } },
-          { type: 'text', text: userMessage },
-        ]
-      : userMessage;
+    let userContent = userMessage;
 
     // For compete: build WEBSITE_CONTENT from (1) user-pasted context or (2) HTML fetch.
     // No web search for compete — it causes hallucinations with mixed external data.

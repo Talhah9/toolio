@@ -747,6 +747,8 @@ export const fr = {
   'tool.linkedin-intel.screenshot.hint': 'Importez une capture pour une analyse visuelle plus précise',
   'tool.linkedin-intel.screenshot.cta': 'Importer une capture',
   'tool.linkedin-intel.screenshot.change': 'Changer',
+  'tool.linkedin-intel.screenshot.error.size': 'Image trop lourde — 4 Mo maximum.',
+  'tool.linkedin-intel.screenshot.analyzing': 'Analyse de la capture en cours…',
   'tool.linkedin-intel.niche.label': 'Votre niche / activité',
   'tool.linkedin-intel.niche.placeholder': 'Designer UX freelance pour éditeurs SaaS et agences digitales…',
   'tool.linkedin-intel.competitors.label': 'Profils LinkedIn concurrents (optionnel)',

@@ -747,6 +747,8 @@ export const en = {
   'tool.linkedin-intel.screenshot.hint': 'Upload a screenshot for a more accurate visual analysis',
   'tool.linkedin-intel.screenshot.cta': 'Upload screenshot',
   'tool.linkedin-intel.screenshot.change': 'Change',
+  'tool.linkedin-intel.screenshot.error.size': 'Image too large — 4 MB maximum.',
+  'tool.linkedin-intel.screenshot.analyzing': 'Analysing screenshot…',
   'tool.linkedin-intel.niche.label': 'Your niche / activity',
   'tool.linkedin-intel.niche.placeholder': 'Freelance UX designer for SaaS companies and digital agencies…',
   'tool.linkedin-intel.competitors.label': 'Competitor LinkedIn profiles (optional)',
