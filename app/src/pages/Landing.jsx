@@ -534,27 +534,27 @@ function BlueprintSection({ navigate }) {
           <text x="744" y="61" textAnchor="end" fill="rgba(255,255,255,0.55)" fontSize="9" letterSpacing="0.1em" fontFamily={ff}>FREELANCE · 2026</text>
 
           {/* ── PARTIES ── */}
-          <text x="397" y="108" textAnchor="middle" fill="#9CA3AF" fontSize="10" fontFamily={ff}>Paris, le 7 juin 2026</text>
-          <text x="397" y="128" textAnchor="middle" fill="#4F46E5" fontSize="12" fontWeight="bold" fontFamily={ff}>N° SAV-2026-042</text>
+          <text x="397" y="108" textAnchor="middle" fill="#9CA3AF" fontSize="10" fontFamily={ff}>Paris, le 15 mai 2026</text>
+          <text x="397" y="128" textAnchor="middle" fill="#4F46E5" fontSize="12" fontWeight="bold" fontFamily={ff}>N° NOVA-2026-018</text>
 
           {/* Prestataire box */}
           <rect x="50" y="142" width="310" height="110" fill="white" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
           <rect x="50" y="142" width="310" height="24" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
           <rect x="50" y="154" width="310" height="12" fill="#F9FAFB"/>
           <text x="66" y="159" fill="#9CA3AF" fontSize="8" fontWeight="bold" letterSpacing="0.1em" fontFamily={ff}>PRESTATAIRE</text>
-          <text x="66" y="180" fill="#111827" fontSize="13" fontWeight="bold" fontFamily={ff}>Talhah Ally</text>
-          <text x="66" y="197" fill="#6B7280" fontSize="10" fontFamily={ff}>Micro-entrepreneur</text>
-          <text x="66" y="212" fill="#6B7280" fontSize="10" fontFamily={ff}>talhahally974@gmail.com</text>
-          <text x="66" y="227" fill="#6B7280" fontSize="10" fontFamily={ff}>savvly.co</text>
+          <text x="66" y="180" fill="#111827" fontSize="13" fontWeight="bold" fontFamily={ff}>Alex Martin</text>
+          <text x="66" y="197" fill="#6B7280" fontSize="10" fontFamily={ff}>Freelance Designer</text>
+          <text x="66" y="212" fill="#6B7280" fontSize="10" fontFamily={ff}>alex@studio-am.fr</text>
+          <text x="66" y="227" fill="#6B7280" fontSize="10" fontFamily={ff}>studio-am.fr</text>
 
           {/* Client box */}
           <rect x="434" y="142" width="310" height="110" fill="white" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
           <rect x="434" y="142" width="310" height="24" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1" rx="4"/>
           <rect x="434" y="154" width="310" height="12" fill="#F9FAFB"/>
           <text x="450" y="159" fill="#9CA3AF" fontSize="8" fontWeight="bold" letterSpacing="0.1em" fontFamily={ff}>CLIENT</text>
-          <text x="450" y="180" fill="#111827" fontSize="13" fontWeight="bold" fontFamily={ff}>Marie Dupont</text>
-          <text x="450" y="197" fill="#6B7280" fontSize="10" fontFamily={ff}>DesignHub Studio</text>
-          <text x="450" y="212" fill="#6B7280" fontSize="10" fontFamily={ff}>marie@designhub.fr</text>
+          <text x="450" y="180" fill="#111827" fontSize="13" fontWeight="bold" fontFamily={ff}>Sophie Leclerc</text>
+          <text x="450" y="197" fill="#6B7280" fontSize="10" fontFamily={ff}>Agence Créative Nova</text>
+          <text x="450" y="212" fill="#6B7280" fontSize="10" fontFamily={ff}>sophie@nova-agency.fr</text>
 
           {/* ── PURPLE ACCENT LINE ── */}
           <rect x="0" y="268" width="794" height="3" fill="#4F46E5"/>
@@ -590,7 +590,7 @@ function BlueprintSection({ navigate }) {
           <line x1="280" y1="486" x2="280" y2="514" stroke="#E5E7EB" strokeWidth="1"/>
           <line x1="410" y1="486" x2="410" y2="514" stroke="#E5E7EB" strokeWidth="1"/>
           <line x1="570" y1="486" x2="570" y2="514" stroke="#E5E7EB" strokeWidth="1"/>
-          <text x="62" y="504" fill="#374151" fontSize="10" fontFamily={ff}>Développement web</text>
+          <text x="62" y="504" fill="#374151" fontSize="10" fontFamily={ff}>Refonte identité visuelle</text>
           <text x="345" y="504" textAnchor="middle" fill="#374151" fontSize="10" fontFamily={ff}>1</text>
           <text x="490" y="504" textAnchor="middle" fill="#374151" fontSize="10" fontFamily={ff}>2 400 €</text>
           <text x="632" y="504" textAnchor="middle" fill="#111827" fontSize="10" fontWeight="bold" fontFamily={ff}>2 400 €</text>
@@ -617,18 +617,18 @@ function BlueprintSection({ navigate }) {
           {/* Left */}
           <text x="62" y="686" fill="#374151" fontSize="10" fontFamily={ff}>Signature du Prestataire</text>
           <rect x="62" y="694" width="220" height="65" fill="none" stroke="#9CA3AF" strokeWidth="1" strokeDasharray="5,3" rx="2"/>
-          <text x="62" y="776" fill="#374151" fontSize="10" fontFamily={ff}>Talhah Ally</text>
+          <text x="62" y="776" fill="#374151" fontSize="10" fontFamily={ff}>Alex Martin</text>
           <text x="62" y="792" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Date : ___________</text>
 
           {/* Right */}
           <text x="512" y="686" fill="#374151" fontSize="10" fontFamily={ff}>Signature du Client</text>
           <rect x="512" y="694" width="220" height="65" fill="none" stroke="#9CA3AF" strokeWidth="1" strokeDasharray="5,3" rx="2"/>
-          <text x="512" y="776" fill="#374151" fontSize="10" fontFamily={ff}>Marie Dupont</text>
+          <text x="512" y="776" fill="#374151" fontSize="10" fontFamily={ff}>Sophie Leclerc</text>
           <text x="512" y="792" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Date : ___________</text>
 
           {/* ── FOOTER ── */}
           <rect x="50" y="820" width="694" height="1" fill="#E5E7EB"/>
-          <text x="397" y="841" textAnchor="middle" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Savvly · savvly.co · SIRET 833 320 757 00036</text>
+          <text x="397" y="841" textAnchor="middle" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Savvly · contact@savvly.co · SIRET 123 456 789 00012</text>
           <text x="744" y="841" textAnchor="end" fill="#9CA3AF" fontSize="9" fontFamily={ff}>Page 1 sur 3</text>
 
         </svg>
