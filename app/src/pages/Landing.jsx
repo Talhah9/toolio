@@ -1057,14 +1057,24 @@ const LI_POST_SRCS = [
 ];
 
 function LIImageCard({ src, rotate, y, side, inView, delay }) {
+  const shadow = side === 'left'
+    ? '-8px 12px 32px rgba(0,0,0,0.18)'
+    : '8px 12px 32px rgba(0,0,0,0.18)';
+  const tx = side === 'left' ? -16 : 16;
   return (
     <motion.div
       initial={{ opacity: 0, x: side === 'left' ? -40 : 40 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.5, delay }}
-      style={{ maxWidth: 220, borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', transform: `rotate(${rotate}deg) translateY(${y}px)`, flexShrink: 0 }}
+      style={{
+        width: 280, maxWidth: 280, borderRadius: 16, overflow: 'hidden',
+        boxShadow: shadow, border: '1px solid rgba(255,255,255,0.8)',
+        transform: `rotate(${rotate}deg) translateY(${y}px) translateX(${tx}px)`,
+        flexShrink: 0, position: 'relative',
+      }}
     >
       <img src={src} alt="Post LinkedIn" loading="lazy" style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'cover' }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(0,0,0,0.15), transparent)', pointerEvents: 'none' }} />
     </motion.div>
   );
 }
@@ -1117,8 +1127,8 @@ function LinkedInShowcaseSection({ navigate, reduce }) {
 
           {/* Left cards */}
           <div className="li-showcase-side" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-end' }}>
-            <LIImageCard src={LI_POST_SRCS[0]} rotate={-2} y={-20} side="left" inView={inView} delay={0.1} />
-            <LIImageCard src={LI_POST_SRCS[2]} rotate={-1} y={20}  side="left" inView={inView} delay={0.25} />
+            <LIImageCard src={LI_POST_SRCS[0]} rotate={-3} y={-20} side="left" inView={inView} delay={0.1} />
+            <LIImageCard src={LI_POST_SRCS[2]} rotate={-2} y={20}  side="left" inView={inView} delay={0.25} />
           </div>
 
           {/* Center demo */}
@@ -1167,8 +1177,8 @@ function LinkedInShowcaseSection({ navigate, reduce }) {
 
           {/* Right cards */}
           <div className="li-showcase-side" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
-            <LIImageCard src={LI_POST_SRCS[1]} rotate={2}  y={-30} side="right" inView={inView} delay={0.15} />
-            <LIImageCard src={LI_POST_SRCS[3]} rotate={1}  y={10}  side="right" inView={inView} delay={0.3} />
+            <LIImageCard src={LI_POST_SRCS[1]} rotate={3}  y={-30} side="right" inView={inView} delay={0.15} />
+            <LIImageCard src={LI_POST_SRCS[3]} rotate={2}  y={10}  side="right" inView={inView} delay={0.3} />
           </div>
         </div>
       </div>
