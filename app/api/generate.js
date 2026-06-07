@@ -99,7 +99,7 @@ const TOOL_CREDITS = {
   relance:            10,
   statut:              5,
   urssaf:              5,
-  'linkedin-intel':   20,
+  'linkedin-intel':   35,
   prospection:        10,
   'mission-finder':   10,
   converter:          25,

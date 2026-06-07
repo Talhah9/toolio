@@ -1,155 +1,130 @@
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from './AppHeader';
 import { Glyph } from './Glyph';
-import { PlanBadge } from './PlanBadge';
 import { getToolText } from '../data/catalog';
-import { useLang } from '../context/LanguageContext';
-import { TEMPLATES } from '../data/templates';
 
-export function ToolIntro({ tool, onStart }) {
+export function ToolIntro({ tool, credits, lang, onStart }) {
   const navigate = useNavigate();
-  const { lang, t } = useLang();
-  const { name, desc } = getToolText(tool, lang);
+  const { name, intro, features } = getToolText(tool, lang);
+  const accent = tool.accent || '#4F46E5';
 
-  const bullets = [
-    t(`tool.intro.${tool.id}.b1`),
-    t(`tool.intro.${tool.id}.b2`),
-    t(`tool.intro.${tool.id}.b3`),
-  ];
+  const creditLabel = tool.credits === 0
+    ? (lang === 'fr' ? 'Gratuit — aucun crédit requis' : 'Free — no credits required')
+    : `${tool.credits} ${lang === 'fr' ? 'crédits par génération' : 'credits per generation'}`;
 
-  const costLabel = tool.credits === 0
-    ? t('tool.intro.cost.free')
-    : `${tool.credits} ${t('tool.intro.cost.credits')}`;
-
-  const isFree = tool.credits === 0;
-  const templates = TEMPLATES[tool.id] || null;
+  const planLabel  = tool.plan === 'free' ? (lang === 'fr' ? 'Gratuit' : 'Free') : 'Pro';
+  const planBg     = tool.plan === 'free' ? '#D1FAE5' : 'rgba(79,70,229,0.1)';
+  const planColor  = tool.plan === 'free' ? '#065F46' : '#4F46E5';
+  const creditsDisplay = credits === null ? '—' : credits;
 
   return (
     <>
       <style>{`
-        @keyframes introIn {
-          from { opacity: 0; transform: translateY(14px); }
+        @keyframes introFadeUp {
+          from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .tool-intro-card { animation: introIn 0.3s ease-out both; }
+        .tool-intro-card { animation: introFadeUp 0.3s ease-out both; }
       `}</style>
-
       <AppHeader />
+      <div style={{ minHeight: 'calc(100vh - 72px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px' }}>
+        <div
+          className="tool-intro-card"
+          style={{
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 20,
+            padding: '40px 40px 36px',
+            maxWidth: 580,
+            width: '100%',
+            boxShadow: '0 8px 40px rgba(15,15,60,0.08)',
+          }}
+        >
+          {/* Back link */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-3)', fontSize: 13, padding: 0, marginBottom: 28 }}
+          >
+            <Glyph name="arrow-left" size={12} />
+            Dashboard
+          </button>
 
-      <div className="page-pad" style={{ display: 'flex', justifyContent: 'center', paddingTop: 56 }}>
-        <div className="tool-intro-card" style={{ maxWidth: 460, width: '100%' }}>
-
-          {/* Breadcrumb */}
-          <div className="breadcrumb" style={{ marginBottom: 32 }}>
-            <a onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Dashboard</a>
-            <Glyph name="chevron-right" size={12} />
-            <span>{t('tool.breadcrumb.tools')}</span>
-            <Glyph name="chevron-right" size={12} />
-            <span className="current">{getToolText(tool, lang).short}</span>
-          </div>
-
-          {/* Icon */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+          {/* Icon + name */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, marginBottom: 24 }}>
             <div style={{
-              width: 72, height: 72, borderRadius: 20,
-              background: 'var(--accent-soft)', color: 'var(--accent)',
+              width: 64, height: 64, borderRadius: 16, flexShrink: 0,
+              background: `${accent}18`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Glyph name={tool.glyph} size={30} />
+              <Glyph name={tool.glyph} size={28} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: 'var(--fg)', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                  {name}
+                </h1>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: planBg, color: planColor, whiteSpace: 'nowrap' }}>
+                  {planLabel}
+                </span>
+                {tool.franceOnly && (
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 20, border: '1px solid #dbeafe', background: '#eff6ff', color: '#1d4ed8', whiteSpace: 'nowrap' }}>
+                    🇫🇷 France
+                  </span>
+                )}
+              </div>
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--fg-2)', lineHeight: 1.65 }}>
+                {intro}
+              </p>
             </div>
           </div>
 
-          {/* Name + badge */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 }}>
-            <h1 className="h1" style={{ margin: 0 }}>{name}</h1>
-            <PlanBadge plan={tool.plan} />
-            {tool.franceOnly && (
-              <span style={{
-                fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
-                border: '1px solid #dbeafe', background: '#eff6ff', color: '#1d4ed8',
-              }}>
-                🇫🇷
-              </span>
-            )}
-          </div>
-
-          {/* Description */}
-          <p className="muted" style={{ fontSize: 15, textAlign: 'center', maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
-            {desc}
-          </p>
-
-          {/* Cost pill */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '5px 14px', borderRadius: 99, fontSize: 13, fontWeight: 600,
-              background: isFree ? '#F0FDF4' : 'var(--accent-soft)',
-              color: isFree ? '#15803D' : 'var(--accent)',
-              border: `1px solid ${isFree ? '#BBF7D0' : 'var(--accent-soft)'}`,
-            }}>
-              {isFree
-                ? <><Glyph name="check" size={12} /> {costLabel}</>
-                : <><Glyph name="sparkle" size={12} /> {costLabel}</>
-              }
-            </span>
-          </div>
-
-          {/* Bullets */}
+          {/* Credit cost pill */}
           <div style={{
-            background: 'var(--bg-soft)',
-            border: '1px solid var(--border)',
-            borderRadius: 12,
-            padding: '20px 24px',
-            display: 'flex', flexDirection: 'column', gap: 13,
-            marginBottom: 28,
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+            background: tool.credits === 0 ? '#D1FAE5' : `${accent}10`,
+            border: `1px solid ${tool.credits === 0 ? '#A7F3D0' : `${accent}28`}`,
+            borderRadius: 10, padding: '8px 14px', marginBottom: 24,
+            fontSize: 13, fontWeight: 600,
+            color: tool.credits === 0 ? '#065F46' : accent,
           }}>
-            {bullets.map((b, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14 }}>
-                <span style={{ color: '#10B981', flexShrink: 0, marginTop: 1 }}>
-                  <Glyph name="check" size={14} />
-                </span>
-                <span style={{ color: 'var(--fg-2)', lineHeight: 1.5 }}>{b}</span>
-              </div>
-            ))}
+            <Glyph name="lightning" size={13} />
+            {creditLabel}
           </div>
+
+          {/* Feature bullets */}
+          {features.length > 0 && (
+            <ul style={{ margin: '0 0 28px', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {features.map((f, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'var(--fg)', lineHeight: 1.5 }}>
+                  <span style={{ color: accent, fontWeight: 800, fontSize: 15, flexShrink: 0, marginTop: 1 }}>✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+          )}
 
           {/* CTA */}
           <button
-            className="btn btn-accent btn-lg btn-block"
-            onClick={() => onStart(null)}
-            style={{ cursor: 'pointer' }}
+            onClick={onStart}
+            style={{
+              width: '100%', padding: '14px 24px',
+              background: accent, color: '#fff',
+              border: 'none', borderRadius: 12,
+              fontSize: 15, fontWeight: 800, cursor: 'pointer',
+              letterSpacing: '0.01em',
+              boxShadow: `0 4px 16px ${accent}38`,
+              transition: 'opacity 0.15s, transform 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1';    e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            {t('tool.intro.cta')} →
+            {lang === 'fr' ? "Accéder à l'outil →" : 'Open the tool →'}
           </button>
 
-          {/* Templates */}
-          {templates && (
-            <div style={{ marginTop: 24 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--fg-4)', marginBottom: 10 }}>
-                {t('tool.intro.templates')}
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {templates.map(tpl => (
-                  <button
-                    key={tpl.id}
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => onStart(tpl.data)}
-                    style={{
-                      justifyContent: 'flex-start', gap: 10,
-                      border: '1px solid var(--border)',
-                      borderRadius: 10, padding: '10px 14px',
-                      fontSize: 13, fontWeight: 500,
-                      color: 'var(--fg-2)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Glyph name="arrow-right" size={13} />
-                    {lang === 'fr' ? tpl.label_fr : tpl.label_en}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Current credits */}
+          <p style={{ textAlign: 'center', margin: '14px 0 0', fontSize: 12, color: 'var(--fg-4)' }}>
+            {lang === 'fr' ? `Vos crédits actuels : ${creditsDisplay}` : `Your current credits: ${creditsDisplay}`}
+          </p>
         </div>
       </div>
     </>
