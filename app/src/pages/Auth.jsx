@@ -258,10 +258,10 @@ export function Auth() {
         </div>
 
         <h1 className="h2" style={{ marginBottom: 6 }}>
-          {mode === 'login' ? 'Welcome back.' : 'Create your account.'}
+          {mode === 'login' ? t('auth.heading.login') : t('auth.heading.register')}
         </h1>
         <p className="muted" style={{ marginBottom: 24, fontSize: 13 }}>
-          {mode === 'login' ? 'Pick up where you left off.' : '50 credits included. No card required.'}
+          {mode === 'login' ? t('auth.tagline.login') : t('auth.tagline.register')}
         </p>
 
         <button className="btn btn-secondary btn-lg btn-block" onClick={handleGoogle} disabled={loading}>
@@ -271,10 +271,10 @@ export function Auth() {
             <path d="M4.09 9.4c-.14-.42-.22-.86-.22-1.32 0-.46.08-.9.22-1.32V5H1.77C1.28 5.94 1 7 1 8.08c0 1.08.28 2.14.77 3.08l2.32-1.76z" fill="#FBBC05"/>
             <path d="M8 4c1.03 0 1.95.35 2.67 1.04l2-2C11.46 1.95 9.88 1 8 1 5.27 1 2.93 2.51 1.77 4.92l2.32 1.76C4.64 5.23 6.18 4 8 4z" fill="#EA4335"/>
           </svg>
-          Continue with Google
+          {t('auth.google')}
         </button>
 
-        <div className="divider-text">OR</div>
+        <div className="divider-text">{t('auth.or')}</div>
 
         <form onSubmit={submit}>
           {mode === 'register' && (
@@ -335,14 +335,7 @@ export function Auth() {
         </form>
 
         <p className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 24 }}>
-          {mode === 'register' && (
-            <>
-              By signing up, you agree to our{' '}
-              <a style={{ textDecoration: 'underline', cursor: 'pointer' }}>terms</a>
-              {' '}and{' '}
-              <a style={{ textDecoration: 'underline', cursor: 'pointer' }}>privacy policy</a>.
-            </>
-          )}
+          {mode === 'register' && t('auth.terms')}
         </p>
       </div>
     </div>

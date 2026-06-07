@@ -372,6 +372,13 @@ export const en = {
   'auth.reset.title': 'Set a new password',
   'auth.reset.new-password': 'New password',
   'auth.reset.btn': 'Update password',
+  'auth.heading.login': 'Welcome back.',
+  'auth.heading.register': 'Create your account.',
+  'auth.tagline.login': 'Pick up where you left off.',
+  'auth.tagline.register': '50 credits included. No card required.',
+  'auth.google': 'Continue with Google',
+  'auth.or': 'OR',
+  'auth.terms': 'By signing up, you agree to our terms and privacy policy.',
 
   // ── Checkout ─────────────────────────────────────────────────
   'checkout.title': 'Confirm payment',

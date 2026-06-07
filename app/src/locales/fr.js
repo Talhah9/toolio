@@ -372,6 +372,13 @@ export const fr = {
   'auth.reset.title': 'Définir un nouveau mot de passe',
   'auth.reset.new-password': 'Nouveau mot de passe',
   'auth.reset.btn': 'Mettre à jour',
+  'auth.heading.login': 'Content de vous revoir.',
+  'auth.heading.register': 'Créez votre compte.',
+  'auth.tagline.login': 'Reprenez là où vous vous êtes arrêté.',
+  'auth.tagline.register': '50 crédits offerts. Sans carte bancaire.',
+  'auth.google': 'Continuer avec Google',
+  'auth.or': 'OU',
+  'auth.terms': 'En créant un compte, vous acceptez nos conditions et notre politique de confidentialité.',
 
   // ── Checkout ─────────────────────────────────────────────────
   'checkout.title': 'Confirmer le paiement',

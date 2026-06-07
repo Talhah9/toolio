@@ -4,13 +4,24 @@ import { fr } from '../locales/fr';
 
 const LanguageContext = createContext(null);
 
+const getInitialLang = () => {
+  try {
+    const stored = localStorage.getItem('savvly-lang');
+    if (stored === 'en') return 'en';
+  } catch {}
+  return 'fr';
+};
+
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => localStorage.getItem('savvly-lang') || 'fr');
+  const [lang, setLang] = useState(getInitialLang);
 
   const toggleLang = useCallback(() => {
     setLang(l => {
       const next = l === 'en' ? 'fr' : 'en';
-      localStorage.setItem('savvly-lang', next);
+      try {
+        if (next === 'en') localStorage.setItem('savvly-lang', 'en');
+        else localStorage.removeItem('savvly-lang');
+      } catch {}
       return next;
     });
   }, []);
