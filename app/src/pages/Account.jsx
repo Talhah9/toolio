@@ -31,6 +31,10 @@ export function Account() {
   const [toast, ToastEl] = useToast();
   const [payments, setPayments] = useState(null); // null = loading
   const [renewalDate, setRenewalDate] = useState(null);
+  const [stripeCancelAt, setStripeCancelAt] = useState(null);
+
+  // DB cancel_at takes priority; fall back to live Stripe value when DB hasn't caught up yet
+  const effectiveCancelAt = cancelAtFormatted || stripeCancelAt;
 
   // Load subscription status from Stripe (renewal date + cancel info)
   useEffect(() => {
@@ -43,8 +47,10 @@ export function Account() {
       .then(r => r.json())
       .then(json => {
         if (json.renewalDate) setRenewalDate(json.renewalDate);
-        // Use Stripe's cancelAt as fallback if DB hasn't been updated yet
-        if (json.cancelAt && !contextCancelAt) setRenewalDate(null);
+        if (json.cancelAt) {
+          setStripeCancelAt(json.cancelAt);
+          setRenewalDate(null); // cancelling — hide renewal date
+        }
       })
       .catch(() => {});
   }, [user, isPro, contextCancelAt]);
@@ -116,7 +122,7 @@ export function Account() {
               <div className="kv-row">
                 <span className="k">{t('account.plan')}</span>
                 <span className="v">
-                  {isPro && cancelAtFormatted
+                  {isPro && effectiveCancelAt
                     ? t('account.plan.cancelling')
                     : isPro
                     ? 'Pro'
@@ -134,13 +140,13 @@ export function Account() {
                 <span className="v tabular">
                   {!isPro
                     ? '—'
-                    : cancelAtFormatted
-                    ? `${t('account.renewal.until')} ${cancelAtFormatted}`
+                    : effectiveCancelAt
+                    ? `${t('account.renewal.until')} ${effectiveCancelAt}`
                     : renewalDate
                     ? renewalDate
                     : '—'}
                 </span>
-                {isPro && cancelAtFormatted ? (
+                {isPro && effectiveCancelAt ? (
                   <button
                     className="btn btn-secondary btn-sm"
                     disabled={reactivating}
@@ -168,7 +174,7 @@ export function Account() {
                   </button>
                 ) : (
                   <span className="muted" style={{ fontSize: 13 }}>
-                    {isPro && !cancelAtFormatted ? t('account.renewal.monthly') : ''}
+                    {isPro && !effectiveCancelAt ? t('account.renewal.monthly') : ''}
                   </span>
                 )}
               </div>
@@ -202,13 +208,13 @@ export function Account() {
                 <div>
                   <div style={{ fontWeight: 500 }}>{t('account.cancel.title')}</div>
                   <div className="muted" style={{ fontSize: 13 }}>
-                    {cancelAtFormatted
-                      ? `${t('account.cancel.until')} ${cancelAtFormatted}`
+                    {effectiveCancelAt
+                      ? `${t('account.cancel.until')} ${effectiveCancelAt}`
                       : t('account.cancel.desc')}
                   </div>
                 </div>
                 <button className="btn btn-secondary" onClick={() => setConfirm(true)}
-                  disabled={!isPro || !!cancelAtFormatted}>
+                  disabled={!isPro || !!effectiveCancelAt}>
                   {t('account.cancel.btn')}
                 </button>
               </div>
@@ -258,8 +264,8 @@ export function Account() {
               <div className="modal-body">
                 <p className="muted" style={{ fontSize: 14 }}>
                   {lang === 'fr'
-                    ? `Vous garderez l'accès Pro jusqu'au ${cancelAtFormatted || renewalDate || '…'}. Vos crédits sont conservés.`
-                    : `You'll keep Pro access until ${cancelAtFormatted || renewalDate || '…'}. Your credits are preserved.`}
+                    ? `Vous garderez l'accès Pro jusqu'au ${effectiveCancelAt || renewalDate || '…'}. Vos crédits sont conservés.`
+                    : `You'll keep Pro access until ${effectiveCancelAt || renewalDate || '…'}. Your credits are preserved.`}
                 </p>
               </div>
               <div className="modal-foot">

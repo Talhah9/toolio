@@ -20,27 +20,28 @@ export default async function handler(req, res) {
 
     const customerId = customers.data[0].id;
 
+    const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+
     // Check active subscription first
     const subs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 1 });
     if (subs.data.length) {
       const sub = subs.data[0];
       const periodEnd = new Date(sub.current_period_end * 1000);
-      const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
       if (sub.cancel_at_period_end) {
-        return res.json({ renewalDate: null, cancelAt: fmt(periodEnd), isCancelling: true });
+        // Use sub.cancel_at (absolute cancellation timestamp set by Stripe) when available,
+        // falling back to current_period_end which should be the same value.
+        const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
+        return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
       }
       return res.json({ renewalDate: fmt(periodEnd), cancelAt: null, isCancelling: false });
     }
 
     // No active sub — check recently cancelled (schedule-cancelled, still within paid period)
-    const cancelledSubs = await stripe.subscriptions.list({ customer: customerId, status: 'canceled', limit: 1 });
-    if (cancelledSubs.data.length) {
-      const sub = cancelledSubs.data[0];
+    const cancelledSubs = await stripe.subscriptions.list({ customer: customerId, status: 'canceled', limit: 3 });
+    for (const sub of cancelledSubs.data) {
       const periodEndMs = sub.current_period_end * 1000;
       if (periodEndMs > Date.now()) {
-        const periodEnd = new Date(periodEndMs);
-        const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-        return res.json({ renewalDate: null, cancelAt: fmt(periodEnd), isCancelling: true });
+        return res.json({ renewalDate: null, cancelAt: fmt(new Date(periodEndMs)), isCancelling: true });
       }
     }
 
