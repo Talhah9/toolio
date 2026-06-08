@@ -74,17 +74,14 @@ export function Account() {
         <div className="stack-8" style={{ maxWidth: 720 }}>
           <div>
             <h2 className="h3" style={{ marginBottom: 12 }}>{t('account.personal.title')}</h2>
-            <div className="card card-pad stack-4">
-              <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('account.name')}</label>
-                <input className="input" defaultValue={[user.firstName, user.lastName].filter(Boolean).join(' ')} />
+            <div className="kv-list">
+              <div className="kv-row">
+                <span className="k">{t('account.name')}</span>
+                <span className="v">{[user.firstName, user.lastName].filter(Boolean).join(' ') || '—'}</span>
               </div>
-              <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('account.email')}</label>
-                <input className="input" defaultValue={user.email} />
-              </div>
-              <div className="row" style={{ justifyContent: 'flex-end' }}>
-                <button className="btn btn-primary btn-sm" onClick={() => toast(t('account.toast.saved'))}>{t('account.save')}</button>
+              <div className="kv-row">
+                <span className="k">{t('account.email')}</span>
+                <span className="v">{user.email}</span>
               </div>
             </div>
           </div>
