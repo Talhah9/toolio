@@ -343,8 +343,6 @@ export const fr = {
   'account.logout.desc': "Vous reviendrez à la page d'accueil.",
   'account.logout.btn': 'Se déconnecter',
   'account.modal.title': 'Confirmer la résiliation',
-  'account.modal.until': "Vous garderez l'accès jusqu'au 1er juin 2026.",
-  'account.modal.body': "Vous perdrez l'accès aux outils Pro et au renouvellement automatique des crédits. Vous pourrez réactiver à tout moment.",
   'account.modal.cancel': 'Annuler',
   'account.modal.confirm': 'Confirmer',
   'account.toast.cancelled': 'Abonnement résilié',

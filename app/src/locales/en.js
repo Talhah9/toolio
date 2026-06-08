@@ -343,8 +343,6 @@ export const en = {
   'account.logout.desc': 'You will be returned to the home page.',
   'account.logout.btn': 'Log out',
   'account.modal.title': 'Confirm cancellation',
-  'account.modal.until': 'You will keep access until June 1, 2026.',
-  'account.modal.body': 'You will lose access to the Pro tools and automatic credit renewal. You can reactivate at any time.',
   'account.modal.cancel': 'Cancel',
   'account.modal.confirm': 'Confirm',
   'account.toast.cancelled': 'Subscription cancelled',

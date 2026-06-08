@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabase';
 export function Account() {
   const navigate = useNavigate();
   const { user, session, credits, plan, refreshCredits, signOut } = useApp();
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [saving, setSaving] = useState(false);
@@ -229,11 +229,14 @@ export function Account() {
               <div className="modal-head">
                 <div>
                   <h3 className="h3" style={{ fontSize: 16 }}>{t('account.modal.title')}</h3>
-                  <p className="muted" style={{ fontSize: 13, margin: '4px 0 0' }}>{t('account.modal.until')}</p>
                 </div>
               </div>
               <div className="modal-body">
-                <p className="muted" style={{ fontSize: 14 }}>{t('account.modal.body')}</p>
+                <p className="muted" style={{ fontSize: 14 }}>
+                  {lang === 'fr'
+                    ? `Vous garderez l'accès Pro jusqu'au ${renewalDate || '…'}. Vos crédits sont conservés.`
+                    : `You'll keep Pro access until ${renewalDate || '…'}. Your credits are preserved.`}
+                </p>
               </div>
               <div className="modal-foot">
                 <button className="btn btn-secondary" onClick={() => setConfirm(false)} disabled={cancelling}>
