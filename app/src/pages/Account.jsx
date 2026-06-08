@@ -11,6 +11,9 @@ export function Account() {
   const navigate = useNavigate();
   const { user, session, credits, plan, refreshCredits, signOut } = useApp();
   const { t } = useLang();
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [saving, setSaving] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelAt, setCancelAt] = useState(null);
@@ -74,14 +77,39 @@ export function Account() {
         <div className="stack-8" style={{ maxWidth: 720 }}>
           <div>
             <h2 className="h3" style={{ marginBottom: 12 }}>{t('account.personal.title')}</h2>
-            <div className="kv-list">
-              <div className="kv-row">
-                <span className="k">{t('account.name')}</span>
-                <span className="v">{[user.firstName, user.lastName].filter(Boolean).join(' ') || '—'}</span>
+            <div className="stack-8">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">{t('account.firstname')}</label>
+                  <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={saving} />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">{t('account.lastname')}</label>
+                  <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} disabled={saving} />
+                </div>
               </div>
-              <div className="kv-row">
-                <span className="k">{t('account.email')}</span>
-                <span className="v">{user.email}</span>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">{t('account.email')}</label>
+                <input className="input" value={user.email} readOnly style={{ opacity: 0.6, cursor: 'default' }} />
+              </div>
+              <div>
+                <button
+                  className="btn btn-primary btn-sm"
+                  disabled={saving}
+                  onClick={async () => {
+                    setSaving(true);
+                    try {
+                      await supabase.from('profiles').update({ first_name: firstName, last_name: lastName }).eq('id', session.user.id);
+                      toast('Profil mis à jour');
+                    } catch {
+                      toast('Erreur lors de la sauvegarde');
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                >
+                  {saving ? '…' : t('account.save')}
+                </button>
               </div>
             </div>
           </div>

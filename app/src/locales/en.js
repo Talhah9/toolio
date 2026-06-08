@@ -315,6 +315,8 @@ export const en = {
   'account.subtitle': 'Your information and billing preferences.',
   'account.personal.title': 'Personal information',
   'account.name': 'Name',
+  'account.firstname': 'First name',
+  'account.lastname': 'Last name',
   'account.email': 'Email',
   'account.save': 'Save',
   'account.toast.saved': 'Changes saved',
