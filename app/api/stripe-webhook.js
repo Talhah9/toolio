@@ -146,7 +146,6 @@ export default async function handler(req, res) {
       if (session.customer) {
         await supabase.from('profiles').update({ stripe_customer_id: session.customer }).eq('id', userId);
       }
-      }
 
       // Idempotency check — insert session ID; if it already exists, skip processing
       const { error: insertError } = await supabase
