@@ -656,6 +656,7 @@ export const fr = {
 
   // ── Tool intro — shared ──────────────────────────────────────
   'tool.intro.cta': 'Utiliser cet outil',
+  'tool.intro.credits': 'Vos crédits actuels :',
   'tool.intro.cost.free': 'Toujours gratuit',
   'tool.intro.cost.credits': 'crédits par utilisation',
 

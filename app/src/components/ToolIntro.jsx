@@ -2,9 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { AppHeader } from './AppHeader';
 import { Glyph } from './Glyph';
 import { getToolText } from '../data/catalog';
+import { useLang } from '../context/LanguageContext';
 
-export function ToolIntro({ tool, credits, lang, onStart }) {
+export function ToolIntro({ tool, credits, onStart }) {
   const navigate = useNavigate();
+  const { lang, t } = useLang();
   const { name, intro, features } = getToolText(tool, lang);
   const accent = tool.accent || '#4F46E5';
 
@@ -118,12 +120,12 @@ export function ToolIntro({ tool, credits, lang, onStart }) {
             onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
             onMouseLeave={e => { e.currentTarget.style.opacity = '1';    e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            {lang === 'fr' ? "Accéder à l'outil →" : 'Open the tool →'}
+            {t('tool.intro.cta')}
           </button>
 
           {/* Current credits */}
           <p style={{ textAlign: 'center', margin: '14px 0 0', fontSize: 12, color: 'var(--fg-4)' }}>
-            {lang === 'fr' ? `Vos crédits actuels : ${creditsDisplay}` : `Your current credits: ${creditsDisplay}`}
+            {`${t('tool.intro.credits')} ${creditsDisplay}`}
           </p>
         </div>
       </div>
