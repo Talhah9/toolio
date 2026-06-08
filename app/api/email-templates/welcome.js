@@ -33,7 +33,7 @@ const COPY = {
   },
   fr: {
     subject: 'Bienvenue sur Savvly 🎉',
-    tagline: 'Tous les outils dont un freelance avisé a besoin. Propulsé par l'IA.',
+    tagline: "Tous les outils dont un freelance avisé a besoin. Propulsé par l'IA.",
     hero: (firstName) => firstName ? `Bienvenue ${firstName} 👋` : 'Bienvenue 👋',
     heroSub: "Vous avez <strong style=\"color:#4F46E5;\">50 crédits</strong> pour commencer. Sans carte bancaire.",
     toolsHeading: 'Commencez par ces outils',

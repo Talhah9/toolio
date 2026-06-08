@@ -124,6 +124,7 @@ export function AppProvider({ children }) {
       throw error;
     }
     // Fire welcome email — don't await so signup flow isn't blocked
+    console.log('[welcome] Sending welcome email to:', email);
     fetch('/api/send-welcome-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
