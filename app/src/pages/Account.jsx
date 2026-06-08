@@ -42,7 +42,7 @@ export function Account() {
     fetch('/api/subscription-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userEmail: user.email }),
+      body: JSON.stringify({ userId: session?.user?.id, userEmail: user.email }),
     })
       .then(r => r.json())
       .then(json => {

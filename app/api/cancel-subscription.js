@@ -31,14 +31,26 @@ export default async function handler(req, res) {
       { auth: { persistSession: false } }
     );
 
-    // Find Stripe customer by email
+    // Resolve Stripe customer: profiles.stripe_customer_id first, email fallback
     console.log('[cancel-sub] Looking for Stripe customer...');
-    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
-    if (!customers.data.length) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', userId)
+      .maybeSingle();
+    let customerId = profile?.stripe_customer_id;
+    if (!customerId) {
+      const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
+      customerId = customers.data[0]?.id;
+      if (customerId) {
+        await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', userId);
+        console.log('[cancel-sub] stripe_customer_id persisted for user', userId);
+      }
+    }
+    if (!customerId) {
       console.log('[cancel-sub] no Stripe customer for', userEmail);
       return res.status(404).json({ error: 'No active subscription found' });
     }
-    const customerId = customers.data[0].id;
     console.log('[cancel-sub] customerId:', customerId);
 
     // Find active subscription

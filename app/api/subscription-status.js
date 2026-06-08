@@ -1,24 +1,67 @@
 import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js';
 
 export const config = { maxDuration: 30 };
+
+// Resolves a Stripe customer ID for a user.
+// Primary: stripe_customer_id column in profiles (never changes even if email changes).
+// Fallback: search Stripe by email, then persist the found ID back to DB.
+async function resolveCustomerId(stripe, supabase, userId, userEmail) {
+  if (userId) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id, email')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (profile?.stripe_customer_id) {
+      return profile.stripe_customer_id;
+    }
+
+    // Not stored yet — search by email and persist for future calls
+    const email = profile?.email || userEmail;
+    if (email) {
+      const customers = await stripe.customers.list({ email, limit: 1 });
+      const customerId = customers.data[0]?.id;
+      if (customerId) {
+        await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', userId);
+        console.log('[subscription-status] stripe_customer_id persisted for user', userId);
+        return customerId;
+      }
+    }
+    return null;
+  }
+
+  // No userId — last resort email-only search
+  if (userEmail) {
+    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
+    return customers.data[0]?.id || null;
+  }
+  return null;
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { userEmail } = req.body ?? {};
-  if (!userEmail) return res.status(400).json({ error: 'Missing userEmail' });
+  const { userId, userEmail } = req.body ?? {};
+  if (!userId && !userEmail) return res.status(400).json({ error: 'Missing userId or userEmail' });
 
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return res.status(500).json({ error: 'Missing STRIPE_SECRET_KEY' });
-  }
+  const missing = [];
+  if (!process.env.STRIPE_SECRET_KEY)         missing.push('STRIPE_SECRET_KEY');
+  if (!process.env.SUPABASE_URL)              missing.push('SUPABASE_URL');
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) missing.push('SUPABASE_SERVICE_ROLE_KEY');
+  if (missing.length) return res.status(500).json({ error: `Missing env vars: ${missing.join(', ')}` });
 
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      { auth: { persistSession: false } }
+    );
 
-    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
-    if (!customers.data.length) return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
-
-    const customerId = customers.data[0].id;
+    const customerId = await resolveCustomerId(stripe, supabase, userId, userEmail);
+    if (!customerId) return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
 
     const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 
