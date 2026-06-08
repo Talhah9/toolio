@@ -33,20 +33,24 @@ export function Sidebar() {
       <div className="sidebar-section">{t('nav.section.tools')}</div>
       {TOOLS.map(tool => {
         const { short } = getToolText(tool, lang);
+        const locked = tool.plan === 'pro' && !isPro;
         return (
           <div
             key={tool.id}
             className={`sidebar-item ${isToolActive() && location.pathname === `/tools/${tool.id}` ? 'active' : ''}`}
-            onClick={() => navigate(`/tools/${tool.id}`)}
-            title={short}
+            onClick={() => locked ? navigate('/pricing') : navigate(`/tools/${tool.id}`)}
+            title={locked ? `${short} — Pro` : short}
+            style={locked ? { opacity: 0.55 } : undefined}
           >
             <Glyph name={tool.glyph} />
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{short}</span>
-            {tool.franceOnly && (
+            {tool.franceOnly && !locked && (
               <span style={{ marginLeft: 'auto', fontSize: 11 }} title="France only">🇫🇷</span>
             )}
-            {tool.plan === 'pro' && !isPro && !tool.franceOnly && (
-              <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--accent)' }}>Pro</span>
+            {locked && (
+              <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 3, color: 'var(--accent)', fontSize: 10, fontWeight: 600 }}>
+                <Glyph name="lock" size={10} />
+              </span>
             )}
           </div>
         );
