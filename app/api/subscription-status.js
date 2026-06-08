@@ -22,27 +22,29 @@ export default async function handler(req, res) {
 
     const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 
-    // Check active subscription first
-    const subs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 1 });
+    // Fetch all active subscriptions and pick the one with the latest period end.
+    // A customer may have an old promo sub (period_end June 1) alongside a renewed
+    // normal-price sub (period_end July 1) — always use the most current one.
+    const subs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 5 });
     if (subs.data.length) {
-      const sub = subs.data[0];
+      const sub = subs.data.sort((a, b) => b.current_period_end - a.current_period_end)[0];
       const periodEnd = new Date(sub.current_period_end * 1000);
       if (sub.cancel_at_period_end) {
-        // Use sub.cancel_at (absolute cancellation timestamp set by Stripe) when available,
-        // falling back to current_period_end which should be the same value.
         const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
         return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
       }
       return res.json({ renewalDate: fmt(periodEnd), cancelAt: null, isCancelling: false });
     }
 
-    // No active sub — check recently cancelled (schedule-cancelled, still within paid period)
-    const cancelledSubs = await stripe.subscriptions.list({ customer: customerId, status: 'canceled', limit: 3 });
-    for (const sub of cancelledSubs.data) {
-      const periodEndMs = sub.current_period_end * 1000;
-      if (periodEndMs > Date.now()) {
-        return res.json({ renewalDate: null, cancelAt: fmt(new Date(periodEndMs)), isCancelling: true });
-      }
+    // No active sub — check recently cancelled (still within paid period)
+    const cancelledSubs = await stripe.subscriptions.list({ customer: customerId, status: 'canceled', limit: 5 });
+    const activeCancelled = cancelledSubs.data
+      .filter(s => s.current_period_end * 1000 > Date.now())
+      .sort((a, b) => b.current_period_end - a.current_period_end);
+    if (activeCancelled.length) {
+      const sub = activeCancelled[0];
+      const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
+      return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
     }
 
     return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
