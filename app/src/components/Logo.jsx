@@ -1,4 +1,4 @@
-const LOGO_URL = 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/logo/Design%20sans%20titre%20(1).svg';
+const LOGO_URL = 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/logo/Design%20sans%20titre%20(2).svg';
 
 export function Logo({ size = 17 }) {
   return (
