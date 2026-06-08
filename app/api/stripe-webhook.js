@@ -222,25 +222,20 @@ export default async function handler(req, res) {
           }
           await sendEmail(
             session.customer_email,
-            '🚀 Bienvenue dans Savvly Pro !',
+            'Votre abonnement Pro Savvly est actif',
             `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
     <div style="background:linear-gradient(135deg,#4F46E5,#6D28D9);padding:40px;text-align:center;">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.7);margin-bottom:12px;">SAVVLY</div>
-      <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;">Bienvenue dans Savvly Pro 🚀</h1>
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;">Bienvenue dans Savvly Pro !</h1>
     </div>
     <div style="padding:36px 40px;">
-      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">Votre abonnement Pro est actif. Voici ce qui est maintenant disponible :</p>
-      <ul style="margin:0 0 24px;padding-left:20px;font-size:14px;color:#374151;line-height:2.2;">
-        <li><strong>500 crédits</strong> ajoutés à votre compte</li>
-        <li>Accès à tous les outils Pro (Contrats, Audit, Mission Finder…)</li>
-        <li>Générations illimitées selon votre solde de crédits</li>
-        <li>Support prioritaire</li>
-      </ul>
+      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">Votre abonnement Pro est actif. Vous avez accès à tous les outils + <strong>500 crédits par mois</strong>.</p>
+      <p style="margin:0 0 24px;font-size:14px;color:#6B7280;line-height:1.7;">Premier mois à 15€, puis 49€/mois. Résiliable à tout moment depuis votre compte.</p>
       <div style="text-align:center;margin:28px 0;">
         <a href="https://savvly.co/dashboard" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">
-          Accéder à mon tableau de bord →
+          Accéder à mon dashboard →
         </a>
       </div>
     </div>
