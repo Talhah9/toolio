@@ -7,11 +7,11 @@ function resendHeaders() {
   return { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESEND_API_KEY}` };
 }
 
-function safeToISO(timestamp) {
-  if (!timestamp) return null;
-  const date = new Date(timestamp * 1000);
-  if (isNaN(date.getTime())) return null;
-  return date.toISOString();
+const safeToISO = (timestamp) => {
+  if (!timestamp || isNaN(timestamp)) return null
+  const date = new Date(Number(timestamp) * 1000)
+  if (isNaN(date.getTime())) return null
+  return date.toISOString()
 }
 
 async function sendEmail(to, subject, html) {
