@@ -5,6 +5,7 @@ import { Glyph } from '../components/Glyph';
 import { useToast } from '../components/Toast';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
+import { supabase } from '../lib/supabase';
 
 export function Account() {
   const navigate = useNavigate();
@@ -18,6 +19,22 @@ export function Account() {
   const [deleting, setDeleting] = useState(false);
   const [toast, ToastEl] = useToast();
   const [payments, setPayments] = useState(null); // null = loading
+
+  // Load cancel_at from DB so the state persists across page reloads
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    supabase
+      .from('profiles')
+      .select('cancel_at')
+      .eq('id', session.user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.cancel_at) {
+          const d = new Date(data.cancel_at);
+          setCancelAt(`${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`);
+        }
+      });
+  }, [session]);
 
   useEffect(() => {
     if (!session?.user?.id || !user?.email) return;
@@ -64,7 +81,11 @@ export function Account() {
               <div className="kv-row">
                 <span className="k">{t('account.plan')}</span>
                 <span className="v">
-                  {plan === 'pro' ? 'Pro' : plan === 'cancelled' ? t('account.plan.cancelled') : 'Free'}
+                  {plan === 'pro' && cancelAt
+                    ? t('account.plan.cancelling')
+                    : plan === 'pro'
+                    ? 'Pro'
+                    : 'Free'}
                 </span>
                 <button className="btn btn-secondary btn-sm" onClick={() => navigate('/pricing')}>{t('account.manage')}</button>
               </div>

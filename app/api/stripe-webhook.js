@@ -165,7 +165,7 @@ export default async function handler(req, res) {
           '| mode:', session.mode);
         const { error } = await supabase
           .from('profiles')
-          .update({ plan: 'pro' })
+          .update({ plan: 'pro', stripe_customer_id: session.customer, cancel_at: null })
           .eq('id', userId);
         if (error) {
           console.error('[stripe-webhook] profiles update error:', JSON.stringify(error));
@@ -327,59 +327,61 @@ export default async function handler(req, res) {
       }
     }
 
-    // ── Subscription cancelled ─────────────────────────────────
+    // ── Subscription actually ended ────────────────────────────
     if (event.type === 'customer.subscription.deleted') {
       const sub = event.data.object;
       const customerId = sub.customer;
       console.log('[stripe-webhook] subscription.deleted | customer:', customerId);
 
-      // Find user by stripe_customer_id or via metadata
-      const userId = sub.metadata?.userId;
+      // Look up user by stripe_customer_id stored at upgrade time
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('stripe_customer_id', customerId)
+        .maybeSingle();
+
+      const userId = profile?.id ?? sub.metadata?.userId;
+      console.log('[stripe-webhook] subscription.deleted | userId:', userId);
+
       let userEmail = null;
-
-      if (userId) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', userId)
-          .maybeSingle();
-        if (profile) {
-          // Downgrade to free plan
-          await supabase
-            .from('profiles')
-            .update({ plan: 'free', updated_at: new Date().toISOString() })
-            .eq('id', userId);
-          console.log('[stripe-webhook] downgraded user', userId, 'to free');
-        }
-      }
-
-      // Get customer email from Stripe
       try {
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         const customer = await stripe.customers.retrieve(customerId);
         if (customer && !customer.deleted) userEmail = customer.email;
       } catch (e) {
         console.error('[stripe-webhook] failed to retrieve customer:', e.message);
       }
 
+      if (userId) {
+        // Downgrade to free, clear scheduled cancellation date
+        await supabase
+          .from('profiles')
+          .update({ plan: 'free', cancel_at: null })
+          .eq('id', userId);
+        // Reset credits to free-plan default
+        await supabase
+          .from('credits')
+          .upsert({ user_id: userId, balance: 50 }, { onConflict: 'user_id' });
+        console.log('[stripe-webhook] user', userId, 'downgraded to free, credits reset to 50');
+      }
+
       if (userEmail) {
         await sendEmail(
           userEmail,
-          'Votre abonnement Savvly Pro a été annulé',
+          'Votre abonnement Savvly Pro a pris fin',
           `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
     <div style="background:#1f2937;padding:40px;text-align:center;">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-bottom:12px;">SAVVLY</div>
-      <h1 style="margin:0;font-size:24px;font-weight:800;color:#fff;">Votre abonnement Pro est annulé</h1>
+      <h1 style="margin:0;font-size:24px;font-weight:800;color:#fff;">Votre abonnement Pro a pris fin</h1>
     </div>
     <div style="padding:36px 40px;">
       <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">
-        Votre abonnement Savvly Pro a bien été annulé. Votre compte a été repassé en offre gratuite.
+        Votre période Pro est terminée. Votre compte est maintenant sur le plan gratuit avec 50 crédits.
       </p>
       <p style="margin:0 0 24px;font-size:14px;color:#6B7280;line-height:1.7;">
-        Vous conservez l'accès aux outils gratuits. Vos données et historique restent disponibles.
-        Pour toute question, contactez-nous à <a href="mailto:talhahally974@gmail.com" style="color:#4F46E5;">talhahally974@gmail.com</a>.
+        Vos données et historique restent disponibles. Vous pouvez réactiver Pro à tout moment.
+        Pour toute question : <a href="mailto:hello@savvly.co" style="color:#4F46E5;">hello@savvly.co</a>.
       </p>
       <div style="text-align:center;margin:28px 0;">
         <a href="https://savvly.co/pricing" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">

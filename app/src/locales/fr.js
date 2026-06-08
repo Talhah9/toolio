@@ -335,6 +335,7 @@ export const fr = {
   'account.cancel.until': 'Accès jusqu\'au',
   'account.cancel.processing': 'En cours…',
   'account.plan.cancelled': 'Pro (résilié)',
+  'account.plan.cancelling': 'Pro (résiliation programmée)',
   'account.logout.title': 'Déconnexion',
   'account.logout.desc': "Vous reviendrez à la page d'accueil.",
   'account.logout.btn': 'Se déconnecter',

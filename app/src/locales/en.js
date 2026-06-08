@@ -335,6 +335,7 @@ export const en = {
   'account.cancel.until': 'Access until',
   'account.cancel.processing': 'Processing…',
   'account.plan.cancelled': 'Pro (cancelled)',
+  'account.plan.cancelling': 'Pro (cancellation scheduled)',
   'account.logout.title': 'Log out',
   'account.logout.desc': 'You will be returned to the home page.',
   'account.logout.btn': 'Log out',

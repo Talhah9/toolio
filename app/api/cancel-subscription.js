@@ -65,17 +65,19 @@ export default async function handler(req, res) {
       console.log('[cancel-sub] subscription set to cancel at period end');
     }
 
-    // Format access-until date from current_period_end
-    const d = new Date(subscription.current_period_end * 1000);
-    const cancelAt = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    // Period end — user keeps Pro access until this date
+    const periodEnd = new Date(subscription.current_period_end * 1000);
+    const cancelAt = `${String(periodEnd.getDate()).padStart(2, '0')}/${String(periodEnd.getMonth() + 1).padStart(2, '0')}/${periodEnd.getFullYear()}`;
     console.log('[cancel-sub] cancelAt:', cancelAt);
 
-    // Update profile to free
-    await supabase.from('profiles').update({ plan: 'free' }).eq('id', userId);
-    // Reset credits
-    await supabase.from('credits').update({ balance: 0 }).eq('user_id', userId);
+    // Store scheduled cancellation date — plan and credits unchanged until period end
+    const { error: dbError } = await supabase
+      .from('profiles')
+      .update({ cancel_at: periodEnd.toISOString() })
+      .eq('id', userId);
+    if (dbError) console.error('[cancel-sub] profiles update error:', JSON.stringify(dbError));
 
-    console.log('[cancel-sub] profile updated to free');
+    console.log('[cancel-sub] cancel_at stored, plan/credits unchanged until period end');
 
     res.json({ success: true, cancelAt });
   } catch (err) {
