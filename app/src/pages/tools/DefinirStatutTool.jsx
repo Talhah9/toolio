@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AppHeader } from '../../components/AppHeader';
 import { Glyph } from '../../components/Glyph';
-import { ToolIcon } from '../../components/ToolIcon';
+import { ToolShell } from '../../components/ToolShell';
 import { useToast } from '../../components/Toast';
 
 const STEPS = ['Revenus', 'Risque', 'Équipe', 'TVA'];
@@ -94,7 +92,6 @@ function getRecommendation({ revenue, risk, employees, vat }) {
 }
 
 export function DefinirStatutTool({ tool }) {
-  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [revenue, setRevenue] = useState(40000);
   const [risk, setRisk] = useState('mid');
@@ -109,31 +106,8 @@ export function DefinirStatutTool({ tool }) {
   const formatRevenue = (v) => v >= 1000 ? `${(v / 1000).toFixed(0)} k€` : `${v}€`;
 
   return (
-    <>
-      <AppHeader />
-      <div className="page-pad">
-        <div className="breadcrumb">
-          <a onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Dashboard</a>
-          <Glyph name="chevron-right" size={12} />
-          <span>Outils</span>
-          <Glyph name="chevron-right" size={12} />
-          <span className="current">{tool.short}</span>
-        </div>
-
-        <div className="row" style={{ marginBottom: 28, gap: 16 }}>
-          <ToolIcon tool={tool} size="lg" />
-          <div>
-            <div className="row" style={{ gap: 10, marginBottom: 4, alignItems: 'center' }}>
-              <h1 className="h1" style={{ margin: 0 }}>{tool.name}</h1>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, border: '1px solid #dbeafe', background: '#eff6ff', color: '#1d4ed8' }}>
-                🇫🇷 France uniquement
-              </span>
-            </div>
-            <p className="muted" style={{ fontSize: 14 }}>{tool.desc}</p>
-          </div>
-        </div>
-
-        {!result ? (
+    <ToolShell tool={tool}>
+      {!result ? (
           <div style={{ maxWidth: 560, margin: '0 auto' }}>
             {/* Progress bar */}
             <div style={{ marginBottom: 32 }}>
@@ -378,9 +352,8 @@ export function DefinirStatutTool({ tool }) {
               </button>
             </div>
           </div>
-        )}
-        {ToastEl}
-      </div>
-    </>
+      )}
+      {ToastEl}
+    </ToolShell>
   );
 }
