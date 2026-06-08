@@ -41,7 +41,10 @@ export function Account() {
     if (!user?.email || !isPro) return;
     fetch('/api/subscription-status', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+      },
       body: JSON.stringify({ userId: session?.user?.id, userEmail: user.email }),
     })
       .then(r => r.json())
