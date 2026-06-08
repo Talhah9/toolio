@@ -165,20 +165,19 @@ export default async function handler(req, res) {
           '| mode:', session.mode);
         const { error } = await supabase
           .from('profiles')
-          .update({ plan: 'pro', updated_at: new Date().toISOString() })
+          .update({ plan: 'pro' })
           .eq('id', userId);
         if (error) {
           console.error('[stripe-webhook] profiles update error:', JSON.stringify(error));
         } else {
           console.log('[stripe-webhook] plan set to pro for user', userId);
-          const { error: creditsError } = await supabase.rpc('add_credits', {
-            p_user_id: userId,
-            p_amount:  500,
-          });
+          const { error: creditsError } = await supabase
+            .from('credits')
+            .upsert({ user_id: userId, balance: 500 }, { onConflict: 'user_id' });
           if (creditsError) {
-            console.error('[stripe-webhook] add_credits (pro) error:', JSON.stringify(creditsError));
+            console.error('[stripe-webhook] credits upsert (pro) error:', JSON.stringify(creditsError));
           } else {
-            console.log('[stripe-webhook] 500 credits added for user', userId);
+            console.log('[stripe-webhook] credits set to 500 for user', userId);
           }
           await sendEmail(
             session.customer_email,
