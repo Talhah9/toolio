@@ -101,7 +101,7 @@ export default async function handler(req, res) {
         from: 'Savvly <hello@savvly.co>',
         reply_to: 'hello@savvly.co',
         to: [normalizedEmail],
-        subject: '🎁 Vos 10 ressources gratuites sont là — Savvly',
+        subject: 'Vos 10 ressources pour booster votre business — Savvly',
         html: `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -117,7 +117,6 @@ export default async function handler(req, res) {
 
       <!-- Hero -->
       <tr><td style="background:#fff;padding:40px 40px 28px;text-align:center;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
-        <div style="font-size:40px;margin-bottom:16px;">🎁</div>
         <h1 style="margin:0 0 12px;font-size:24px;font-weight:900;color:#0F172A;letter-spacing:-0.02em;">Vos ressources sont arrivées</h1>
         <p style="margin:0;font-size:15px;color:#6B7280;line-height:1.6;">10 ressources testées et approuvées pour booster votre business.</p>
       </td></tr>
