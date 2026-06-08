@@ -14,6 +14,36 @@ const safeToISO = (timestamp) => {
   return date.toISOString()
 }
 
+// Find the Supabase user for a given Stripe customer ID.
+// Primary path: stripe_customer_id column. Fallback: look up by customer email
+// and then persist stripe_customer_id so future events use the fast path.
+async function findUserByCustomer(supabase, stripe, customerId) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('stripe_customer_id', customerId)
+    .maybeSingle();
+  if (profile?.id) return profile.id;
+
+  try {
+    const customer = await stripe.customers.retrieve(customerId);
+    if (customer?.deleted || !customer?.email) return null;
+    const { data: emailProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', customer.email)
+      .maybeSingle();
+    if (emailProfile?.id) {
+      await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', emailProfile.id);
+      console.log('[stripe-webhook] findUserByCustomer | linked stripe_customer_id via email:', customer.email);
+      return emailProfile.id;
+    }
+  } catch (e) {
+    console.error('[stripe-webhook] findUserByCustomer fallback error:', e.message);
+  }
+  return null;
+}
+
 async function sendEmail(to, subject, html) {
   if (!to) return;
   await fetch(RESEND_API, {
@@ -110,6 +140,12 @@ export default async function handler(req, res) {
       if (!userId) {
         console.error('[stripe-webhook] No userId in metadata or client_reference_id — cannot credit account');
         return res.json({ received: true });
+      }
+
+      // Always persist stripe_customer_id on any successful checkout
+      if (session.customer) {
+        await supabase.from('profiles').update({ stripe_customer_id: session.customer }).eq('id', userId);
+      }
       }
 
       // Idempotency check — insert session ID; if it already exists, skip processing
@@ -336,12 +372,7 @@ export default async function handler(req, res) {
     // ── Subscription updated (cancellation scheduled or reactivated) ─
     if (event.type === 'customer.subscription.updated') {
       const sub = event.data.object;
-      const { data: upProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('stripe_customer_id', sub.customer)
-        .maybeSingle();
-      const upUserId = upProfile?.id ?? sub.metadata?.userId;
+      const upUserId = await findUserByCustomer(supabase, stripe, sub.customer);
       if (upUserId) {
         if (sub.cancel_at_period_end && sub.current_period_end) {
           const cancelAt = safeToISO(sub.current_period_end);
@@ -360,14 +391,7 @@ export default async function handler(req, res) {
       const customerId = sub.customer;
       console.log('[stripe-webhook] subscription.deleted | customer:', customerId);
 
-      // Look up user by stripe_customer_id stored at upgrade time
-      const { data: delProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('stripe_customer_id', customerId)
-        .maybeSingle();
-
-      const userId = delProfile?.id ?? sub.metadata?.userId;
+      const userId = await findUserByCustomer(supabase, stripe, customerId);
       console.log('[stripe-webhook] subscription.deleted | userId:', userId, '| period_end:', safeToISO(sub.current_period_end) ?? 'unknown');
 
       let userEmail = null;
