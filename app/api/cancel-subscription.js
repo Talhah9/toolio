@@ -48,29 +48,34 @@ export default async function handler(req, res) {
       console.log('[cancel-sub] no active subscription for customer', customerId);
       return res.status(404).json({ error: 'No active subscription found' });
     }
-    const sub = subs.data[0];
-    console.log('[cancel-sub] found sub:', sub.id, '| status:', sub.status);
+    const subscriptionId = subs.data[0].id;
+    console.log('[cancel-sub] found subscriptionId:', subscriptionId);
 
-    // Cancel at period end
-    await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true });
-    console.log('[cancel-sub] set cancel_at_period_end for sub', sub.id);
+    // Get the full subscription (includes schedule field)
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    console.log('[cancel-sub] schedule:', subscription.schedule);
+
+    if (subscription.schedule) {
+      // Cancel the schedule first
+      await stripe.subscriptionSchedules.cancel(subscription.schedule);
+      console.log('[cancel-sub] schedule cancelled:', subscription.schedule);
+    } else {
+      // No schedule — cancel directly at period end
+      await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
+      console.log('[cancel-sub] subscription set to cancel at period end');
+    }
 
     // Format access-until date from current_period_end
-    const d = new Date(sub.current_period_end * 1000);
+    const d = new Date(subscription.current_period_end * 1000);
     const cancelAt = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
     console.log('[cancel-sub] cancelAt:', cancelAt);
 
-    // Update profile in Supabase — no updated_at column on profiles table
-    const { error: dbError } = await supabase
-      .from('profiles')
-      .update({ plan: 'cancelled' })
-      .eq('id', userId);
+    // Update profile to free
+    await supabase.from('profiles').update({ plan: 'free' }).eq('id', userId);
+    // Reset credits
+    await supabase.from('credits').update({ balance: 0 }).eq('user_id', userId);
 
-    if (dbError) {
-      console.error('[cancel-sub] profiles update error:', JSON.stringify(dbError));
-    } else {
-      console.log('[cancel-sub] profiles.plan set to cancelled for user', userId);
-    }
+    console.log('[cancel-sub] profile updated to free');
 
     res.json({ success: true, cancelAt });
   } catch (err) {
