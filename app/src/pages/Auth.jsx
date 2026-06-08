@@ -6,6 +6,17 @@ import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
 
+function translateAuthError(error) {
+  const msg = error?.message?.toLowerCase() || '';
+  if (msg.includes('invalid login') || msg.includes('invalid credentials')) return 'Email ou mot de passe incorrect';
+  if (msg.includes('already registered') || msg.includes('already exists')) return 'Un compte existe déjà avec cet email';
+  if (msg.includes('password')) return 'Le mot de passe doit contenir au moins 6 caractères';
+  if (msg.includes('not confirmed')) return 'Veuillez confirmer votre email avant de vous connecter';
+  if (msg.includes('too many')) return 'Trop de tentatives. Réessayez dans quelques minutes.';
+  if (msg.includes('email')) return 'Adresse email invalide';
+  return 'Une erreur est survenue. Réessayez.';
+}
+
 export function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -74,7 +85,7 @@ export function Auth() {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.message);
+      setError(translateAuthError(err));
       setLoading(false);
     }
   };
@@ -88,7 +99,7 @@ export function Auth() {
       await resetPassword(email);
       setForgotSent(true);
     } catch (err) {
-      setError(err.message);
+      setError(translateAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -100,7 +111,7 @@ export function Auth() {
     try {
       await signInWithGoogle();
     } catch (err) {
-      setError(err.message);
+      setError(translateAuthError(err));
       setLoading(false);
     }
   };
