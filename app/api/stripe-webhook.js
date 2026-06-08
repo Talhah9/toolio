@@ -140,12 +140,21 @@ export default async function handler(req, res) {
         console.log('[stripe-webhook] Upgrading user', userId, 'to pro with 500 credits');
         const { error } = await supabase
           .from('profiles')
-          .update({ plan: 'pro', balance: 500, updated_at: new Date().toISOString() })
+          .update({ plan: 'pro', updated_at: new Date().toISOString() })
           .eq('id', userId);
         if (error) {
           console.error('[stripe-webhook] profiles update error:', JSON.stringify(error));
         } else {
-          console.log('[stripe-webhook] plan set to pro, balance set to 500 for user', userId);
+          console.log('[stripe-webhook] plan set to pro for user', userId);
+          const { error: creditsError } = await supabase.rpc('add_credits', {
+            p_user_id: userId,
+            p_amount:  500,
+          });
+          if (creditsError) {
+            console.error('[stripe-webhook] add_credits (pro) error:', JSON.stringify(creditsError));
+          } else {
+            console.log('[stripe-webhook] 500 credits added for user', userId);
+          }
           await sendEmail(
             session.customer_email,
             '🚀 Bienvenue dans Savvly Pro !',
