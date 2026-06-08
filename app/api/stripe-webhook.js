@@ -68,14 +68,37 @@ export default async function handler(req, res) {
 
     console.log('[stripe-webhook] Event type:', event.type, '| id:', event.id);
 
+    // Price IDs that unlock Savvly Pro (all regions + promo variants)
+    const PRO_PRICE_IDS = [
+      'price_1TWwVeAFTm9a9DATGNn4FO2g', // EUR 49€ normal
+      'price_1TbG6eAFTm9a9DATlWDutoHI', // EUR 15€ promo first month
+      'price_1TYNvyAFTm9a9DATmtwE5E3a', // USD $54 normal
+      'price_1TbG7JAFTm9a9DATFk8BiFSv', // USD $17 promo first month
+    ];
+
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const userId  = session.metadata?.userId || session.client_reference_id;
       const credits = parseInt(session.metadata?.credits || '0', 10);
 
-      console.log('[stripe-webhook] session:', session.id, '| mode:', session.mode,
-        '| userId:', userId, '| credits metadata:', credits,
-        '| payment_status:', session.payment_status);
+      // Retrieve line items to get the actual price ID used
+      let priceIds = [];
+      try {
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 5 });
+        priceIds = lineItems.data.map(item => item.price?.id).filter(Boolean);
+      } catch (liErr) {
+        console.error('[stripe-webhook] failed to list line items:', liErr.message);
+      }
+
+      const isProPurchase = session.mode === 'subscription' || priceIds.some(id => PRO_PRICE_IDS.includes(id));
+
+      console.log('[stripe-webhook] session:', session.id,
+        '| mode:', session.mode,
+        '| userId:', userId,
+        '| credits metadata:', credits,
+        '| payment_status:', session.payment_status,
+        '| priceIds:', priceIds.join(', ') || '(none)',
+        '| isProPurchase:', isProPurchase);
 
       if (!userId) {
         console.error('[stripe-webhook] No userId in metadata or client_reference_id — cannot credit account');
@@ -97,7 +120,7 @@ export default async function handler(req, res) {
         console.error('[stripe-webhook] processed_payments insert error:', JSON.stringify(insertError));
       }
 
-      if (session.mode === 'payment' && credits > 0) {
+      if (session.mode === 'payment' && credits > 0 && !isProPurchase) {
         console.log('[stripe-webhook] Calling add_credits for user', userId, 'amount', credits);
         const { data, error } = await supabase.rpc('add_credits', {
           p_user_id: userId,
@@ -136,8 +159,10 @@ export default async function handler(req, res) {
         }
       }
 
-      if (session.mode === 'subscription') {
-        console.log('[stripe-webhook] Upgrading user', userId, 'to pro with 500 credits');
+      if (isProPurchase) {
+        console.log('[stripe-webhook] Pro upgrade triggered for user', userId,
+          '| priceIds:', priceIds.join(', ') || '(none)',
+          '| mode:', session.mode);
         const { error } = await supabase
           .from('profiles')
           .update({ plan: 'pro', updated_at: new Date().toISOString() })
