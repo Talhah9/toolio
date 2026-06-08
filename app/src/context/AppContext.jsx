@@ -18,6 +18,7 @@ export function AppProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [credits, setCredits] = useState(null);
   const [plan, setPlan] = useState('free');
+  const [cancelAt, setCancelAt] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
@@ -37,7 +38,34 @@ export function AppProvider({ children }) {
       }
 
       setCredits(data.balance);
-      setPlan(data.plan || 'free');
+
+      // Fetch cancel_at to handle early-cancelled subscriptions (schedule cancellations
+      // fire subscription.deleted immediately while the paid period is still active).
+      // We use the authenticated user's ID to avoid a .eq() filter race.
+      let profileCancelAt = null;
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (authUser?.id) {
+          const { data: prof } = await supabase
+            .from('profiles')
+            .select('cancel_at')
+            .eq('id', authUser.id)
+            .maybeSingle();
+          profileCancelAt = prof?.cancel_at || null;
+        }
+      } catch (profileErr) {
+        console.error('[AppContext] cancel_at fetch failed (non-fatal):', profileErr.message);
+      }
+
+      setCancelAt(profileCancelAt);
+
+      // Treat the user as Pro if:
+      // 1. Their DB plan is 'pro', OR
+      // 2. Their DB plan was set to 'free' by the webhook but cancel_at is still in the future
+      //    (meaning the subscription was deleted early — e.g. schedule cancelled — but they
+      //    have paid access until cancel_at)
+      const cancelAtActive = profileCancelAt && new Date(profileCancelAt) > new Date();
+      setPlan((data.plan === 'pro' || cancelAtActive) ? 'pro' : 'free');
 
       if (data.onboarding_completed === false || data.onboarding_completed === null) {
         setShowOnboarding(true);
@@ -96,6 +124,7 @@ export function AppProvider({ children }) {
         if (event === 'SIGNED_OUT') {
           setCredits(null);
           setPlan('free');
+          setCancelAt(null);
           setNotifications([]);
         }
       }
@@ -225,6 +254,7 @@ export function AppProvider({ children }) {
       loading,
       credits,
       plan,
+      cancelAt,
       signIn,
       signUp,
       signInWithGoogle,

@@ -326,21 +326,40 @@ export default async function handler(req, res) {
       }
     }
 
-    // ── Subscription actually ended ────────────────────────────
+    // ── Subscription cancellation scheduled (cancel_at_period_end) ─
+    if (event.type === 'customer.subscription.updated') {
+      const sub = event.data.object;
+      // Store cancel_at when user schedules a non-schedule cancellation directly
+      if (sub.cancel_at_period_end && sub.current_period_end) {
+        const { data: upProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('stripe_customer_id', sub.customer)
+          .maybeSingle();
+        const upUserId = upProfile?.id ?? sub.metadata?.userId;
+        if (upUserId) {
+          const cancelAt = new Date(sub.current_period_end * 1000).toISOString();
+          await supabase.from('profiles').update({ cancel_at: cancelAt }).eq('id', upUserId);
+          console.log('[stripe-webhook] sub.updated | cancel_at_period_end=true, stored cancel_at:', cancelAt);
+        }
+      }
+    }
+
+    // ── Subscription ended ─────────────────────────────────────
     if (event.type === 'customer.subscription.deleted') {
       const sub = event.data.object;
       const customerId = sub.customer;
       console.log('[stripe-webhook] subscription.deleted | customer:', customerId);
 
       // Look up user by stripe_customer_id stored at upgrade time
-      const { data: profile } = await supabase
+      const { data: delProfile } = await supabase
         .from('profiles')
         .select('id')
         .eq('stripe_customer_id', customerId)
         .maybeSingle();
 
-      const userId = profile?.id ?? sub.metadata?.userId;
-      console.log('[stripe-webhook] subscription.deleted | userId:', userId);
+      const userId = delProfile?.id ?? sub.metadata?.userId;
+      console.log('[stripe-webhook] subscription.deleted | userId:', userId, '| period_end:', new Date(sub.current_period_end * 1000).toISOString());
 
       let userEmail = null;
       try {
@@ -350,16 +369,34 @@ export default async function handler(req, res) {
         console.error('[stripe-webhook] failed to retrieve customer:', e.message);
       }
 
+      const periodEndMs = sub.current_period_end * 1000;
+      // Credits expire 90 days after the paid period ends (not from now)
+      const creditsExpireAt = new Date(periodEndMs + 90 * 24 * 60 * 60 * 1000).toISOString();
+      const periodStillActive = periodEndMs > Date.now();
+
       if (userId) {
-        const creditsExpireAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-        await supabase
-          .from('profiles')
-          .update({ plan: 'free', cancel_at: null, credits_expire_at: creditsExpireAt })
-          .eq('id', userId);
-        console.log('[stripe-webhook] user', userId, 'downgraded to free | credits_expire_at:', creditsExpireAt);
+        if (periodStillActive) {
+          // Subscription deleted immediately (e.g. schedule cancelled) but user has paid time left.
+          // Set plan=free in DB but store cancel_at so the frontend keeps showing Pro features
+          // until the period actually ends. The email is NOT sent yet.
+          const cancelAt = new Date(periodEndMs).toISOString();
+          await supabase
+            .from('profiles')
+            .update({ plan: 'free', cancel_at: cancelAt, credits_expire_at: creditsExpireAt })
+            .eq('id', userId);
+          console.log('[stripe-webhook] sub.deleted | period_end future — plan=free, Pro access kept until:', cancelAt);
+        } else {
+          // Period has ended — full downgrade now
+          await supabase
+            .from('profiles')
+            .update({ plan: 'free', cancel_at: null, credits_expire_at: creditsExpireAt })
+            .eq('id', userId);
+          console.log('[stripe-webhook] sub.deleted | period past — downgraded to free, credits_expire_at:', creditsExpireAt);
+        }
       }
 
-      if (userEmail) {
+      // Send "subscription ended" email only when the paid period is actually over
+      if (!periodStillActive && userEmail) {
         await sendEmail(
           userEmail,
           'Votre abonnement Savvly Pro a pris fin',
