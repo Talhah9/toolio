@@ -8,7 +8,7 @@ import { useLang } from '../context/LanguageContext';
 import { useApp } from '../context/AppContext';
 import { getToolText } from '../data/catalog';
 
-function storageKey(toolId) { return `savvly-intro-seen-${toolId}`; }
+function storageKey(toolId) { return `savvly-intro-v2-${toolId}`; }
 
 function hasSeenIntro(toolId) {
   try { return !!localStorage.getItem(storageKey(toolId)); } catch { return false; }
