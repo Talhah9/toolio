@@ -59,20 +59,19 @@ export default async function handler(req, res) {
 
     if (!customerId) return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
 
-    const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    const fmt = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     const nowSec = Math.floor(Date.now() / 1000);
 
-    // Only active subs with a future period_end; pick the one furthest into the future
-    const activeSubs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 10 });
-    const validActive = activeSubs.data
-      .filter(s => s.current_period_end > nowSec)
+    // Fetch all subs; keep only active/trialing with a future period_end;
+    // pick the one furthest into the future (highest current_period_end)
+    const allSubs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 10 });
+    const validActive = allSubs.data
+      .filter(s => (s.status === 'active' || s.status === 'trialing') && s.current_period_end > nowSec)
       .sort((a, b) => b.current_period_end - a.current_period_end);
-
-    console.log('[subscription-status] active subs:', activeSubs.data.length, 'valid:', validActive.length,
-      validActive.map(s => ({ id: s.id, period_end: s.current_period_end, cancel_at_period_end: s.cancel_at_period_end })));
 
     if (validActive.length) {
       const sub = validActive[0];
+      console.log('subscription trouvée:', sub.id, sub.status, sub.current_period_end);
       const periodEnd = new Date(sub.current_period_end * 1000);
       if (sub.cancel_at_period_end) {
         const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
@@ -81,13 +80,13 @@ export default async function handler(req, res) {
       return res.json({ renewalDate: fmt(periodEnd), cancelAt: null, isCancelling: false });
     }
 
-    // No active sub — check recently canceled (still within paid period)
-    const cancelledSubs = await stripe.subscriptions.list({ customer: customerId, status: 'canceled', limit: 10 });
-    const activeCancelled = cancelledSubs.data
-      .filter(s => s.current_period_end > nowSec)
+    // No active/trialing sub — check recently canceled (still within paid period)
+    const activeCancelled = allSubs.data
+      .filter(s => s.status === 'canceled' && s.current_period_end > nowSec)
       .sort((a, b) => b.current_period_end - a.current_period_end);
     if (activeCancelled.length) {
       const sub = activeCancelled[0];
+      console.log('subscription trouvée (canceled):', sub.id, sub.status, sub.current_period_end);
       const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
       return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
     }

@@ -11,7 +11,7 @@ function fmtDMY(isoStr) {
   if (!isoStr) return null;
   const d = new Date(isoStr);
   if (isNaN(d.getTime())) return null;
-  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 export function Account() {
@@ -124,9 +124,9 @@ export function Account() {
             <div className="kv-list">
               <div className="kv-row">
                 <span className="k">{t('account.plan')}</span>
-                <span className="v">
+                <span className="v" style={isPro && effectiveCancelAt ? { color: '#D97706', fontWeight: 500 } : {}}>
                   {isPro && effectiveCancelAt
-                    ? t('account.plan.cancelling')
+                    ? `Actif jusqu'au ${effectiveCancelAt}`
                     : isPro
                     ? 'Pro'
                     : 'Free'}
@@ -212,7 +212,7 @@ export function Account() {
                   <div style={{ fontWeight: 500 }}>{t('account.cancel.title')}</div>
                   <div className="muted" style={{ fontSize: 13 }}>
                     {effectiveCancelAt
-                      ? `${t('account.cancel.until')} ${effectiveCancelAt}`
+                      ? `Ton abonnement sera résilié le ${effectiveCancelAt}. Tu gardes l'accès Pro jusqu'à cette date.`
                       : t('account.cancel.desc')}
                   </div>
                 </div>

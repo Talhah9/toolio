@@ -53,15 +53,19 @@ export default async function handler(req, res) {
     }
     console.log('[cancel-sub] customerId:', customerId);
 
-    // Find active subscription
+    // Find the most current active/trialing subscription (highest future current_period_end)
     console.log('[cancel-sub] Looking for subscription...');
-    const subs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 1 });
-    if (!subs.data.length) {
+    const nowSec = Math.floor(Date.now() / 1000);
+    const allSubs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 10 });
+    const validSubs = allSubs.data
+      .filter(s => (s.status === 'active' || s.status === 'trialing') && s.current_period_end > nowSec)
+      .sort((a, b) => b.current_period_end - a.current_period_end);
+    if (!validSubs.length) {
       console.log('[cancel-sub] no active subscription for customer', customerId);
       return res.status(404).json({ error: 'No active subscription found' });
     }
-    const subscriptionId = subs.data[0].id;
-    console.log('[cancel-sub] found subscriptionId:', subscriptionId);
+    const subscriptionId = validSubs[0].id;
+    console.log('[cancel-sub] found subscriptionId:', subscriptionId, '| period_end:', validSubs[0].current_period_end);
 
     // Get the full subscription (includes schedule field)
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -84,7 +88,7 @@ export default async function handler(req, res) {
 
     // Period end — user keeps Pro access until this date
     const periodEnd = new Date(subscription.current_period_end * 1000);
-    const cancelAt = `${String(periodEnd.getDate()).padStart(2, '0')}/${String(periodEnd.getMonth() + 1).padStart(2, '0')}/${periodEnd.getFullYear()}`;
+    const cancelAt = periodEnd.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     console.log('[cancel-sub] cancelAt:', cancelAt);
 
     // Store scheduled cancellation date — plan and credits unchanged until period end
@@ -133,7 +137,7 @@ export default async function handler(req, res) {
       }),
     }).catch(e => console.error('[cancel-sub] email error:', e.message));
 
-    res.json({ success: true, cancelAt });
+    res.json({ success: true, canceled: true, access_until: subscription.current_period_end, cancelAt });
   } catch (err) {
     console.error('[cancel-sub] unhandled error:', err.message, err.stack);
     res.status(500).json({ error: err.message });

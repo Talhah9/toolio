@@ -370,13 +370,10 @@ export default async function handler(req, res) {
       const upUserId = await findUserByCustomer(supabase, stripe, sub.customer);
       if (upUserId) {
         if (sub.cancel_at_period_end && sub.current_period_end) {
-          // Cancellation was just scheduled
-          const cancelAt = safeToISO(sub.current_period_end);
-          await supabase.from('profiles').update({ cancel_at: cancelAt }).eq('id', upUserId);
-          console.log('[stripe-webhook] sub.updated | cancellation scheduled, cancel_at:', cancelAt);
+          // Cancellation scheduled — the API endpoint already wrote cancel_at to DB; just log
+          console.log('[stripe-webhook] sub.updated | cancellation scheduled (log only), period_end:', safeToISO(sub.current_period_end));
         } else if (!sub.cancel_at_period_end && prev.cancel_at_period_end === true) {
           // Genuine reactivation: was cancel_at_period_end=true, now false
-          // (Not a schedule release, which fires updated with cancel_at_period_end still false)
           await supabase.from('profiles').update({ cancel_at: null }).eq('id', upUserId);
           console.log('[stripe-webhook] sub.updated | reactivated, cancel_at cleared');
         } else {
