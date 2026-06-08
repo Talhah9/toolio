@@ -165,19 +165,18 @@ export default async function handler(req, res) {
           '| mode:', session.mode);
         const { error } = await supabase
           .from('profiles')
-          .update({ plan: 'pro', stripe_customer_id: session.customer, cancel_at: null })
+          .update({ plan: 'pro', stripe_customer_id: session.customer, cancel_at: null, credits_expire_at: null })
           .eq('id', userId);
         if (error) {
           console.error('[stripe-webhook] profiles update error:', JSON.stringify(error));
         } else {
           console.log('[stripe-webhook] plan set to pro for user', userId);
           const { error: creditsError } = await supabase
-            .from('credits')
-            .upsert({ user_id: userId, balance: 500 }, { onConflict: 'user_id' });
+            .rpc('add_credits', { p_user_id: userId, p_amount: 500 });
           if (creditsError) {
-            console.error('[stripe-webhook] credits upsert (pro) error:', JSON.stringify(creditsError));
+            console.error('[stripe-webhook] add_credits (pro) error:', JSON.stringify(creditsError));
           } else {
-            console.log('[stripe-webhook] credits set to 500 for user', userId);
+            console.log('[stripe-webhook] 500 credits added for user', userId);
           }
           await sendEmail(
             session.customer_email,
@@ -352,16 +351,12 @@ export default async function handler(req, res) {
       }
 
       if (userId) {
-        // Downgrade to free, clear scheduled cancellation date
+        const creditsExpireAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
         await supabase
           .from('profiles')
-          .update({ plan: 'free', cancel_at: null })
+          .update({ plan: 'free', cancel_at: null, credits_expire_at: creditsExpireAt })
           .eq('id', userId);
-        // Reset credits to free-plan default
-        await supabase
-          .from('credits')
-          .upsert({ user_id: userId, balance: 50 }, { onConflict: 'user_id' });
-        console.log('[stripe-webhook] user', userId, 'downgraded to free, credits reset to 50');
+        console.log('[stripe-webhook] user', userId, 'downgraded to free | credits_expire_at:', creditsExpireAt);
       }
 
       if (userEmail) {
@@ -377,9 +372,10 @@ export default async function handler(req, res) {
     </div>
     <div style="padding:36px 40px;">
       <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">
-        Votre période Pro est terminée. Votre compte est maintenant sur le plan gratuit avec 50 crédits.
+        Votre période Pro est terminée. Votre compte est maintenant sur le plan gratuit.
       </p>
       <p style="margin:0 0 24px;font-size:14px;color:#6B7280;line-height:1.7;">
+        Vos crédits restants sont conservés et utilisables pendant encore <strong>90 jours</strong>.
         Vos données et historique restent disponibles. Vous pouvez réactiver Pro à tout moment.
         Pour toute question : <a href="mailto:hello@savvly.co" style="color:#4F46E5;">hello@savvly.co</a>.
       </p>

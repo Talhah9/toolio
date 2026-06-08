@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppHeader } from './AppHeader';
 import { Glyph } from './Glyph';
@@ -21,12 +21,24 @@ function markIntroSeen(toolId) {
 export function ToolShell({ tool, children }) {
   const navigate = useNavigate();
   const { lang, t } = useLang();
-  const { credits } = useApp();
+  const { credits, plan, loading } = useApp();
   const { name, desc } = getToolText(tool, lang);
 
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro(tool.id));
 
+  // If intro already dismissed but user is free on a pro tool, redirect to pricing
+  useEffect(() => {
+    if (loading) return;
+    if (!showIntro && tool.plan === 'pro' && plan !== 'pro') {
+      navigate('/pricing', { replace: true });
+    }
+  }, [loading, plan, showIntro, tool.plan, navigate]);
+
   const handleStart = () => {
+    if (tool.plan === 'pro' && plan !== 'pro') {
+      navigate('/pricing');
+      return;
+    }
     markIntroSeen(tool.id);
     setShowIntro(false);
   };

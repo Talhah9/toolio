@@ -325,6 +325,7 @@ export const fr = {
   'account.topup': 'Recharger',
   'account.renewal': 'Renouvellement',
   'account.renewal.monthly': 'Mensuel',
+  'account.renewal.until': "Accès Pro jusqu'au",
   'account.payments.title': 'Historique des paiements',
   'account.payments.loading': 'Chargement…',
   'account.payments.empty': 'Aucun paiement pour l\'instant.',

@@ -19,6 +19,7 @@ export function Account() {
   const [deleting, setDeleting] = useState(false);
   const [toast, ToastEl] = useToast();
   const [payments, setPayments] = useState(null); // null = loading
+  const [renewalDate, setRenewalDate] = useState(null);
 
   // Load cancel_at from DB so the state persists across page reloads
   useEffect(() => {
@@ -35,6 +36,19 @@ export function Account() {
         }
       });
   }, [session]);
+
+  // Load current_period_end from Stripe
+  useEffect(() => {
+    if (!user?.email || plan !== 'pro') return;
+    fetch('/api/subscription-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userEmail: user.email }),
+    })
+      .then(r => r.json())
+      .then(json => { if (json.renewalDate) setRenewalDate(json.renewalDate); })
+      .catch(() => {});
+  }, [user, plan]);
 
   useEffect(() => {
     if (!session?.user?.id || !user?.email) return;
@@ -96,8 +110,18 @@ export function Account() {
               </div>
               <div className="kv-row">
                 <span className="k">{t('account.renewal')}</span>
-                <span className="v">{plan === 'pro' ? '1 Jun 2026' : '—'}</span>
-                <span className="muted" style={{ fontSize: 13 }}>{plan === 'pro' ? t('account.renewal.monthly') : ''}</span>
+                <span className="v tabular">
+                  {plan !== 'pro'
+                    ? '—'
+                    : cancelAt
+                    ? `${t('account.renewal.until')} ${cancelAt}`
+                    : renewalDate
+                    ? renewalDate
+                    : '—'}
+                </span>
+                <span className="muted" style={{ fontSize: 13 }}>
+                  {plan === 'pro' && !cancelAt ? t('account.renewal.monthly') : ''}
+                </span>
               </div>
             </div>
           </div>

@@ -648,6 +648,17 @@ export default async function handler(req, res) {
   // ── 5. Rate limiting ──────────────────────────────────────────
   if (!rateLimit(res, verifiedId)) return;
 
+  // ── 5b. Credits expiry check ─────────────────────────────────
+  {
+    const admin = getAdminClient();
+    const { data: expiryProfile } = await admin.from('profiles').select('credits_expire_at').eq('id', verifiedId).single();
+    if (expiryProfile?.credits_expire_at && new Date(expiryProfile.credits_expire_at) < new Date()) {
+      await admin.from('credits').update({ balance: 0 }).eq('user_id', verifiedId);
+      await admin.from('profiles').update({ credits_expire_at: null }).eq('id', verifiedId);
+      console.log('[generate] credits expired for user', verifiedId, '— reset to 0');
+    }
+  }
+
   // ── 6. Server-side credit check ───────────────────────────────
   const cost = TOOL_CREDITS[toolId];
   if (!(await checkCredits(res, verifiedId, cost))) return;
