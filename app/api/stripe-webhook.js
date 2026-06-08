@@ -7,6 +7,13 @@ function resendHeaders() {
   return { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESEND_API_KEY}` };
 }
 
+function safeToISO(timestamp) {
+  if (!timestamp) return null;
+  const date = new Date(timestamp * 1000);
+  if (isNaN(date.getTime())) return null;
+  return date.toISOString();
+}
+
 async function sendEmail(to, subject, html) {
   if (!to) return;
   await fetch(RESEND_API, {
@@ -338,7 +345,7 @@ export default async function handler(req, res) {
           .maybeSingle();
         const upUserId = upProfile?.id ?? sub.metadata?.userId;
         if (upUserId) {
-          const cancelAt = new Date(sub.current_period_end * 1000).toISOString();
+          const cancelAt = safeToISO(sub.current_period_end);
           await supabase.from('profiles').update({ cancel_at: cancelAt }).eq('id', upUserId);
           console.log('[stripe-webhook] sub.updated | cancel_at_period_end=true, stored cancel_at:', cancelAt);
         }
@@ -359,7 +366,7 @@ export default async function handler(req, res) {
         .maybeSingle();
 
       const userId = delProfile?.id ?? sub.metadata?.userId;
-      console.log('[stripe-webhook] subscription.deleted | userId:', userId, '| period_end:', new Date(sub.current_period_end * 1000).toISOString());
+      console.log('[stripe-webhook] subscription.deleted | userId:', userId, '| period_end:', safeToISO(sub.current_period_end) ?? 'unknown');
 
       let userEmail = null;
       try {
@@ -370,8 +377,9 @@ export default async function handler(req, res) {
       }
 
       const periodEndMs = sub.current_period_end * 1000;
-      // Credits expire 90 days after the paid period ends (not from now)
-      const creditsExpireAt = new Date(periodEndMs + 90 * 24 * 60 * 60 * 1000).toISOString();
+      // Credits expire 90 days after the paid period ends; fall back to now if timestamp missing
+      const creditsExpireSecs = (sub.current_period_end || Math.floor(Date.now() / 1000)) + 90 * 24 * 60 * 60;
+      const creditsExpireAt = safeToISO(creditsExpireSecs);
       const periodStillActive = periodEndMs > Date.now();
 
       if (userId) {
@@ -379,7 +387,7 @@ export default async function handler(req, res) {
           // Subscription deleted immediately (e.g. schedule cancelled) but user has paid time left.
           // Set plan=free in DB but store cancel_at so the frontend keeps showing Pro features
           // until the period actually ends. The email is NOT sent yet.
-          const cancelAt = new Date(periodEndMs).toISOString();
+          const cancelAt = safeToISO(sub.current_period_end);
           await supabase
             .from('profiles')
             .update({ plan: 'free', cancel_at: cancelAt, credits_expire_at: creditsExpireAt })
