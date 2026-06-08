@@ -56,9 +56,14 @@ export default async function handler(req, res) {
     console.log('[cancel-sub] schedule:', subscription.schedule);
 
     if (subscription.schedule) {
-      // Cancel the schedule first
-      await stripe.subscriptionSchedules.cancel(subscription.schedule);
-      console.log('[cancel-sub] schedule cancelled:', subscription.schedule);
+      // Release the schedule (detaches it without cancelling the subscription),
+      // then mark the subscription to end at the current period boundary.
+      // Using cancel() instead would terminate the sub immediately, firing
+      // subscription.deleted and dropping the user to free right away.
+      await stripe.subscriptionSchedules.release(subscription.schedule);
+      console.log('[cancel-sub] schedule released:', subscription.schedule);
+      await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
+      console.log('[cancel-sub] subscription set to cancel at period end (post-release)');
     } else {
       // No schedule — cancel directly at period end
       await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
