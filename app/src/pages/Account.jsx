@@ -7,16 +7,24 @@ import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
 
+function fmtDMY(isoStr) {
+  if (!isoStr) return null;
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return null;
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
 export function Account() {
   const navigate = useNavigate();
-  const { user, session, credits, plan, refreshCredits, signOut } = useApp();
+  const { user, session, credits, plan, isPro, cancelAt: contextCancelAt, refreshCredits, signOut } = useApp();
   const { lang, t } = useLang();
+  const cancelAtFormatted = fmtDMY(contextCancelAt);
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [saving, setSaving] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const [cancelAt, setCancelAt] = useState(null);
+  const [reactivating, setReactivating] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -24,34 +32,22 @@ export function Account() {
   const [payments, setPayments] = useState(null); // null = loading
   const [renewalDate, setRenewalDate] = useState(null);
 
-  // Load cancel_at from DB so the state persists across page reloads
+  // Load subscription status from Stripe (renewal date + cancel info)
   useEffect(() => {
-    if (!session?.user?.id) return;
-    supabase
-      .from('profiles')
-      .select('cancel_at')
-      .eq('id', session.user.id)
-      .single()
-      .then(({ data }) => {
-        if (data?.cancel_at) {
-          const d = new Date(data.cancel_at);
-          setCancelAt(`${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`);
-        }
-      });
-  }, [session]);
-
-  // Load current_period_end from Stripe
-  useEffect(() => {
-    if (!user?.email || plan !== 'pro') return;
+    if (!user?.email || !isPro) return;
     fetch('/api/subscription-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userEmail: user.email }),
     })
       .then(r => r.json())
-      .then(json => { if (json.renewalDate) setRenewalDate(json.renewalDate); })
+      .then(json => {
+        if (json.renewalDate) setRenewalDate(json.renewalDate);
+        // Use Stripe's cancelAt as fallback if DB hasn't been updated yet
+        if (json.cancelAt && !contextCancelAt) setRenewalDate(null);
+      })
       .catch(() => {});
-  }, [user, plan]);
+  }, [user, isPro, contextCancelAt]);
 
   useEffect(() => {
     if (!session?.user?.id || !user?.email) return;
@@ -120,9 +116,9 @@ export function Account() {
               <div className="kv-row">
                 <span className="k">{t('account.plan')}</span>
                 <span className="v">
-                  {plan === 'pro' && cancelAt
+                  {isPro && cancelAtFormatted
                     ? t('account.plan.cancelling')
-                    : plan === 'pro'
+                    : isPro
                     ? 'Pro'
                     : 'Free'}
                 </span>
@@ -136,17 +132,45 @@ export function Account() {
               <div className="kv-row">
                 <span className="k">{t('account.renewal')}</span>
                 <span className="v tabular">
-                  {plan !== 'pro'
+                  {!isPro
                     ? '—'
-                    : cancelAt
-                    ? `${t('account.renewal.until')} ${cancelAt}`
+                    : cancelAtFormatted
+                    ? `${t('account.renewal.until')} ${cancelAtFormatted}`
                     : renewalDate
                     ? renewalDate
                     : '—'}
                 </span>
-                <span className="muted" style={{ fontSize: 13 }}>
-                  {plan === 'pro' && !cancelAt ? t('account.renewal.monthly') : ''}
-                </span>
+                {isPro && cancelAtFormatted ? (
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    disabled={reactivating}
+                    onClick={async () => {
+                      setReactivating(true);
+                      try {
+                        const res = await fetch('/api/reactivate-subscription', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
+                        });
+                        const json = await res.json();
+                        if (json.redirectToPricing) { navigate('/pricing'); return; }
+                        if (!json.success) throw new Error(json.error || 'Reactivation failed');
+                        await refreshCredits();
+                        toast(t('account.toast.reactivated'));
+                      } catch (err) {
+                        toast(err.message);
+                      } finally {
+                        setReactivating(false);
+                      }
+                    }}
+                  >
+                    {reactivating ? t('account.reactivate.processing') : t('account.reactivate.btn')}
+                  </button>
+                ) : (
+                  <span className="muted" style={{ fontSize: 13 }}>
+                    {isPro && !cancelAtFormatted ? t('account.renewal.monthly') : ''}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -178,13 +202,13 @@ export function Account() {
                 <div>
                   <div style={{ fontWeight: 500 }}>{t('account.cancel.title')}</div>
                   <div className="muted" style={{ fontSize: 13 }}>
-                    {cancelAt
-                      ? `${t('account.cancel.until')} ${cancelAt}`
+                    {cancelAtFormatted
+                      ? `${t('account.cancel.until')} ${cancelAtFormatted}`
                       : t('account.cancel.desc')}
                   </div>
                 </div>
                 <button className="btn btn-secondary" onClick={() => setConfirm(true)}
-                  disabled={plan !== 'pro' || !!cancelAt}>
+                  disabled={!isPro || !!cancelAtFormatted}>
                   {t('account.cancel.btn')}
                 </button>
               </div>
@@ -234,8 +258,8 @@ export function Account() {
               <div className="modal-body">
                 <p className="muted" style={{ fontSize: 14 }}>
                   {lang === 'fr'
-                    ? `Vous garderez l'accès Pro jusqu'au ${renewalDate || '…'}. Vos crédits sont conservés.`
-                    : `You'll keep Pro access until ${renewalDate || '…'}. Your credits are preserved.`}
+                    ? `Vous garderez l'accès Pro jusqu'au ${cancelAtFormatted || renewalDate || '…'}. Vos crédits sont conservés.`
+                    : `You'll keep Pro access until ${cancelAtFormatted || renewalDate || '…'}. Your credits are preserved.`}
                 </p>
               </div>
               <div className="modal-foot">
@@ -252,7 +276,6 @@ export function Account() {
                     });
                     const json = await res.json();
                     if (!json.success) throw new Error(json.error || 'Cancellation failed');
-                    setCancelAt(json.cancelAt);
                     setConfirm(false);
                     await refreshCredits();
                     toast(t('account.toast.cancelled'));

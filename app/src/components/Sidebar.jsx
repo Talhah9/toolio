@@ -8,7 +8,7 @@ import { useLang } from '../context/LanguageContext';
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { plan, signOut, user } = useApp();
+  const { isPro, signOut, user } = useApp();
   const { lang, t } = useLang();
 
   const isActive = (path) => location.pathname === path;
@@ -45,7 +45,7 @@ export function Sidebar() {
             {tool.franceOnly && (
               <span style={{ marginLeft: 'auto', fontSize: 11 }} title="France only">🇫🇷</span>
             )}
-            {tool.plan === 'pro' && plan === 'free' && !tool.franceOnly && (
+            {tool.plan === 'pro' && !isPro && !tool.franceOnly && (
               <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--accent)' }}>Pro</span>
             )}
           </div>

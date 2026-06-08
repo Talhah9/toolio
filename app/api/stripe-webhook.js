@@ -333,21 +333,23 @@ export default async function handler(req, res) {
       }
     }
 
-    // ── Subscription cancellation scheduled (cancel_at_period_end) ─
+    // ── Subscription updated (cancellation scheduled or reactivated) ─
     if (event.type === 'customer.subscription.updated') {
       const sub = event.data.object;
-      // Store cancel_at when user schedules a non-schedule cancellation directly
-      if (sub.cancel_at_period_end && sub.current_period_end) {
-        const { data: upProfile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('stripe_customer_id', sub.customer)
-          .maybeSingle();
-        const upUserId = upProfile?.id ?? sub.metadata?.userId;
-        if (upUserId) {
+      const { data: upProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('stripe_customer_id', sub.customer)
+        .maybeSingle();
+      const upUserId = upProfile?.id ?? sub.metadata?.userId;
+      if (upUserId) {
+        if (sub.cancel_at_period_end && sub.current_period_end) {
           const cancelAt = safeToISO(sub.current_period_end);
           await supabase.from('profiles').update({ cancel_at: cancelAt }).eq('id', upUserId);
-          console.log('[stripe-webhook] sub.updated | cancel_at_period_end=true, stored cancel_at:', cancelAt);
+          console.log('[stripe-webhook] sub.updated | cancellation scheduled, cancel_at:', cancelAt);
+        } else if (!sub.cancel_at_period_end) {
+          await supabase.from('profiles').update({ cancel_at: null }).eq('id', upUserId);
+          console.log('[stripe-webhook] sub.updated | reactivated, cancel_at cleared');
         }
       }
     }

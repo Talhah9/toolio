@@ -246,6 +246,7 @@ export function AppProvider({ children }) {
     : null;
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const isPro = plan === 'pro';
 
   return (
     <AppContext.Provider value={{
@@ -254,6 +255,7 @@ export function AppProvider({ children }) {
       loading,
       credits,
       plan,
+      isPro,
       cancelAt,
       signIn,
       signUp,

@@ -12,10 +12,10 @@ import { useLang } from '../context/LanguageContext';
 export function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { credits, plan, refreshCredits } = useApp();
+  const { credits, plan, isPro, refreshCredits } = useApp();
   const { lang, t } = useLang();
   const [toast, ToastEl] = useToast();
-  const low = credits !== null && credits < 15 && plan === 'free';
+  const low = credits !== null && credits < 15 && !isPro;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -36,7 +36,7 @@ export function Dashboard() {
           <p className="muted">{t('dashboard.subtitle')}</p>
         </div>
 
-        {plan !== 'pro' && (
+        {!isPro && (
           <div className="banner" style={{ marginBottom: 16 }}>
             <span className="row" style={{ gap: 10 }}>
               <Glyph name="lightning" size={14} />
@@ -63,7 +63,7 @@ export function Dashboard() {
         <div className="tools-grid">
           {TOOLS.flatMap(tool => {
             const { name, desc } = getToolText(tool, lang);
-            const locked = tool.plan === 'pro' && plan !== 'pro';
+            const locked = tool.plan === 'pro' && !isPro;
 
             const toolCard = (
               <div
