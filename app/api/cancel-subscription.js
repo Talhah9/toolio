@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     console.log('[cancel-sub] Looking for Stripe customer...');
     const { data: profile } = await supabase
       .from('profiles')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, email')
       .eq('id', userId)
       .maybeSingle();
     let customerId = profile?.stripe_customer_id;
@@ -101,6 +101,7 @@ export default async function handler(req, res) {
     console.log('[cancel-sub] cancel_at stored, plan/credits unchanged until period end');
 
     // Send cancellation confirmation email
+    const recipientEmail = profile?.email || userEmail;
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -108,32 +109,24 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Savvly <hello@savvly.co>',
+        from: 'Savvly <no-reply@savvly.co>',
         reply_to: 'hello@savvly.co',
-        to: [userEmail],
-        subject: 'Résiliation confirmée — Savvly',
-        html: `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-    <div style="background:#1f2937;padding:40px;text-align:center;">
-      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-bottom:12px;">SAVVLY</div>
-      <h1 style="margin:0;font-size:24px;font-weight:800;color:#fff;">Résiliation confirmée</h1>
-    </div>
-    <div style="padding:36px 40px;">
-      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">Votre résiliation a bien été prise en compte.</p>
-      <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.7;">Vous gardez l'accès Pro jusqu'au <strong>${cancelAt}</strong>. Vos crédits sont conservés pendant cette période.</p>
-      <p style="margin:0 0 28px;font-size:14px;color:#6B7280;line-height:1.7;">Vous pouvez réactiver votre abonnement à tout moment depuis votre compte.</p>
-      <div style="text-align:center;margin:28px 0;">
-        <a href="https://savvly.co/dashboard" style="display:inline-block;background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">
-          Réactiver mon abonnement →
-        </a>
-      </div>
-    </div>
-    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
-    </div>
-  </div>
-</body></html>`,
+        to: [recipientEmail],
+        subject: 'Confirmation de résiliation — Savvly',
+        html: `
+<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+  <h2 style="color: #0A0A0A;">Résiliation confirmée</h2>
+  <p>Bonjour,</p>
+  <p>Ta résiliation a bien été prise en compte.</p>
+  <p>Tu gardes ton accès <strong>Pro</strong> jusqu'au <strong>${cancelAt}</strong>.</p>
+  <p>Après cette date, ton compte passera automatiquement en version gratuite.</p>
+  <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;" />
+  <p style="color: #6B7280; font-size: 14px;">
+    Tu peux réactiver ton abonnement à tout moment depuis ton espace compte.<br/>
+    Une question ? Réponds à cet email.
+  </p>
+  <p style="color: #6B7280; font-size: 14px;">L'équipe Savvly</p>
+</div>`,
       }),
     }).catch(e => console.error('[cancel-sub] email error:', e.message));
 

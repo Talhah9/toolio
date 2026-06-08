@@ -286,6 +286,12 @@ export function Account() {
                     const json = await res.json();
                     if (!json.success) throw new Error(json.error || 'Cancellation failed');
                     setConfirm(false);
+                    // Immediately reflect cancellation in local state without waiting for
+                    // refreshCredits → subscription-status re-fetch chain to complete
+                    if (json.cancelAt) {
+                      setStripeCancelAt(json.cancelAt);
+                      setRenewalDate(null);
+                    }
                     await refreshCredits();
                     toast(t('account.toast.cancelled'));
                   } catch (err) {
