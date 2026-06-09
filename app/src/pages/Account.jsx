@@ -7,21 +7,11 @@ import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
 
-function fmtDMY(isoStr) {
-  if (!isoStr) return null;
-  const d = new Date(isoStr);
-  if (isNaN(d.getTime())) return null;
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-}
 
 export function Account() {
   const navigate = useNavigate();
-  const { user, session, credits, plan, isPro, cancelAt: contextCancelAt, refreshCredits, signOut } = useApp();
+  const { user, session, credits, plan, isPro, refreshCredits, signOut } = useApp();
   const { lang, t } = useLang();
-  // Only treat DB cancel_at as active if the date is still in the future
-  const cancelAtFormatted = contextCancelAt && new Date(contextCancelAt) > new Date()
-    ? fmtDMY(contextCancelAt)
-    : null;
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [saving, setSaving] = useState(false);
@@ -36,8 +26,8 @@ export function Account() {
   const [renewalDate, setRenewalDate] = useState(null);
   const [stripeCancelAt, setStripeCancelAt] = useState(null);
 
-  // DB cancel_at takes priority; fall back to live Stripe value when DB hasn't caught up yet
-  const effectiveCancelAt = cancelAtFormatted || stripeCancelAt;
+  // Cancellation date comes exclusively from Stripe via /api/subscription-status
+  const effectiveCancelAt = stripeCancelAt;
 
   // Load subscription status from Stripe (renewal date + cancel info)
   useEffect(() => {
@@ -59,7 +49,7 @@ export function Account() {
         }
       })
       .catch(() => {});
-  }, [user, isPro, contextCancelAt]);
+  }, [user, isPro]);
 
   useEffect(() => {
     if (!session?.user?.id || !user?.email) return;
