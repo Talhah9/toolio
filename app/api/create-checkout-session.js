@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js';
 
 export const config = { maxDuration: 10 };
 
@@ -54,11 +55,34 @@ export default async function handler(req, res) {
     ? { coachingBookingId: coachingData.bookingId, coachingTheme: coachingData.theme, coachingPhone: coachingData.phone }
     : {};
 
+  // Resolve Stripe customer ID from Supabase to avoid ambiguity when multiple
+  // customers share the same email across projects (e.g. old MarketFormation customer)
+  let stripeCustomerId = null;
   try {
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      { auth: { persistSession: false } }
+    );
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', userId)
+      .maybeSingle();
+    stripeCustomerId = profile?.stripe_customer_id ?? null;
+  } catch (e) {
+    console.warn('[create-checkout-session] supabase lookup failed, falling back to email:', e.message);
+  }
+
+  try {
+    const customerParam = stripeCustomerId
+      ? { customer: stripeCustomerId, customer_update: { address: 'auto' } }
+      : { customer_email: userEmail || undefined };
+
     const session = await stripe.checkout.sessions.create({
       mode,
       line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: userEmail || undefined,
+      ...customerParam,
       client_reference_id: userId,
       metadata: { userId, credits: String(credits ?? 0), ...scheduleMetadata, ...coachingMeta },
       success_url: successUrl,
