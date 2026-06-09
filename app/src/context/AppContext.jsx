@@ -19,6 +19,7 @@ export function AppProvider({ children }) {
   const [credits, setCredits] = useState(null);
   const [plan, setPlan] = useState('free');
   const [cancelAt, setCancelAt] = useState(null);
+  const [profileNames, setProfileNames] = useState({ firstName: '', lastName: '' });
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
@@ -48,10 +49,11 @@ export function AppProvider({ children }) {
         if (authUser?.id) {
           const { data: prof } = await supabase
             .from('profiles')
-            .select('cancel_at')
+            .select('cancel_at, first_name, last_name')
             .eq('id', authUser.id)
             .maybeSingle();
           profileCancelAt = prof?.cancel_at || null;
+          setProfileNames({ firstName: prof?.first_name || '', lastName: prof?.last_name || '' });
         }
       } catch (profileErr) {
         console.error('[AppContext] cancel_at fetch failed (non-fatal):', profileErr.message);
@@ -238,9 +240,12 @@ export function AppProvider({ children }) {
   const rawUser = session?.user ?? null;
   const user = rawUser
     ? {
-        firstName: rawUser.user_metadata?.full_name?.split(' ')[0]
+        firstName: profileNames.firstName
+          || rawUser.user_metadata?.full_name?.split(' ')[0]
           || rawUser.email.split('@')[0],
-        lastName: rawUser.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+        lastName: profileNames.lastName
+          || rawUser.user_metadata?.full_name?.split(' ').slice(1).join(' ')
+          || '',
         email: rawUser.email,
       }
     : null;

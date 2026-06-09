@@ -14,6 +14,12 @@ export function Account() {
   const { lang, t } = useLang();
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
+
+  // Re-sync from context when profile names load or refresh
+  useEffect(() => {
+    setFirstName(user?.firstName || '');
+    setLastName(user?.lastName || '');
+  }, [user?.firstName, user?.lastName]);
   const [saving, setSaving] = useState(false);
   const [saveOk, setSaveOk] = useState(false);
   const [saveErr, setSaveErr] = useState('');
