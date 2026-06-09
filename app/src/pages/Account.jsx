@@ -15,6 +15,8 @@ export function Account() {
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [saving, setSaving] = useState(false);
+  const [saveOk, setSaveOk] = useState(false);
+  const [saveErr, setSaveErr] = useState('');
   const [confirm, setConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [reactivating, setReactivating] = useState(false);
@@ -93,21 +95,30 @@ export function Account() {
               <div>
                 <button
                   className="btn btn-primary btn-sm"
+                  style={saveOk ? { background: '#10B981', borderColor: '#10B981' } : undefined}
                   disabled={saving}
                   onClick={async () => {
                     setSaving(true);
+                    setSaveErr('');
                     try {
-                      await supabase.from('profiles').update({ first_name: firstName, last_name: lastName }).eq('id', session.user.id);
-                      toast('Profil mis à jour');
-                    } catch {
-                      toast('Erreur lors de la sauvegarde');
+                      const { error } = await supabase
+                        .from('profiles')
+                        .update({ first_name: firstName, last_name: lastName })
+                        .eq('id', session.user.id);
+                      if (error) throw error;
+                      setSaveOk(true);
+                      setTimeout(() => setSaveOk(false), 2000);
+                      await refreshCredits();
+                    } catch (err) {
+                      setSaveErr(err.message || 'Erreur lors de la sauvegarde');
                     } finally {
                       setSaving(false);
                     }
                   }}
                 >
-                  {saving ? '…' : t('account.save')}
+                  {saving ? '…' : saveOk ? 'Enregistré ✓' : t('account.save')}
                 </button>
+                {saveErr && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 6 }}>{saveErr}</p>}
               </div>
             </div>
           </div>
