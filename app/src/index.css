@@ -382,10 +382,21 @@ a {
 .mk-footer-bottom {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   font-size: var(--t-xs);
   color: var(--fg-4);
   padding-top: 24px;
   border-top: 1px solid var(--border);
+}
+@media (max-width: 640px) {
+  .mk-footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
 }
 
 /* === Dashboard layout === */
@@ -1862,6 +1873,20 @@ a {
 
   /* UltimateSection comparison table — overflow scroll */
   .lp-ultimate-table { overflow-x: auto; }
+
+  /* Coaching CTA row — stack vertically on mobile */
+  .coaching-cta-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .coaching-cta-row > * { width: 100% !important; text-align: center !important; justify-content: center !important; }
+
+  /* Social proof inline — stack text below avatars */
+  .lp-social-inline {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
 }
 
 /* ============================================================
