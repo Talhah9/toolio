@@ -18,7 +18,10 @@ export function Account() {
   const navigate = useNavigate();
   const { user, session, credits, plan, isPro, cancelAt: contextCancelAt, refreshCredits, signOut } = useApp();
   const { lang, t } = useLang();
-  const cancelAtFormatted = fmtDMY(contextCancelAt);
+  // Only treat DB cancel_at as active if the date is still in the future
+  const cancelAtFormatted = contextCancelAt && new Date(contextCancelAt) > new Date()
+    ? fmtDMY(contextCancelAt)
+    : null;
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [saving, setSaving] = useState(false);
