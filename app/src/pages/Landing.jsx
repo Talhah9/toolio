@@ -2167,11 +2167,11 @@ export function Landing() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginBottom: 40 }}>
               {[
                 { icon: '🎯', title: 'Positionnement & TJM', desc: 'Définis ton offre, ton positionnement et fixe un tarif que tes clients acceptent.' },
-                { icon: '🔍', title: 'Analyse de ton cas', desc: 'On analyse ensemble ta situation, tes forces, tes blocages et ce qui t'empêche d'avancer.' },
-                { icon: '📋', title: 'Actions concrètes', desc: 'Tu repars avec un plan d'action clair et des étapes précises à mettre en place dès le lendemain.' },
+                { icon: '🔍', title: 'Analyse de ton cas', desc: `On analyse ensemble ta situation, tes forces, tes blocages et ce qui t'empêche d'avancer.` },
+                { icon: '📋', title: 'Actions concrètes', desc: `Tu repars avec un plan d'action clair et des étapes précises à mettre en place dès le lendemain.` },
                 { icon: '🎯', title: 'Trouver tes clients', desc: 'Stratégie personnalisée pour identifier tes cibles et savoir exactement où et comment les approcher.' },
                 { icon: '💼', title: 'Stratégie business', desc: 'On parle de ta stratégie globale, tes objectifs, tes revenus cibles et comment les atteindre.' },
-                { icon: '👥', title: 'Ateliers de groupe', desc: 'Accède aux ateliers mensuels : trouver des clients, IA & Claude Code, LinkedIn qui convertit — au sein d'une communauté de 200+ freelances.' },
+                { icon: '👥', title: 'Ateliers de groupe', desc: `Accède aux ateliers mensuels : trouver des clients, IA & Claude Code, LinkedIn qui convertit — au sein d'une communauté de 200+ freelances.` },
               ].map(({ icon, title, desc }) => (
                 <div key={title} style={{ background: '#fff', border: '1px solid #E9E9F0', borderRadius: 16, padding: '20px 22px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
                   <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(79,70,229,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, marginBottom: 12 }}>{icon}</div>
