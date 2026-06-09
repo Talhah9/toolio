@@ -6,6 +6,7 @@ import { ToolIcon } from '../components/ToolIcon';
 import { PlanBadge } from '../components/PlanBadge';
 import { useToast } from '../components/Toast';
 import { TOOLS, getToolText } from '../data/catalog';
+import { CoachingBanner } from '../components/CoachingBanner';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 
@@ -35,6 +36,8 @@ export function Dashboard() {
           <h1 className="h1" style={{ marginBottom: 6 }}>{t('dashboard.title')}</h1>
           <p className="muted">{t('dashboard.subtitle')}</p>
         </div>
+
+        {isPro && <CoachingBanner />}
 
         {!isPro && (
           <div className="banner" style={{ marginBottom: 16 }}>

@@ -2182,6 +2182,12 @@ export function Landing() {
                     Mon LinkedIn
                   </a>
                 </div>
+
+                {/* Free coaching encart for loyal subscribers */}
+                <div style={{ marginTop: 20, padding: '14px 18px', borderRadius: 12, background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', border: '1px solid #FDE68A', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#92400E' }}>✨ Abonnés Pro depuis 2 mois+ : accédez à une session de coaching 1:1 offerte</span>
+                  <span style={{ fontSize: 12, color: '#B45309' }}>Réservé aux membres fidèles · Une fois par abonnement</span>
+                </div>
               </div>
 
               {/* RIGHT — testimonials carousel */}
