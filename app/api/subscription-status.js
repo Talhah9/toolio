@@ -61,34 +61,35 @@ export default async function handler(req, res) {
 
     const fmt = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     const nowSec = Math.floor(Date.now() / 1000);
+    const minSec = nowSec + 86400; // must have > 24 h remaining
 
-    // Fetch all subs for this customer
+    const SAVVLY_PRICE_IDS = new Set([
+      'price_1TWwVeAFTm9a9DATGNn4FO2g', // Pro EUR 49€
+      'price_1TbG6eAFTm9a9DATlWDutoHI', // Pro first month 15€
+      'price_1TYNvyAFTm9a9DATmtwE5E3a', // Pro USD $54
+      'price_1TbG7JAFTm9a9DATFk8BiFSv', // Pro first month $17
+    ]);
+
     const allSubs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 10 });
 
-    console.log('TOUTES LES SUBS:', JSON.stringify(allSubs.data.map(s => ({
+    console.log('[subscription-status] all subs for', customerId, ':', allSubs.data.map(s => ({
       id: s.id,
       status: s.status,
-      current_period_end: s.current_period_end,
-      current_period_end_date: new Date(s.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: s.cancel_at_period_end,
-      items: s.items.data.map(i => i.price.id),
-    }))));
+      period_end: new Date(s.current_period_end * 1000).toISOString(),
+      prices: s.items.data.map(i => i.price.id),
+    })));
 
-    // Keep only active/trialing with period_end at least 24 h in the future
-    const minSec = nowSec + 86400;
+    const isSavvlySub = (s) => s.items.data.some(i => SAVVLY_PRICE_IDS.has(i.price.id));
+
+    // Active/trialing, future period_end (>24 h), Savvly price only
     const validActive = allSubs.data
-      .filter(s => (s.status === 'active' || s.status === 'trialing') && s.current_period_end > minSec)
+      .filter(s => (s.status === 'active' || s.status === 'trialing') && s.current_period_end > minSec && isSavvlySub(s))
       .sort((a, b) => b.current_period_end - a.current_period_end);
 
-    console.log('APRÈS FILTRE:', JSON.stringify(validActive.map(s => ({
-      id: s.id,
-      status: s.status,
-      end: new Date(s.current_period_end * 1000).toISOString(),
-    }))));
+    console.log('[subscription-status] valid savvly subs:', validActive.map(s => s.id));
 
     if (validActive.length) {
       const sub = validActive[0];
-      console.log('subscription trouvée:', sub.id, sub.status, sub.current_period_end);
       const periodEnd = new Date(sub.current_period_end * 1000);
       if (sub.cancel_at_period_end) {
         const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
@@ -97,18 +98,17 @@ export default async function handler(req, res) {
       return res.json({ renewalDate: fmt(periodEnd), cancelAt: null, isCancelling: false });
     }
 
-    // No active/trialing sub — check recently canceled (still within paid period)
+    // No active Savvly sub — check recently canceled (still within paid period)
     const activeCancelled = allSubs.data
-      .filter(s => s.status === 'canceled' && s.current_period_end > nowSec)
+      .filter(s => s.status === 'canceled' && s.current_period_end > nowSec && isSavvlySub(s))
       .sort((a, b) => b.current_period_end - a.current_period_end);
     if (activeCancelled.length) {
       const sub = activeCancelled[0];
-      console.log('subscription trouvée (canceled):', sub.id, sub.status, sub.current_period_end);
       const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
       return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
     }
 
-    console.log('[subscription-status] aucune sub valide trouvée pour', customerId);
+    console.log('[subscription-status] no valid Savvly sub for', customerId);
     return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
   } catch (err) {
     console.error('[subscription-status] error:', err.message);
