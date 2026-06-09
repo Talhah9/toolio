@@ -1338,9 +1338,17 @@ function NewsletterSection({ reduce }) {
                   <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F0F1A', margin: '0 0 10px', lineHeight: 1.3 }}>
                     {t('landing.newsletter.title')}
                   </h2>
-                  <p style={{ fontSize: 14, color: '#6B6B8A', margin: '0 0 24px', lineHeight: 1.65 }}>
+                  <p style={{ fontSize: 14, color: '#6B6B8A', margin: '0 0 12px', lineHeight: 1.65 }}>
                     {t('landing.newsletter.sub')}
                   </p>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 24 }}>
+                    {['✓ 10 ressources gratuites', '✓ Stratégie & positionnement', '✓ Trouver des clients'].map(label => (
+                      <span key={label} style={{ background: '#F5F3FF', color: '#6D28D9', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 99 }}>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
 
                   <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <div style={{ position: 'relative' }}>
