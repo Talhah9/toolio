@@ -46,7 +46,7 @@ export function CoachingSuccess() {
           </h1>
 
           <p style={{ fontSize: 15, color: 'var(--fg-2)', marginBottom: 36, lineHeight: 1.7 }}>
-            Talhah va vous contacter sous 24h sur{' '}
+            Un expert Savvly va vous contacter sous 24h sur{' '}
             <strong>{user?.email}</strong>
             {booking?.phone ? <> ou au <strong>{booking.phone}</strong></> : ''}.
           </p>

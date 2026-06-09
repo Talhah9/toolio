@@ -945,7 +945,7 @@ export const en = {
   'nav.coaching': 'Consultation',
   'landing.coaching.eyebrow': 'Coaching',
   'landing.coaching.title': 'Need a push?',
-  'landing.coaching.sub': '1-hour individual video consultation with Talhah Ally, business coach for freelancers and entrepreneurs.',
+  'landing.coaching.sub': '1-hour individual video consultation with a Savvly expert coach for freelancers and entrepreneurs.',
   'landing.coaching.detail': 'Strategy, positioning, pricing, client acquisition. A concrete action plan at the end of the session.',
   'landing.coaching.cta': 'Book a consultation →',
   // Coaching page

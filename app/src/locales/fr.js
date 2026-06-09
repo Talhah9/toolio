@@ -945,11 +945,11 @@ export const fr = {
   'nav.coaching': 'Consultation',
   'landing.coaching.eyebrow': 'Coaching',
   'landing.coaching.title': "Besoin d'un coup de pouce ?",
-  'landing.coaching.sub': '1h de consultation individuelle avec Talhah Ally, coach business pour freelances et entrepreneurs.',
+  'landing.coaching.sub': '1h de consultation individuelle avec un expert Savvly, coach business pour freelances et entrepreneurs.',
   'landing.coaching.detail': "Stratégie, positionnement, tarification, acquisition clients. Un plan d'action concret à l'issue de la séance.",
   'landing.coaching.cta': 'Réserver une consultation →',
   // Coaching page
-  'coaching.page.title':                   'Réservez une consultation avec Talhah Ally',
+  'coaching.page.title':                   'Réservez une consultation avec un expert Savvly',
   'coaching.page.tagline':                 'Coach business — 1h de consultation à 80€',
   'coaching.page.profile-link':            'Voir mon profil →',
   'coaching.page.subtitle':                "Structurez votre activité, résolvez vos blocages concrets, établissez une stratégie claire et un plan d'action.",

@@ -353,7 +353,7 @@ const TESTIMONIALS = [
   {
     name: 'Josi GAUDENS',
     role: 'Experte Shopify, Fondatrice @JOSIFY',
-    quote: "J'ai eu la chance de me former auprès de Talhah, et je recommande son coaching sans hésitation. Ses explications sont claires, accessibles et vraiment adaptées au niveau de la personne qu'il accompagne. Une communication fluide, une bonne ambiance et une vraie bienveillance.",
+    quote: "J'ai eu la chance de me former auprès de mon coach Savvly, et je recommande son coaching sans hésitation. Ses explications sont claires, accessibles et vraiment adaptées au niveau de la personne qu'il accompagne. Une communication fluide, une bonne ambiance et une vraie bienveillance.",
   },
   {
     name: 'Romain Sansiquet',
@@ -813,8 +813,8 @@ function IlluLinkedIn({ reduce }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexShrink: 0 }}>
         <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#4F46E5,#818CF8)', flexShrink: 0 }} />
         <div>
-          <div style={{ fontWeight: 700, fontSize: 11, color: '#0F0F1A' }}>Talhah Ally</div>
-          <div style={{ fontSize: 10, color: '#9CA3AF' }}>Freelance & Coach Business</div>
+          <div style={{ fontWeight: 700, fontSize: 11, color: '#0F0F1A' }}>Expert Savvly · +150 freelances accompagnés</div>
+          <div style={{ fontSize: 10, color: '#9CA3AF' }}>Coach Business</div>
         </div>
       </div>
       <div ref={textRef} style={{ maxHeight: 180, overflowY: 'hidden', whiteSpace: 'pre-line' }}>
