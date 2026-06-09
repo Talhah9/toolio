@@ -274,7 +274,7 @@ export const en = {
   'pricing.current-plan': 'Current plan',
   'pricing.credits-left': 'Credits remaining',
   'pricing.next-renewal': 'Next renewal',
-  'pricing.pro.renewal': 'Renews June 1, 2026',
+  'pricing.pro.renewal': 'Monthly renewal',
   'pricing.free.renewal': '50 credits on sign-up',
   'pricing.pro.billing': '€49.00',
   'pricing.no-billing': 'None',

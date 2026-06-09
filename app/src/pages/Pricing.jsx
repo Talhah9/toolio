@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppHeader } from '../components/AppHeader';
 import { Checkout } from '../components/Checkout';
 import { Glyph } from '../components/Glyph';
@@ -9,10 +9,30 @@ import { useLang } from '../context/LanguageContext';
 import { useCurrency } from '../hooks/useCurrency';
 
 export function Pricing() {
-  const { credits, plan } = useApp();
+  const { credits, plan, isPro, user, session } = useApp();
   const { t } = useLang();
   const { format, convert } = useCurrency();
   const [showCheckout, setShowCheckout] = useState(null);
+  const [renewalDate, setRenewalDate] = useState(null);
+  const [cancelAt, setCancelAt] = useState(null);
+
+  useEffect(() => {
+    if (!user?.email || !isPro) return;
+    fetch('/api/subscription-status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+      },
+      body: JSON.stringify({ userId: session?.user?.id, userEmail: user.email }),
+    })
+      .then(r => r.json())
+      .then(json => {
+        if (json.renewalDate) setRenewalDate(json.renewalDate);
+        if (json.cancelAt) { setCancelAt(json.cancelAt); setRenewalDate(null); }
+      })
+      .catch(() => {});
+  }, [user, isPro]);
 
   return (
     <>
@@ -37,7 +57,15 @@ export function Pricing() {
           </div>
           <div className="kv-row">
             <span className="k">{t('pricing.next-renewal')}</span>
-            <span className="v">{plan === 'pro' ? '1 Jun 2026' : '—'}</span>
+            <span className="v">
+              {!isPro
+                ? '—'
+                : cancelAt
+                ? cancelAt
+                : renewalDate
+                ? renewalDate
+                : '—'}
+            </span>
             <span className="muted" style={{ fontSize: 13 }}>{plan === 'pro' ? t('pricing.pro.billing') : t('pricing.no-billing')}</span>
           </div>
         </div>

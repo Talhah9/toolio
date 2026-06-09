@@ -274,7 +274,7 @@ export const fr = {
   'pricing.current-plan': 'Plan actuel',
   'pricing.credits-left': 'Crédits restants',
   'pricing.next-renewal': 'Prochaine échéance',
-  'pricing.pro.renewal': 'Renouvelé le 1er juin 2026',
+  'pricing.pro.renewal': 'Renouvellement mensuel',
   'pricing.free.renewal': "50 offerts à l'inscription",
   'pricing.pro.billing': '49,00€',
   'pricing.no-billing': 'Aucune',
