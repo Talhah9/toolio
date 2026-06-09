@@ -44,7 +44,7 @@ export function Pricing() {
         </div>
 
         {/* Current plan summary */}
-        <div className="kv-list" style={{ marginBottom: 40 }}>
+        <div className="kv-list" style={{ marginBottom: isPro && cancelAt ? 12 : 40 }}>
           <div className="kv-row">
             <span className="k">{t('pricing.current-plan')}</span>
             <span className="v">{plan === 'pro' ? 'Pro' : 'Free'}</span>
@@ -53,22 +53,29 @@ export function Pricing() {
           <div className="kv-row">
             <span className="k">{t('pricing.credits-left')}</span>
             <span className="v tabular">{credits} {t('header.credits')}</span>
-            <span className="muted" style={{ fontSize: 13 }}>{plan === 'pro' ? t('pricing.pro.renewal') : t('pricing.free.renewal')}</span>
-          </div>
-          <div className="kv-row">
-            <span className="k">{t('pricing.next-renewal')}</span>
-            <span className="v">
-              {!isPro
-                ? '—'
-                : cancelAt
-                ? cancelAt
-                : renewalDate
-                ? renewalDate
-                : '—'}
+            <span className="muted" style={{ fontSize: 13 }}>
+              {plan === 'free' ? t('pricing.free.renewal') : !cancelAt ? t('pricing.pro.renewal') : ''}
             </span>
-            <span className="muted" style={{ fontSize: 13 }}>{plan === 'pro' ? t('pricing.pro.billing') : t('pricing.no-billing')}</span>
           </div>
+          {isPro && cancelAt ? (
+            <div className="kv-row">
+              <span className="k">Accès Pro jusqu'au</span>
+              <span className="v" style={{ color: '#D97706', fontWeight: 500 }}>{cancelAt}</span>
+              <span />
+            </div>
+          ) : (
+            <div className="kv-row">
+              <span className="k">{t('pricing.next-renewal')}</span>
+              <span className="v">{!isPro ? '—' : renewalDate || '—'}</span>
+              <span className="muted" style={{ fontSize: 13 }}>{plan === 'pro' ? t('pricing.pro.billing') : t('pricing.no-billing')}</span>
+            </div>
+          )}
         </div>
+        {isPro && cancelAt && (
+          <p style={{ fontSize: 13, color: '#D97706', marginBottom: 40 }}>
+            Ton abonnement sera résilié le {cancelAt}. Tu gardes l'accès Pro jusqu'à cette date.
+          </p>
+        )}
 
         {/* Plans */}
         <div style={{ marginBottom: 16 }}>
