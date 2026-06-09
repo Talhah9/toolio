@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 export const config = { maxDuration: 30 };
 
 // ONE-USE endpoint — delete after running.
-// Call: GET /api/_admin-customer-init?token=savvly-init-2026
+// Call: GET /api/admin-customer-init-once?token=savvly-init-2026
 export default async function handler(req, res) {
   if (req.query.token !== 'savvly-init-2026') {
     return res.status(401).json({ error: 'Unauthorized' });
