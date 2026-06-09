@@ -62,12 +62,29 @@ export default async function handler(req, res) {
     const fmt = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     const nowSec = Math.floor(Date.now() / 1000);
 
-    // Fetch all subs; keep only active/trialing with a future period_end;
-    // pick the one furthest into the future (highest current_period_end)
+    // Fetch all subs for this customer
     const allSubs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 10 });
+
+    console.log('TOUTES LES SUBS:', JSON.stringify(allSubs.data.map(s => ({
+      id: s.id,
+      status: s.status,
+      current_period_end: s.current_period_end,
+      current_period_end_date: new Date(s.current_period_end * 1000).toISOString(),
+      cancel_at_period_end: s.cancel_at_period_end,
+      items: s.items.data.map(i => i.price.id),
+    }))));
+
+    // Keep only active/trialing with period_end at least 24 h in the future
+    const minSec = nowSec + 86400;
     const validActive = allSubs.data
-      .filter(s => (s.status === 'active' || s.status === 'trialing') && s.current_period_end > nowSec)
+      .filter(s => (s.status === 'active' || s.status === 'trialing') && s.current_period_end > minSec)
       .sort((a, b) => b.current_period_end - a.current_period_end);
+
+    console.log('APRÈS FILTRE:', JSON.stringify(validActive.map(s => ({
+      id: s.id,
+      status: s.status,
+      end: new Date(s.current_period_end * 1000).toISOString(),
+    }))));
 
     if (validActive.length) {
       const sub = validActive[0];
@@ -91,6 +108,7 @@ export default async function handler(req, res) {
       return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
     }
 
+    console.log('[subscription-status] aucune sub valide trouvée pour', customerId);
     return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
   } catch (err) {
     console.error('[subscription-status] error:', err.message);
