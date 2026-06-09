@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AppHeader } from '../components/AppHeader';
 import { Glyph } from '../components/Glyph';
@@ -37,7 +38,15 @@ export function Dashboard() {
           <p className="muted">{t('dashboard.subtitle')}</p>
         </div>
 
-        {isPro && <CoachingBanner />}
+        {isPro && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          >
+            <CoachingBanner />
+          </motion.div>
+        )}
 
         {!isPro && (
           <div className="banner" style={{ marginBottom: 16 }}>

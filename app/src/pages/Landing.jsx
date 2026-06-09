@@ -1859,6 +1859,17 @@ export function Landing() {
             >
               {t('landing.hero.note')}
             </motion.p>
+
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.55 }}
+              style={{ marginTop: 14 }}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FEFCE8', border: '1px solid #FDE68A', borderRadius: 99, padding: '5px 16px', fontSize: 13, color: '#92400E', fontWeight: 600 }}>
+                🎯 Coaching 1:1 offert après 2 mois d'abonnement
+              </span>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -2137,35 +2148,43 @@ export function Landing() {
       {/* ── 9. COACHING ──────────────────────────────────────── */}
       <FadeUp>
         <section style={{ background: '#F7F7FF', borderTop: '1px solid #E4E4F0', padding: '96px 24px' }}>
-          <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 64, alignItems: 'center', maxWidth: 1060, margin: '0 auto' }}>
+          <div className="container" style={{ maxWidth: 1060, margin: '0 auto' }}>
 
-              {/* LEFT — coach presentation */}
-              <div>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.18)', borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 24 }}>
-                  Coach Business ✦
-                </span>
-                <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-                  Travaillez avec notre<br />coach business
-                </h2>
-                <p style={{ fontSize: 16, color: '#4B4B6A', margin: '0 0 28px', lineHeight: 1.7 }}>
-                  1h de consultation pour structurer votre activité, débloquer vos points de friction et repartir avec un plan d'action concret.
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 36 }}>
-                  {[
-                    'Analyse de votre situation actuelle',
-                    'Stratégie claire et adaptée à votre contexte',
-                    "Plan d'action concret à mettre en place dès le lendemain",
-                  ].map((benefit, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(79,70,229,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      </span>
-                      <span style={{ fontSize: 14, color: '#2D2D4A', lineHeight: 1.6 }}>{benefit}</span>
-                    </div>
-                  ))}
+            {/* Header */}
+            <div style={{ marginBottom: 48, maxWidth: 640 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.18)', borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 20 }}>
+                Coach Business ✦
+              </span>
+              <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 40px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 16px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+                Un expert à tes côtés pour<br />accélérer ton business
+              </h2>
+              <p style={{ fontSize: 16, color: '#4B4B6A', margin: 0, lineHeight: 1.7 }}>
+                Après 2 mois d'abonnement, accède à une session de coaching 1:1 offerte avec un expert qui a accompagné +150 freelances.
+              </p>
+            </div>
+
+            {/* 3×2 benefit cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginBottom: 40 }}>
+              {[
+                { icon: '🎯', title: 'Positionnement & TJM', desc: 'Définis ton offre, ton positionnement et fixe un tarif que tes clients acceptent.' },
+                { icon: '🔍', title: 'Analyse de ton cas', desc: 'On analyse ensemble ta situation, tes forces, tes blocages et ce qui t'empêche d'avancer.' },
+                { icon: '📋', title: 'Actions concrètes', desc: 'Tu repars avec un plan d'action clair et des étapes précises à mettre en place dès le lendemain.' },
+                { icon: '🎯', title: 'Trouver tes clients', desc: 'Stratégie personnalisée pour identifier tes cibles et savoir exactement où et comment les approcher.' },
+                { icon: '💼', title: 'Stratégie business', desc: 'On parle de ta stratégie globale, tes objectifs, tes revenus cibles et comment les atteindre.' },
+                { icon: '👥', title: 'Ateliers de groupe', desc: 'Accède aux ateliers mensuels : trouver des clients, IA & Claude Code, LinkedIn qui convertit — au sein d'une communauté de 200+ freelances.' },
+              ].map(({ icon, title, desc }) => (
+                <div key={title} style={{ background: '#fff', border: '1px solid #E9E9F0', borderRadius: 16, padding: '20px 22px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(79,70,229,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, marginBottom: 12 }}>{icon}</div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: '#0F0F1A', marginBottom: 6 }}>{title}</div>
+                  <p style={{ fontSize: 13, color: '#6B7280', margin: 0, lineHeight: 1.6 }}>{desc}</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+              ))}
+            </div>
+
+            {/* Bottom row: CTA + encart fidélité left, testimonials right */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 48, alignItems: 'start' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
                   <motion.button
                     onClick={() => navigate('/coaching')}
                     style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px 28px', fontWeight: 800, fontSize: 15, cursor: 'pointer', letterSpacing: '0.01em' }}
@@ -2183,17 +2202,22 @@ export function Landing() {
                   </a>
                 </div>
 
-                {/* Free coaching encart for loyal subscribers */}
-                <div style={{ marginTop: 20, padding: '14px 18px', borderRadius: 12, background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', border: '1px solid #FDE68A', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#92400E' }}>✨ Abonnés Pro depuis 2 mois+ : accédez à une session de coaching 1:1 offerte</span>
-                  <span style={{ fontSize: 12, color: '#B45309' }}>Réservé aux membres fidèles · Une fois par abonnement</span>
+                {/* Encart fidélité */}
+                <div style={{ padding: '20px 22px', borderRadius: 16, background: 'linear-gradient(135deg, #FFFBEB, #FFF7ED)', border: '1px solid #FDE68A' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: '#92400E' }}>✨ Réservé aux abonnés Pro fidèles</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, background: 'rgba(79,70,229,0.1)', color: '#4F46E5', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 99, padding: '3px 10px', whiteSpace: 'nowrap' }}>+150 freelances accompagnés</span>
+                  </div>
+                  <p style={{ fontSize: 13, color: '#B45309', margin: 0, lineHeight: 1.6 }}>
+                    Ta session de coaching 1:1 est offerte après 2 mois d'abonnement. Une fois par abonnement, sans engagement.
+                  </p>
                 </div>
               </div>
 
-              {/* RIGHT — testimonials carousel */}
+              {/* Testimonials */}
               <CoachingTestimonials />
-
             </div>
+
           </div>
         </section>
       </FadeUp>
