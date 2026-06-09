@@ -56,8 +56,6 @@ export function Sidebar() {
         );
       })}
 
-      <div style={{ flex: 1 }} />
-
       {/* Community — coming soon */}
       <div
         className="sidebar-item"
