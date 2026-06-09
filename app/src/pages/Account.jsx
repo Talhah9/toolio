@@ -117,7 +117,7 @@ export function Account() {
             <div className="kv-list">
               <div className="kv-row">
                 <span className="k">{t('account.plan')}</span>
-                <span className="v" style={isPro && effectiveCancelAt ? { color: '#D97706', fontWeight: 500 } : {}}>
+                <span className="v" style={isPro && effectiveCancelAt ? { color: '#EF4444', fontWeight: 500 } : {}}>
                   {isPro && effectiveCancelAt
                     ? `Actif jusqu'au ${effectiveCancelAt}`
                     : isPro

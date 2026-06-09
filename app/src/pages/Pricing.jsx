@@ -60,7 +60,7 @@ export function Pricing() {
           {isPro && cancelAt ? (
             <div className="kv-row">
               <span className="k">Accès Pro jusqu'au</span>
-              <span className="v" style={{ color: '#D97706', fontWeight: 500 }}>{cancelAt}</span>
+              <span className="v" style={{ color: '#EF4444', fontWeight: 500 }}>{cancelAt}</span>
               <span />
             </div>
           ) : (
@@ -72,7 +72,7 @@ export function Pricing() {
           )}
         </div>
         {isPro && cancelAt && (
-          <p style={{ fontSize: 13, color: '#D97706', marginBottom: 40 }}>
+          <p style={{ fontSize: 13, color: '#EF4444', marginBottom: 40 }}>
             Ton abonnement sera résilié le {cancelAt}. Tu gardes l'accès Pro jusqu'à cette date.
           </p>
         )}
