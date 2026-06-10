@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
@@ -63,6 +63,20 @@ function PlanBadge({ plan }) {
   );
 }
 
+function MiniBar({ date, count, max }) {
+  const heightPct = max > 0 ? Math.max(6, Math.round((count / max) * 100)) : 6;
+  const label = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: count > 0 ? 'var(--fg-2)' : 'var(--fg-4)' }}>{count}</span>
+      <div style={{ width: '100%', height: 56, display: 'flex', alignItems: 'flex-end' }}>
+        <div style={{ width: '100%', height: `${heightPct}%`, background: count > 0 ? 'var(--accent)' : 'var(--border)', borderRadius: '3px 3px 0 0', transition: 'height 0.4s ease', minHeight: 3 }} />
+      </div>
+      <span style={{ fontSize: 10, color: 'var(--fg-4)', textTransform: 'capitalize' }}>{label}</span>
+    </div>
+  );
+}
+
 function ToolBar({ tool_id, count, max }) {
   const pct = max > 0 ? Math.round((count / max) * 100) : 0;
   return (
@@ -89,6 +103,14 @@ export function Admin() {
   const [digestSent, setDigestSent] = useState(false);
   const [digestBusy, setDigestBusy] = useState(false);
 
+  const refreshStats = useCallback(async () => {
+    if (!session?.access_token) return;
+    const data = await fetch('/api/admin-stats', {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    }).then(r => r.json()).catch(() => null);
+    if (data && !data.error) setStats(data);
+  }, [session?.access_token]);
+
   useEffect(() => {
     if (!session?.access_token) return;
 
@@ -109,7 +131,10 @@ export function Admin() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, [session]);
+
+    const interval = setInterval(refreshStats, 30000);
+    return () => clearInterval(interval);
+  }, [session, refreshStats]);
 
   const sendDigest = async () => {
     setDigestBusy(true);
@@ -190,7 +215,77 @@ export function Admin() {
           </div>
         </Section>
 
-        {/* Section 2 — Recent signups */}
+        {/* Section 2 — Traffic */}
+        <Section title="Trafic">
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+            <StatCard label="Visiteurs aujourd'hui" value={stats.todayVisits} sub="rafraîchi toutes les 30s" accent />
+            <StatCard label="7 derniers jours" value={stats.weekVisits.reduce((s, d) => s + d.count, 0)} sub="pages vues" />
+          </div>
+
+          {/* Week bar chart */}
+          <div className="card card-pad" style={{ marginBottom: 16 }}>
+            <p style={{ margin: '0 0 14px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)' }}>
+              Visites par jour
+            </p>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
+              {stats.weekVisits.map(d => (
+                <MiniBar key={d.date} {...d} max={Math.max(...stats.weekVisits.map(x => x.count), 1)} />
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {/* Top pages */}
+            <div>
+              <p style={{ margin: '0 0 8px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)' }}>
+                Pages les plus visitées
+              </p>
+              {stats.topPages.length === 0 ? (
+                <div className="card card-pad"><p className="muted">Aucune donnée.</p></div>
+              ) : (
+                <TableWrap>
+                  <thead>
+                    <tr><TH>Page</TH><TH right>Vues</TH></tr>
+                  </thead>
+                  <tbody>
+                    {stats.topPages.map((p, i) => (
+                      <tr key={i} style={{ background: i % 2 === 0 ? 'var(--bg)' : 'var(--bg-soft)' }}>
+                        <TD><span style={{ fontFamily: 'monospace', fontSize: 12 }}>{p.path}</span></TD>
+                        <TD right bold>{p.count}</TD>
+                      </tr>
+                    ))}
+                  </tbody>
+                </TableWrap>
+              )}
+            </div>
+
+            {/* Top referrers */}
+            <div>
+              <p style={{ margin: '0 0 8px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-3)' }}>
+                Sources de trafic
+              </p>
+              {stats.topReferrers.length === 0 ? (
+                <div className="card card-pad"><p className="muted">Aucune donnée.</p></div>
+              ) : (
+                <TableWrap>
+                  <thead>
+                    <tr><TH>Source</TH><TH right>Visites</TH></tr>
+                  </thead>
+                  <tbody>
+                    {stats.topReferrers.map((r, i) => (
+                      <tr key={i} style={{ background: i % 2 === 0 ? 'var(--bg)' : 'var(--bg-soft)' }}>
+                        <TD>{r.referrer}</TD>
+                        <TD right bold>{r.count}</TD>
+                      </tr>
+                    ))}
+                  </tbody>
+                </TableWrap>
+              )}
+            </div>
+          </div>
+        </Section>
+
+        {/* Section 3 — Recent signups */}
         <Section title="Recent signups — last 20">
           {stats.recentUsers.length === 0 ? (
             <div className="card card-pad"><p className="muted">No users yet.</p></div>
@@ -218,7 +313,7 @@ export function Admin() {
           )}
         </Section>
 
-        {/* Section 3 — Tool usage */}
+        {/* Section 4 — Tool usage */}
         <Section title="Tool usage — this month">
           {stats.toolUsage.length === 0 ? (
             <div className="card card-pad"><p className="muted">No generations this month.</p></div>
@@ -231,7 +326,7 @@ export function Admin() {
           )}
         </Section>
 
-        {/* Section 4 — Revenue */}
+        {/* Section 5 — Revenue */}
         <Section title="Revenue">
           <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
             <a
@@ -270,7 +365,7 @@ export function Admin() {
           )}
         </Section>
 
-        {/* Section 5 — Low credit users */}
+        {/* Section 6 — Low credit users */}
         <Section title={`Low credit users — <20 credits (${stats.lowCreditUsers.length})`}>
           {stats.lowCreditUsers.length === 0 ? (
             <div className="card card-pad"><p className="muted" style={{ color: '#16a34a' }}>All users have plenty of credits.</p></div>

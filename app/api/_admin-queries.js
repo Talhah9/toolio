@@ -37,6 +37,10 @@ export async function fetchAdminStats() {
 
   const weekStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayIso = todayStart.toISOString();
+
   const [
     { count: totalUsers },
     { count: proUsers },
@@ -45,6 +49,8 @@ export async function fetchAdminStats() {
     { data: recentProfiles },
     { data: lowCreditRows },
     { data: newThisWeek },
+    { count: todayVisits },
+    { data: weekViewRows },
   ] = await Promise.all([
     db.from('profiles').select('*', { count: 'exact', head: true }),
     db.from('profiles').select('*', { count: 'exact', head: true }).eq('plan', 'pro'),
@@ -53,6 +59,8 @@ export async function fetchAdminStats() {
     db.from('profiles').select('id, email, plan, created_at').order('created_at', { ascending: false }).limit(20),
     db.from('credits').select('user_id, balance').lt('balance', 20),
     db.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', weekStart),
+    db.from('page_views').select('*', { count: 'exact', head: true }).gte('created_at', todayIso),
+    db.from('page_views').select('path, referrer, created_at').gte('created_at', weekStart).limit(2000),
   ]);
 
   // Tool usage: group by tool_id client-side
@@ -97,6 +105,41 @@ export async function fetchAdminStats() {
     credits: creditMap[p.id] ?? 0,
   }));
 
+  // Visits per day — last 7 days
+  const dayMap = {};
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    dayMap[d.toISOString().slice(0, 10)] = 0;
+  }
+  (weekViewRows ?? []).forEach(r => {
+    const day = r.created_at.slice(0, 10);
+    if (day in dayMap) dayMap[day]++;
+  });
+  const weekVisits = Object.entries(dayMap).map(([date, count]) => ({ date, count }));
+
+  // Top pages — last 7 days
+  const pageCounts = {};
+  (weekViewRows ?? []).forEach(r => {
+    pageCounts[r.path] = (pageCounts[r.path] ?? 0) + 1;
+  });
+  const topPages = Object.entries(pageCounts)
+    .map(([path, count]) => ({ path, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  // Top referrers — last 7 days (normalize to domain)
+  const refCounts = {};
+  (weekViewRows ?? []).forEach(r => {
+    if (!r.referrer) return;
+    let ref = r.referrer;
+    try { ref = new URL(r.referrer).hostname.replace(/^www\./, ''); } catch {}
+    refCounts[ref] = (refCounts[ref] ?? 0) + 1;
+  });
+  const topReferrers = Object.entries(refCounts)
+    .map(([referrer, count]) => ({ referrer, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
   return {
     totalUsers:   totalUsers ?? 0,
     proUsers:     proUsers   ?? 0,
@@ -106,5 +149,9 @@ export async function fetchAdminStats() {
     toolUsage,
     recentUsers,
     lowCreditUsers,
+    todayVisits:  todayVisits ?? 0,
+    weekVisits,
+    topPages,
+    topReferrers,
   };
 }

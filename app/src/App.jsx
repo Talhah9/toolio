@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -24,6 +24,32 @@ const ComingSoon    = lazy(() => import('./pages/ComingSoon').then(m => ({ defau
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
 
+const _initialReferrer = typeof document !== 'undefined' ? (document.referrer || null) : null;
+
+function RouteTracker() {
+  const location = useLocation();
+  const tracked = useRef(new Set());
+  const isFirst = useRef(true);
+
+  useEffect(() => {
+    const { pathname } = location;
+    if (pathname.startsWith('/admin')) return;
+    if (tracked.current.has(pathname)) return;
+    tracked.current.add(pathname);
+
+    const referrer = isFirst.current ? _initialReferrer : null;
+    isFirst.current = false;
+
+    fetch('/api/track-visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: pathname, referrer }),
+    }).catch(() => {});
+  }, [location.pathname]);
+
+  return null;
+}
+
 const Spinner = () => (
   <>
     <style>{`@keyframes _spin { to { transform: rotate(360deg); } }`}</style>
@@ -45,6 +71,7 @@ export function App() {
     <LanguageProvider>
     <AppProvider>
       <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+        <RouteTracker />
         <Suspense fallback={<Spinner />}>
           <Routes>
             <Route path="/" element={<Landing />} />
