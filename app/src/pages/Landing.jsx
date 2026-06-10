@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, useInView, AnimatePresence, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { MarketingNav } from '../components/MarketingNav';
@@ -381,14 +381,17 @@ function CoachingTestimonials() {
   const reduce = useReducedMotion();
   const [current, setCurrent] = useState(0);
   const [dir, setDir] = useState(1);
+  const carouselRef = useRef(null);
+  const inViewport = useInView(carouselRef, { once: false, amount: 0.3 });
 
   useEffect(() => {
+    if (!inViewport || reduce) return;
     const id = setInterval(() => {
       setDir(1);
       setCurrent(c => (c + 1) % TESTIMONIALS.length);
     }, 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [inViewport, reduce]);
 
   const go = (idx) => {
     setDir(idx > current ? 1 : -1);
@@ -404,7 +407,7 @@ function CoachingTestimonials() {
   const item = TESTIMONIALS[current];
 
   return (
-    <div>
+    <div ref={carouselRef}>
       <div style={{ overflow: 'hidden', borderRadius: 20 }}>
         <AnimatePresence initial={false} custom={dir} mode="wait">
           <motion.div
@@ -664,8 +667,26 @@ function BlueprintSection({ navigate }) {
 
 // ── "L'arme ultime" comparison section ───────────────────────
 
+const VIDEO_SRC = 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/video/Create_a_second_product_dem.mp4';
+
 function UltimateSection({ lang, navigate, reduce }) {
   const { t } = useLang();
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && videoRef.current) {
+          videoRef.current.src = VIDEO_SRC;
+          videoRef.current.load();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    if (videoRef.current) observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
   const rows = [
     [t('landing.ultimate.row.1'), false, true],
     [t('landing.ultimate.row.2'), false, true],
@@ -714,15 +735,16 @@ function UltimateSection({ lang, navigate, reduce }) {
           {/* Product video */}
           <FadeUp delay={0.15}>
             <video
+              ref={videoRef}
               key="savvly-demo"
               autoPlay
               loop
               muted
               playsInline
               controls={false}
+              preload="none"
               poster="/dashboard-preview.png"
               onError={(e) => console.error('Video error:', e)}
-              onLoadedData={undefined}
               style={{
                 width: '100%',
                 maxWidth: 600,
@@ -732,13 +754,7 @@ function UltimateSection({ lang, navigate, reduce }) {
                 display: 'block',
                 backgroundColor: '#f0f0f0',
               }}
-            >
-              <source
-                src="https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/video/Create_a_second_product_dem.mp4"
-                type="video/mp4"
-              />
-              Votre navigateur ne supporte pas la vidéo.
-            </video>
+            />
           </FadeUp>
         </div>
 
@@ -1256,8 +1272,8 @@ function NewsletterSection({ reduce }) {
         {/* Card container — logos are positioned relative to this div */}
         <div style={{ position: 'relative', maxWidth: 480, width: '100%' }}>
 
-          {/* Floating tool logos — hidden on mobile via CSS class */}
-          {NL_TOOLS.map((tool, i) => (
+          {/* Floating tool logos — hidden on mobile via CSS class, capped at 6 */}
+          {NL_TOOLS.slice(0, 6).map((tool, i) => (
             <motion.div
               key={i}
               className="nl-floating-logo"
@@ -1273,17 +1289,12 @@ function NewsletterSection({ reduce }) {
                 pointerEvents: 'none',
               }}
             >
-              <motion.div
-                animate={reduce ? {} : { y: [0, -4, 0] }}
-                transition={{ duration: 2.5 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
-              >
-                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 15, fontWeight: 700, color: '#374151', minWidth: 100 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: tool.bg, color: tool.color, fontSize: tool.label.length > 1 ? 9 : 11, fontWeight: 800, flexShrink: 0, letterSpacing: '-0.02em' }}>
-                    {tool.label}
-                  </span>
-                  {tool.name}
-                </div>
-              </motion.div>
+              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 15, fontWeight: 700, color: '#374151', minWidth: 100 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: tool.bg, color: tool.color, fontSize: tool.label.length > 1 ? 9 : 11, fontWeight: 800, flexShrink: 0, letterSpacing: '-0.02em' }}>
+                  {tool.label}
+                </span>
+                {tool.name}
+              </div>
             </motion.div>
           ))}
 
@@ -1737,6 +1748,11 @@ function HeroOutputCard({ t, lang, startIdx = 0 }) {
   );
 }
 
+// ── Memoized heavy sections ───────────────────────────────────
+const MemoTestimonialCarousel = memo(TestimonialCarousel);
+const MemoFeaturedTools       = memo(FeaturedTools);
+const MemoNewsletterSection   = memo(NewsletterSection);
+
 // ── Landing page ──────────────────────────────────────────────
 
 export function Landing() {
@@ -1883,7 +1899,7 @@ export function Landing() {
       </section>
 
       {/* ── 1b. NEWSLETTER ───────────────────────────────────── */}
-      <NewsletterSection reduce={reduce} />
+      <MemoNewsletterSection reduce={reduce} />
 
       {/* ── NEW: "L'arme ultime" comparison ──────────────────── */}
       <UltimateSection lang={lang} navigate={navigate} reduce={reduce} />
@@ -1892,7 +1908,7 @@ export function Landing() {
       <BlueprintSection navigate={navigate} />
 
       {/* ── NEW: 4 outils qui changent tout ──────────────────── */}
-      <FeaturedTools lang={lang} navigate={navigate} reduce={reduce} />
+      <MemoFeaturedTools lang={lang} navigate={navigate} reduce={reduce} />
 
       {/* ── LinkedIn Content showcase ────────────────────────── */}
       <LinkedInShowcaseSection navigate={navigate} reduce={reduce} />
@@ -1933,7 +1949,7 @@ export function Landing() {
           </FadeUp>
 
           <FadeUp delay={0.1}>
-            <TestimonialCarousel t={t} />
+            <MemoTestimonialCarousel t={t} />
           </FadeUp>
         </div>
       </section>
