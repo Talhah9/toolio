@@ -515,7 +515,7 @@ function TornEdge({ topColor = '#0A0A0A', bottomColor = '#fff', flip = false }) 
 function BlueprintSection({ navigate }) {
   const ff = "'Segoe UI', system-ui, sans-serif";
   return (
-    <section style={{ background: '#FAFAFA', padding: '80px 24px', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+    <section aria-label="Exemple de document généré" style={{ background: '#FAFAFA', padding: '80px 24px', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       <div style={{ textAlign: 'center', marginBottom: 52 }}>
         <span style={{ background: '#4F46E5', color: 'white', borderRadius: 100, padding: '4px 14px', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em' }}>EXEMPLE RÉEL</span>
         <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, margin: '16px 0 8px' }}>Voici ce que Savvly génère pour vous</h2>
@@ -698,7 +698,7 @@ function UltimateSection({ lang, navigate, reduce }) {
   ];
 
   return (
-    <section style={{ background: '#FDFCF7', padding: '100px 24px 80px', borderTop: '1px solid #EDE9D8' }}>
+    <section aria-label="Offre et avantages" style={{ background: '#FDFCF7', padding: '100px 24px 80px', borderTop: '1px solid #EDE9D8' }}>
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
@@ -1006,7 +1006,7 @@ function FeaturedTools({ lang, navigate, reduce }) {
   ];
 
   return (
-    <section style={{ background: '#F5F5F7', padding: 'clamp(48px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)' }}>
+    <section aria-label="Communauté freelance" style={{ background: '#F5F5F7', padding: 'clamp(48px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)' }}>
       <div className="container">
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -1100,7 +1100,7 @@ function LinkedInShowcaseSection({ navigate, reduce }) {
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section ref={ref} style={{ background: '#FAFAFA', padding: 'clamp(60px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)', backgroundImage: 'linear-gradient(rgba(79,70,229,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.045) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+    <section ref={ref} aria-label="Posts LinkedIn générés par IA" style={{ background: '#FAFAFA', padding: 'clamp(60px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)', backgroundImage: 'linear-gradient(rgba(79,70,229,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.045) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       <style>{`
         @media (max-width: 860px) {
           .li-showcase-grid { grid-template-columns: 1fr !important; }
@@ -1251,7 +1251,7 @@ function NewsletterSection({ reduce }) {
   }
 
   return (
-    <section style={{ background: '#FAFAFA', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+    <section aria-label="Newsletter et ressources" style={{ background: '#FAFAFA', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
       <style>{`
         .nl-success { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .nl-success-icon { font-size: 44px; line-height: 1; margin-bottom: 4px; }
@@ -1418,7 +1418,7 @@ function CommunitySection({ lang, navigate, reduce }) {
   ];
   return (
     <FadeUp>
-      <section style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+      <section aria-label="Témoignages clients" style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(79,70,229,0.05) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,208,44,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -1506,7 +1506,7 @@ function ContainerScroll({ lang, navigate, reduce }) {
   );
 
   return (
-    <section ref={containerRef} className="container-scroll-section" style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px 80px' }}>
+    <section ref={containerRef} className="container-scroll-section" aria-label="Fonctionnalités détaillées" style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px 80px' }}>
       <div className="container">
         <FadeUp>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -1788,7 +1788,7 @@ export function Landing() {
       <MarketingNav />
 
       {/* ── 1. HERO ───────────────────────────────────────────── */}
-      <section className="hero" style={{ paddingBottom: 80, position: 'relative' }}>
+      <section className="hero" aria-label="Présentation" style={{ paddingBottom: 80, position: 'relative' }}>
         {/* Background blobs + dot grid */}
         <div className="hero-bg" aria-hidden="true">
           <div className="hero-blob hero-blob-purple" />
@@ -1917,7 +1917,7 @@ export function Landing() {
       <ContainerScroll lang={lang} navigate={navigate} reduce={reduce} />
 
       {/* ── 3. ANIMATED DEMO ──────────────────────────────────── */}
-      <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+      <section className="section" aria-label="Démonstration" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>
             <div className="section-hd">
@@ -1937,7 +1937,7 @@ export function Landing() {
 
 
       {/* ── 4. SOCIAL PROOF — STATS + TESTIMONIALS ────────────── */}
-      <section className="section lp-dark">
+      <section className="section lp-dark" aria-label="Statistiques et témoignages">
         <div className="container">
           <FadeUp>
             <div className="stat-bar">
@@ -1955,7 +1955,7 @@ export function Landing() {
       </section>
 
       {/* ── 5. TOOLS SHOWCASE ─────────────────────────────────── */}
-      <section id="tools" className="section" style={{ borderTop: '1px solid var(--border)' }}>
+      <section id="tools" className="section" aria-label="Outils" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>
             <div className="section-hd">
@@ -2065,7 +2065,7 @@ export function Landing() {
       </section>
 
       {/* ── 6. HOW IT WORKS ───────────────────────────────────── */}
-      <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+      <section className="section" aria-label="Comment ça marche" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>
             <div className="section-hd">
@@ -2091,7 +2091,7 @@ export function Landing() {
       </section>
 
       {/* ── 7. PRICING ────────────────────────────────────────── */}
-      <section id="pricing" className="section">
+      <section id="pricing" className="section" aria-label="Tarifs">
         <div className="container">
           <FadeUp>
             <div className="section-hd">
@@ -2171,7 +2171,7 @@ export function Landing() {
 
       {/* ── 9. COACHING ──────────────────────────────────────── */}
       <FadeUp>
-        <section style={{ background: '#F7F7FF', borderTop: '1px solid #E4E4F0', padding: '96px 24px' }}>
+        <section aria-label="Coaching business" style={{ background: '#F7F7FF', borderTop: '1px solid #E4E4F0', padding: '96px 24px' }}>
           <div className="container" style={{ maxWidth: 1060, margin: '0 auto' }}>
 
             {/* Header */}
@@ -2247,7 +2247,7 @@ export function Landing() {
       </FadeUp>
 
       {/* ── 11. FAQ ───────────────────────────────────────────── */}
-      <section className="section" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
+      <section className="section" aria-label="Questions fréquentes" style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <FadeUp>
             <div className="section-hd" style={{ marginBottom: 0 }}>
@@ -2267,7 +2267,7 @@ export function Landing() {
 
       {/* ── 9. FINAL CTA ──────────────────────────────────────── */}
       <FadeUp>
-        <section className="lp-final-dark">
+        <section className="lp-final-dark" aria-label="Appel à l'action">
           <div className="container-narrow">
             <h2 className="h1" style={{ marginBottom: 16, color: '#0F0F1A' }}>{t('landing.final.title')}</h2>
             <p style={{ marginBottom: 32, color: '#6B6B8A', fontSize: 15 }}>{t('landing.final.sub')}</p>
@@ -2294,7 +2294,7 @@ export function Landing() {
                   <img
                     key={i}
                     src={url}
-                    alt="user"
+                    alt="Freelance utilisant Savvly"
                     style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -12, objectFit: 'cover', position: 'relative', zIndex: 5 - i }}
                   />
                 ))}
