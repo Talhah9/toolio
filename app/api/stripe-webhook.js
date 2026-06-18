@@ -115,6 +115,43 @@ export default async function handler(req, res) {
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
+
+      // ── Discord club one-time purchase ────────────────────────
+      if (session.metadata?.type === 'discord_access') {
+        const customerEmail = session.customer_details?.email || session.customer_email;
+        console.log('[stripe-webhook] discord_access purchase | email:', customerEmail);
+        if (customerEmail) {
+          await sendEmail(
+            customerEmail,
+            'Bienvenue dans le club Savvly 🎉',
+            `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:#5865F2;padding:40px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.7);margin-bottom:12px;">SAVVLY</div>
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:#fff;">Bienvenue dans le club 🎉</h1>
+    </div>
+    <div style="padding:36px 40px;text-align:center;">
+      <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
+        Ton accès au club Discord Savvly est confirmé. Clique ci-dessous pour rejoindre les <strong>220+ freelances</strong> qui avancent ensemble.
+      </p>
+      <a href="https://discord.gg/8DvYb5uB6X" style="display:inline-block;background:#5865F2;color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;">
+        Rejoindre le Discord →
+      </a>
+      <p style="margin:24px 0 0;font-size:13px;color:#9CA3AF;">
+        Ou copie ce lien : <a href="https://discord.gg/8DvYb5uB6X" style="color:#5865F2;">discord.gg/8DvYb5uB6X</a>
+      </p>
+    </div>
+    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+    </div>
+  </div>
+</body></html>`
+          );
+        }
+        return res.json({ received: true });
+      }
+
       const userId  = session.metadata?.userId || session.client_reference_id;
       const credits = parseInt(session.metadata?.credits || '0', 10);
 
