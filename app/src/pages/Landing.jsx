@@ -778,9 +778,9 @@ function UltimateSection({ lang, navigate, reduce }) {
 // ── Club Discord (merged with newsletter) ─────────────────────
 
 const CLUB_BENEFITS = [
-  '23 ressources PDF offertes (valeur 97€ chacune) — prospection, IA, LinkedIn, automatisation',
-  'Communauté de 220+ freelances actifs sur Discord',
-  'Experts dans chaque domaine — dev, assistance virtuelle, marketing, design',
+  <><strong>23 ressources PDF</strong> offertes (valeur 97€ chacune) — prospection, IA, LinkedIn, automatisation</>,
+  <>Communauté de <strong>220+ freelances</strong> actifs sur Discord</>,
+  <>Experts — <strong>dev, assistance virtuelle, marketing, design</strong></>,
   'Ateliers réguliers en groupe',
   'Entraide et opportunités au quotidien',
 ];
@@ -790,6 +790,32 @@ const DISCORD_SVG = (
     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.128 18.115a19.9 19.9 0 0 0 5.993 3.03.077.077 0 0 0 .084-.026c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
   </svg>
 );
+
+// Floating app logos for ClubSection — real SVG icons, spread full height of card
+const CLUB_TOOLS = [
+  // ── Left side ────────────────────────────────────────────────
+  { name: 'Claude', bg: '#CC785C', top: -55, left: -235, rotate: -14, delay: 0,    floatY: 8,  floatDur: 3.2,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M12 2 3 20h3.5L8 16h8l1.5 4H21L12 2zm0 5.5 2.5 6.5h-5L12 7.5z"/></svg> },
+  { name: 'Zapier', bg: '#FF4A00', top: 65,  left: -265, rotate: -18, delay: 0.3,  floatY: 10, floatDur: 2.8,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M3 4h12L7 12h9v8H4l8-8H3V4z"/></svg> },
+  { name: 'LinkedIn', bg: '#0A66C2', top: 180, left: -248, rotate: -8,  delay: 0.5,  floatY: 7,  floatDur: 3.5,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> },
+  { name: 'Airtable', bg: '#18BFFF', top: 305, left: -222, rotate: 12,  delay: 0.7,  floatY: 9,  floatDur: 3.0,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M11.984 0L0 4.35v1.09l.46.172L12 9.906l11.54-4.295.46-.17V4.35zm.016 11.052L1 6.957v8.336l.107.04L12 19.19l10.893-3.856.107-.04V6.957zM0 6.957v8.378l.5.19L11 19.334v-8.378L.5 7.147zm13 3.999v8.378l10.5-3.809V7.147z"/></svg> },
+  { name: 'Gemini', bg: '#4285F4', top: 415, left: -208, rotate: 8,   delay: 0.9,  floatY: 11, floatDur: 3.8,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M12 1.5 9 9H1.5l6.375 4.5L5.25 21 12 16.5 18.75 21l-2.625-7.5L22.5 9H15z"/></svg> },
+  // ── Right side ───────────────────────────────────────────────
+  { name: 'ChatGPT', bg: '#10A37F', top: -60,  right: -235, rotate: 14,  delay: 0.15, floatY: 9,  floatDur: 2.9,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zm-9.022 12.61a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.677l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387 2.02-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08-4.778 2.758a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/></svg> },
+  { name: 'Make', bg: '#6D00A8', top: 70,   right: -268, rotate: 18,  delay: 0.4,  floatY: 11, floatDur: 3.3,
+    icon: <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="5" r="3" fill="white"/><circle cx="5" cy="17" r="3" fill="white"/><circle cx="19" cy="17" r="3" fill="white"/><line x1="12" y1="8" x2="5.5" y2="14.5" stroke="white" strokeWidth="1.5"/><line x1="12" y1="8" x2="18.5" y2="14.5" stroke="white" strokeWidth="1.5"/><line x1="5" y1="17" x2="19" y2="17" stroke="white" strokeWidth="1.5"/></svg> },
+  { name: 'Notion', bg: '#1A1A1A', top: 185, right: -250, rotate: -8,  delay: 0.6,  floatY: 8,  floatDur: 4.0,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z"/></svg> },
+  { name: 'Instagram', bg: '#E1306C', top: 315, right: -220, rotate: -12, delay: 0.8,  floatY: 9,  floatDur: 2.7,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 3.252.148 4.771 1.691 4.919 4.919.049 1.265.064 1.645.064 4.849 0 3.205-.015 3.585-.074 4.85-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.072-4.85.072-3.204 0-3.584-.014-4.849-.072-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.072-1.644-.072-4.849 0-3.204.013-3.583.072-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.071 4.849-.071zM12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg> },
+  { name: 'Apollo', bg: '#7C3AED', top: 425, right: -208, rotate: -10, delay: 1.0,  floatY: 8,  floatDur: 3.6,
+    icon: <svg viewBox="0 0 24 24" fill="white" width="18" height="18" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 3a7 7 0 1 1 0 14A7 7 0 0 1 12 5zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg> },
+];
 
 function ClubSection({ reduce }) {
   const [email, setEmail] = useState('');
@@ -829,18 +855,26 @@ function ClubSection({ reduce }) {
         <div style={{ position: 'relative', maxWidth: 480, width: '100%' }}>
 
           {/* Floating tool logos */}
-          {NL_TOOLS.slice(0, 6).map((tool, i) => (
+          {CLUB_TOOLS.map((tool, i) => (
             <motion.div
               key={i}
               className="nl-floating-logo"
               initial={{ opacity: 0, scale: 0.75 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: reduce ? 0 : tool.delay, ease }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: reduce ? 0 : [0, -tool.floatY, 0],
+              }}
+              transition={{
+                opacity: { duration: 0.35, delay: tool.delay },
+                scale:   { duration: 0.35, delay: tool.delay },
+                y: reduce ? { duration: 0 } : { duration: tool.floatDur, repeat: Infinity, ease: 'easeInOut', delay: tool.delay + 0.5 },
+              }}
               style={{ position: 'absolute', top: tool.top, ...(tool.left !== undefined ? { left: tool.left } : { right: tool.right }), rotate: tool.rotate, zIndex: 10, pointerEvents: 'none' }}
             >
-              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 15, fontWeight: 700, color: '#374151', minWidth: 100 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: tool.bg, color: tool.color, fontSize: tool.label.length > 1 ? 9 : 11, fontWeight: 800, flexShrink: 0, letterSpacing: '-0.02em' }}>
-                  {tool.label}
+              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '9px 15px', display: 'flex', alignItems: 'center', gap: 9, boxShadow: '0 2px 12px rgba(0,0,0,0.09)', whiteSpace: 'nowrap', fontSize: 14, fontWeight: 700, color: '#374151' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: '50%', background: tool.bg, flexShrink: 0 }}>
+                  {tool.icon}
                 </span>
                 {tool.name}
               </div>
