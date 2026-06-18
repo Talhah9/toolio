@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MarkdownResult } from '../components/MarkdownResult';
 import { Glyph } from '../components/Glyph';
 import { SaveButton } from '../components/SaveButton';
@@ -9,6 +10,7 @@ import { TOOLS, getToolText } from '../data/catalog';
 import { exportPdf } from '../lib/exportPdf';
 
 export function History() {
+  const navigate = useNavigate();
   const { session, user } = useApp();
   const { t, lang } = useLang();
   const [rows, setRows] = useState([]);
@@ -210,12 +212,23 @@ export function History() {
                   {isExp && canExpand && (
                     <div style={{ borderTop: '1px solid var(--border)' }}>
                       {/* Action bar */}
-                      <div style={{ display: 'flex', gap: 8, padding: '10px 18px', borderBottom: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', gap: 8, padding: '10px 18px', borderBottom: '1px solid var(--border)', flexWrap: 'wrap' }}>
                         <button className="btn btn-ghost btn-sm" onClick={() => copyOutput(row.output)}>
                           <Glyph name="copy" size={12} /> {t('history.expand.copy')}
                         </button>
                         <button className="btn btn-ghost btn-sm" onClick={() => downloadPdf(row)}>
                           <Glyph name="arrow-down" size={12} /> {t('history.expand.pdf')}
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => {
+                            const initialData = typeof row.input === 'string'
+                              ? (() => { try { return JSON.parse(row.input); } catch { return {}; } })()
+                              : (row.input ?? {});
+                            navigate(`/tools/${row.tool_id}`, { state: { initialData } });
+                          }}
+                        >
+                          <Glyph name="refresh" size={12} /> Relancer
                         </button>
                       </div>
                       {/* Output */}

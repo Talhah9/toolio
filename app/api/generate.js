@@ -104,6 +104,7 @@ const TOOL_CREDITS = {
   prospection:        10,
   'mission-finder':   10,
   converter:          25,
+  facture:            10,
 };
 
 const KNOWN_TOOLS = new Set(Object.keys(TOOL_CREDITS));
@@ -185,6 +186,14 @@ Use short paragraphs, strategic line breaks, and a strong opening hook.
 Stay under 3000 characters.
 End with a clear call-to-action or discussion prompt.
 Output only the post — no preamble, no "Here is your post:" framing.`,
+
+  facture: `You are a professional invoice generator for French freelancers.
+Create legally compliant, formatted French invoice (facture) documents ready to send to clients.
+Include: the exact invoice number and dates provided, a "Prestataire" (De) section and a "Client" (À) section, SIRET if provided, a formatted table (Description | Qté | Prix unitaire HT | Total HT), sous-total HT, TVA line (or "TVA non applicable, art. 293 B du CGI"), total TTC, and payment due date.
+CRITICAL: Use EXACT prices and quantities — never round or modify any figure.
+CRITICAL: Include at the bottom this exact clause: "Conformément à l'art. L.441-10 du Code de commerce, tout retard de paiement entraîne des pénalités de retard au taux de 3 fois le taux d'intérêt légal, ainsi qu'une indemnité forfaitaire de 40 € pour frais de recouvrement."
+CRITICAL: Add a final line: "Facture acquittée le ___/___/______     Signature :"
+Output only the invoice document — no preamble or explanation.`,
 
   devis: `You are a professional quote generator for freelancers.
 Create clean, formatted quote documents that are ready to send to clients.
@@ -473,6 +482,37 @@ Payment terms: ${input.paymentTerms || 'Net 30 days'}
 ${input.notes ? `Notes: ${input.notes}` : ''}
 
 Generate a professional quote document.`;
+    }
+
+    case 'facture': {
+      const lines = Array.isArray(input.lines)
+        ? input.lines.filter(l => l.desc).map(l => `- ${l.desc}: qté ${l.qty || 1} x ${l.price || 0} €`).join('\n')
+        : '';
+      const prestataire = [
+        input.nom        ? `Nom : ${input.nom}`              : null,
+        input.entreprise ? `Entreprise : ${input.entreprise}` : null,
+        input.siret      ? `SIRET : ${input.siret}`           : null,
+        input.email      ? `Email : ${input.email}`           : null,
+        input.tel        ? `Tél : ${input.tel}`               : null,
+        input.adresse    ? `Adresse : ${input.adresse}`       : null,
+      ].filter(Boolean).join('\n');
+      return `Numéro de facture : ${input.numeroFacture || 'FACT-2026-001'}
+Date d'émission : ${input.dateEmission || ''}
+Date d'échéance : ${input.dateEcheance || ''}
+
+Prestataire (De) :
+${prestataire || '(non renseigné)'}
+
+Client (À) : ${input.clientName}${input.clientCompany ? ` — ${input.clientCompany}` : ''}
+${input.clientEmail ? `Email : ${input.clientEmail}` : ''}
+
+Prestations :
+${lines || '(aucune ligne renseignée)'}
+
+Taux TVA : ${input.vatRate || '0%'}
+${input.notes ? `Notes : ${input.notes}` : ''}
+
+Génère la facture complète.`;
     }
 
     case 'relance':

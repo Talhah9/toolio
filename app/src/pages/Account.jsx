@@ -6,6 +6,7 @@ import { useToast } from '../components/Toast';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
 import { supabase } from '../lib/supabase';
+import { loadProfile, saveProfile } from '../hooks/useFreelanceProfile';
 
 
 export function Account() {
@@ -31,6 +32,15 @@ export function Account() {
   const [deleting, setDeleting] = useState(false);
   const [toast, ToastEl] = useToast();
   const [payments, setPayments] = useState(null); // null = loading
+
+  // Freelance profile (localStorage)
+  const [fpNom,       setFpNom]       = useState(() => loadProfile().nom        || '');
+  const [fpEntreprise,setFpEntreprise]= useState(() => loadProfile().entreprise  || '');
+  const [fpEmail,     setFpEmail]     = useState(() => loadProfile().email       || '');
+  const [fpTel,       setFpTel]       = useState(() => loadProfile().tel         || '');
+  const [fpSiret,     setFpSiret]     = useState(() => loadProfile().siret       || '');
+  const [fpAdresse,   setFpAdresse]   = useState(() => loadProfile().adresse     || '');
+  const [fpSaved,     setFpSaved]     = useState(false);
   const [renewalDate, setRenewalDate] = useState(null);
   const [stripeCancelAt, setStripeCancelAt] = useState(null);
 
@@ -125,6 +135,54 @@ export function Account() {
                   {saving ? '…' : saveOk ? 'Enregistré ✓' : t('account.save')}
                 </button>
                 {saveErr && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 6 }}>{saveErr}</p>}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="h3" style={{ marginBottom: 4 }}>Profil freelance</h2>
+            <p className="muted" style={{ fontSize: 13, marginBottom: 12 }}>
+              Ces informations sont pré-remplies automatiquement dans tous vos outils (contrat, devis, facture, CGV).
+            </p>
+            <div className="stack-8">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">Nom complet</label>
+                  <input className="input" value={fpNom} onChange={e => setFpNom(e.target.value)} placeholder="Jean Dupont" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">Entreprise</label>
+                  <input className="input" value={fpEntreprise} onChange={e => setFpEntreprise(e.target.value)} placeholder="JD Conseil" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">SIRET</label>
+                  <input className="input" value={fpSiret} onChange={e => setFpSiret(e.target.value)} placeholder="000 000 000 00000" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">Email pro</label>
+                  <input className="input" type="email" value={fpEmail} onChange={e => setFpEmail(e.target.value)} placeholder="jean@dupont.fr" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">Téléphone</label>
+                  <input className="input" value={fpTel} onChange={e => setFpTel(e.target.value)} placeholder="+33 6 00 00 00 00" />
+                </div>
+                <div className="field" style={{ margin: 0 }}>
+                  <label className="label">Adresse</label>
+                  <input className="input" value={fpAdresse} onChange={e => setFpAdresse(e.target.value)} placeholder="12 rue de la Paix, 75001 Paris" />
+                </div>
+              </div>
+              <div>
+                <button
+                  className="btn btn-primary btn-sm"
+                  style={fpSaved ? { background: '#10B981', borderColor: '#10B981' } : undefined}
+                  onClick={() => {
+                    saveProfile({ nom: fpNom, entreprise: fpEntreprise, email: fpEmail, tel: fpTel, siret: fpSiret, adresse: fpAdresse });
+                    setFpSaved(true);
+                    setTimeout(() => setFpSaved(false), 2000);
+                  }}
+                >
+                  {fpSaved ? 'Enregistré ✓' : 'Sauvegarder le profil'}
+                </button>
               </div>
             </div>
           </div>

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { loadProfile } from '../../hooks/useFreelanceProfile';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -32,6 +33,14 @@ export function LegalTool({ tool, initialData }) {
   const [siret, setSiret] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    const p = loadProfile();
+    if (p.entreprise) setCompany(p.entreprise);
+    if (p.siret)      setSiret(p.siret);
+    if (p.email)      setEmail(p.email);
+    if (p.adresse)    setAddress(p.adresse);
+  }, []);
   const [website, setWebsite] = useState('');
   const [activity, setActivity] = useState(initialData?.activity ?? '');
   const [vatSubject, setVatSubject] = useState(false);

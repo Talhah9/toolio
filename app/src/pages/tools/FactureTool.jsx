@@ -14,73 +14,98 @@ import { useLang } from '../../context/LanguageContext';
 import { exportPdf } from '../../lib/exportPdf';
 import { streamGenerate } from '../../lib/streamGenerate';
 import { CompletionCelebration } from '../../components/CompletionCelebration';
+import { loadProfile, saveProfile } from '../../hooks/useFreelanceProfile';
 
-const VAT_RATES = ['0%', '5%', '10%', '20%'];
+const VAT_RATES     = ['0%', '5%', '10%', '20%'];
 const PAYMENT_TERMS = [
-  { id: 'delivery', key: 'tool.devis.payment.delivery' },
-  { id: 'net14',    key: 'tool.devis.payment.net14' },
-  { id: 'net30',    key: 'tool.devis.payment.net30' },
-  { id: 'net45',    key: 'tool.devis.payment.net45' },
-  { id: 'net60',    key: 'tool.devis.payment.net60' },
+  { id: 'immediate', label: 'À réception' },
+  { id: 'net14',     label: '14 jours'    },
+  { id: 'net30',     label: '30 jours'    },
+  { id: 'net45',     label: '45 jours'    },
+  { id: 'net60',     label: '60 jours'    },
 ];
 
 function newLine() {
   return { id: Date.now() + Math.random(), desc: '', qty: 1, price: '' };
 }
 
-import { loadProfile, saveProfile } from '../../hooks/useFreelanceProfile';
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
 
-export function DevisTool({ tool, initialData }) {
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function defaultNumero() {
+  return `FACT-${new Date().getFullYear()}-001`;
+}
+
+export function FactureTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
   const { t, lang } = useLang();
 
-  const [prestataireNom, setPrestataireNom] = useState(() => loadProfile().nom     || '');
-  const [prestataireEmail, setPrestataireEmail] = useState(() => loadProfile().email   || '');
-  const [prestataireTel, setPrestataireTel] = useState(() => loadProfile().tel     || '');
-  const [prestataireAdresse, setPrestataireAdresse] = useState(() => loadProfile().adresse || '');
+  const prof = loadProfile();
 
-  const [clientName, setClientName] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
-  const [clientCompany, setClientCompany] = useState('');
-  const [lines, setLines] = useState(() => initialData?.lines ?? [newLine()]);
+  // Prestataire (from shared profile)
+  const [nom,       setNom]       = useState(prof.nom        || '');
+  const [entreprise,setEntreprise]= useState(prof.entreprise  || '');
+  const [email,     setEmail]     = useState(prof.email       || '');
+  const [tel,       setTel]       = useState(prof.tel         || '');
+  const [siret,     setSiret]     = useState(prof.siret       || '');
+  const [adresse,   setAdresse]   = useState(prof.adresse     || '');
+
+  // Invoice metadata
+  const [numeroFacture, setNumeroFacture] = useState(initialData?.numeroFacture || defaultNumero());
+  const [dateEmission,  setDateEmission]  = useState(initialData?.dateEmission  || todayStr());
+  const [paymentTerms,  setPaymentTerms]  = useState(initialData?.paymentTerms  || 'net30');
+
+  // Client
+  const [clientName,    setClientName]    = useState(initialData?.clientName    || '');
+  const [clientCompany, setClientCompany] = useState(initialData?.clientCompany || '');
+  const [clientEmail,   setClientEmail]   = useState(initialData?.clientEmail   || '');
+
+  // Services
+  const [lines,   setLines]   = useState(() => initialData?.lines ?? [newLine()]);
   const [vatRate, setVatRate] = useState(initialData?.vatRate ?? '0%');
-  const [paymentTerms, setPaymentTerms] = useState(initialData?.paymentTerms ?? 'net30');
-  const [notes, setNotes] = useState('');
-  const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [genId, setGenId] = useState(null);
-  const [viewerOpen, setViewerOpen] = useState(false);
+  const [notes,   setNotes]   = useState(initialData?.notes   || '');
+
+  const [output,          setOutput]          = useState('');
+  const [loading,         setLoading]         = useState(false);
+  const [genId,           setGenId]           = useState(null);
+  const [viewerOpen,      setViewerOpen]      = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
-  const updateLine = (id, field, value) =>
-    setLines(ls => ls.map(l => l.id === id ? { ...l, [field]: value } : l));
+  const updateLine  = (id, field, value) => setLines(ls => ls.map(l => l.id === id ? { ...l, [field]: value } : l));
+  const removeLine  = (id) => setLines(ls => ls.length > 1 ? ls.filter(l => l.id !== id) : ls);
 
-  const removeLine = (id) =>
-    setLines(ls => ls.length > 1 ? ls.filter(l => l.id !== id) : ls);
-
-  const subtotal = lines.reduce((sum, l) => sum + (parseFloat(l.price) || 0) * (parseFloat(l.qty) || 0), 0);
-  const vatPct = parseFloat(vatRate) / 100;
+  const subtotal  = lines.reduce((s, l) => s + (parseFloat(l.price) || 0) * (parseFloat(l.qty) || 0), 0);
+  const vatPct    = parseFloat(vatRate) / 100;
   const vatAmount = subtotal * vatPct;
-  const total = subtotal + vatAmount;
-  const fmt = (n) => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const total     = subtotal + vatAmount;
+  const fmt       = (n) => n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  const echeanceDays = { immediate: 0, net14: 14, net30: 30, net45: 45, net60: 60 }[paymentTerms] ?? 30;
+  const dateEcheance = addDays(dateEmission, echeanceDays);
 
   const generate = async () => {
-    if (!clientName.trim()) { toast(t('tool.devis.error.client')); return; }
+    if (!clientName.trim()) { toast('Nom du client requis'); return; }
     if (credits === null) return;
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
 
-    saveProfile({ nom: prestataireNom, email: prestataireEmail, tel: prestataireTel, adresse: prestataireAdresse });
+    saveProfile({ nom, entreprise, email, tel, siret, adresse });
 
     setLoading(true);
     setOutput('');
     try {
-      const today = new Date().toLocaleDateString('fr-FR');
       const input = {
-        prestataireNom, prestataireEmail, prestataireTel, prestataireAdresse,
+        nom, entreprise, email, tel, siret, adresse,
+        numeroFacture, dateEmission, dateEcheance,
         clientName, clientCompany, clientEmail,
         lines, vatRate, paymentTerms, notes,
-        today,
       };
       const fullText = await streamGenerate(
         { toolId: tool.id, input, session, lang },
@@ -96,88 +121,122 @@ export function DevisTool({ tool, initialData }) {
     }
   };
 
-  const copy = () => {
-    if (!output) return;
-    navigator.clipboard?.writeText(output);
-    toast(t('tool.copied'));
-  };
-
+  const copy = () => { if (!output) return; navigator.clipboard?.writeText(output); toast(t('tool.copied')); };
   const downloadPdf = () => exportPdf({
     toolName: lang === 'fr' ? tool.name_fr : tool.name_en,
     userEmail: user?.email,
     output,
-    filename: `devis-${new Date().toISOString().slice(0, 10)}.pdf`,
+    filename: `facture-${numeroFacture}-${dateEmission}.pdf`,
   });
 
-  const sectionLabelStyle = { marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' };
+  const sectionLabel = { marginBottom: 14, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--fg-4)' };
 
   return (
     <ToolShell tool={tool}>
       <div className="tool-page">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
+          {/* Numéro + Date */}
+          <div className="card card-pad">
+            <h3 className="h3" style={sectionLabel}>Facture</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">Numéro de facture</label>
+                <input className="input" value={numeroFacture} onChange={e => setNumeroFacture(e.target.value)} placeholder="FACT-2026-001" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">Date d'émission</label>
+                <input className="input" type="date" value={dateEmission} onChange={e => setDateEmission(e.target.value)} />
+              </div>
+            </div>
+            <div className="field" style={{ margin: '10px 0 0' }}>
+              <label className="label">Délai de paiement</label>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+                {PAYMENT_TERMS.map(pt => (
+                  <button key={pt.id} type="button" onClick={() => setPaymentTerms(pt.id)} className="btn btn-sm"
+                    style={{ fontSize: 12, border: '1px solid ' + (paymentTerms === pt.id ? 'var(--fg)' : 'var(--border)'), background: paymentTerms === pt.id ? 'var(--fg)' : 'var(--bg)', color: paymentTerms === pt.id ? '#fff' : 'var(--fg-2)' }}>
+                    {pt.label}
+                  </button>
+                ))}
+              </div>
+              {echeanceDays > 0 && (
+                <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+                  Date d'échéance : <strong>{new Date(dateEcheance).toLocaleDateString('fr-FR')}</strong>
+                </p>
+              )}
+            </div>
+          </div>
+
           {/* Prestataire */}
           <div className="card card-pad">
-            <h3 className="h3" style={sectionLabelStyle}>
-              {t('tool.devis.prestataire.section')}
+            <h3 className="h3" style={sectionLabel}>
+              Vos coordonnées
               <span style={{ fontSize: 11, fontWeight: 400, marginLeft: 8, color: 'var(--fg-4)', textTransform: 'none', letterSpacing: 0 }}>
-                {t('tool.devis.prestataire.hint')}
+                sauvegardées automatiquement
               </span>
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.devis.prestataire.name')}</label>
-                <input className="input" value={prestataireNom} onChange={e => setPrestataireNom(e.target.value)} placeholder="Jean Dupont" />
+                <label className="label">Nom complet</label>
+                <input className="input" value={nom} onChange={e => setNom(e.target.value)} placeholder="Jean Dupont" />
               </div>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.devis.prestataire.email')}</label>
-                <input className="input" value={prestataireEmail} onChange={e => setPrestataireEmail(e.target.value)} type="email" placeholder="jean@dupont.fr" />
+                <label className="label">Entreprise (optionnel)</label>
+                <input className="input" value={entreprise} onChange={e => setEntreprise(e.target.value)} placeholder="JD Conseil" />
               </div>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.devis.prestataire.tel')}</label>
-                <input className="input" value={prestataireTel} onChange={e => setPrestataireTel(e.target.value)} placeholder="+33 6 00 00 00 00" />
+                <label className="label">SIRET</label>
+                <input className="input" value={siret} onChange={e => setSiret(e.target.value)} placeholder="000 000 000 00000" />
               </div>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.devis.prestataire.address')}</label>
-                <input className="input" value={prestataireAdresse} onChange={e => setPrestataireAdresse(e.target.value)} placeholder="12 rue de la Paix, 75001 Paris" />
+                <label className="label">Email</label>
+                <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jean@dupont.fr" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">Téléphone</label>
+                <input className="input" value={tel} onChange={e => setTel(e.target.value)} placeholder="+33 6 00 00 00 00" />
+              </div>
+              <div className="field" style={{ margin: 0 }}>
+                <label className="label">Adresse</label>
+                <input className="input" value={adresse} onChange={e => setAdresse(e.target.value)} placeholder="12 rue de la Paix, 75001 Paris" />
               </div>
             </div>
           </div>
 
           {/* Client */}
           <div className="card card-pad">
-            <h3 className="h3" style={sectionLabelStyle}>{t('tool.devis.client.section')}</h3>
+            <h3 className="h3" style={sectionLabel}>Client</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.devis.client.name')} <span style={{ color: 'var(--accent)' }}>*</span></label>
+                <label className="label">Nom <span style={{ color: 'var(--accent)' }}>*</span></label>
                 <input className="input" value={clientName} onChange={e => setClientName(e.target.value)} placeholder="Sophie Lefèvre" />
               </div>
               <div className="field" style={{ margin: 0 }}>
-                <label className="label">{t('tool.devis.client.company')}</label>
+                <label className="label">Entreprise</label>
                 <input className="input" value={clientCompany} onChange={e => setClientCompany(e.target.value)} placeholder="Atelier Marquetin" />
               </div>
-            </div>
-            <div className="field" style={{ margin: '10px 0 0' }}>
-              <label className="label">{t('tool.devis.client.email')}</label>
-              <input className="input" value={clientEmail} onChange={e => setClientEmail(e.target.value)} placeholder="sophie@atelier.com" type="email" />
+              <div className="field" style={{ margin: 0, gridColumn: '1 / -1' }}>
+                <label className="label">Email client</label>
+                <input className="input" type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} placeholder="sophie@atelier.com" />
+              </div>
             </div>
           </div>
 
           {/* Services */}
           <div className="card card-pad">
-            <h3 className="h3" style={sectionLabelStyle}>{t('tool.devis.services.section')}</h3>
+            <h3 className="h3" style={sectionLabel}>Prestations</h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6 }}>
-              <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.desc')}</span>
-              <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.qty')}</span>
-              <span className="label" style={{ margin: 0, fontSize: 11 }}>{t('tool.devis.line.price')}</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>Description</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>Qté</span>
+              <span className="label" style={{ margin: 0, fontSize: 11 }}>PU HT (€)</span>
               <span />
             </div>
 
             {lines.map(line => (
               <div key={line.id} style={{ display: 'grid', gridTemplateColumns: '1fr 60px 90px 24px', gap: 6, marginBottom: 6, alignItems: 'center' }}>
-                <input className="input" value={line.desc} onChange={e => updateLine(line.id, 'desc', e.target.value)} placeholder="UX design — 10 screens" style={{ fontSize: 13 }} />
-                <input className="input" value={line.qty} onChange={e => updateLine(line.id, 'qty', e.target.value)} type="number" min="0" style={{ fontSize: 13 }} />
+                <input className="input" value={line.desc} onChange={e => updateLine(line.id, 'desc', e.target.value)} placeholder="Développement front-end" style={{ fontSize: 13 }} />
+                <input className="input" value={line.qty}  onChange={e => updateLine(line.id, 'qty',  e.target.value)} type="number" min="0" style={{ fontSize: 13 }} />
                 <div style={{ position: 'relative' }}>
                   <span style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--fg-4)', fontSize: 12 }}>€</span>
                   <input className="input" value={line.price} onChange={e => updateLine(line.id, 'price', e.target.value)} type="number" min="0" placeholder="0" style={{ fontSize: 13, paddingLeft: 20 }} />
@@ -189,19 +248,19 @@ export function DevisTool({ tool, initialData }) {
             ))}
 
             <button className="btn btn-ghost btn-sm" onClick={() => setLines(ls => [...ls, newLine()])} style={{ marginTop: 4 }}>
-              <Glyph name="plus" size={12} /> {t('tool.devis.add-line')}
+              <Glyph name="plus" size={12} /> Ajouter une ligne
             </button>
 
             <div className="hr" style={{ margin: '16px 0' }} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
               <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span className="muted">{t('tool.devis.subtotal')}</span>
+                <span className="muted">Sous-total HT</span>
                 <span className="tabular">€{fmt(subtotal)}</span>
               </div>
               <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="row" style={{ gap: 8 }}>
-                  <span className="muted">{t('tool.devis.vat')}</span>
+                  <span className="muted">TVA</span>
                   <select className="select" value={vatRate} onChange={e => setVatRate(e.target.value)} style={{ width: 'auto', padding: '2px 8px', fontSize: 12, height: 'auto' }}>
                     {VAT_RATES.map(r => <option key={r}>{r}</option>)}
                   </select>
@@ -209,23 +268,14 @@ export function DevisTool({ tool, initialData }) {
                 <span className="tabular">€{fmt(vatAmount)}</span>
               </div>
               <div className="row" style={{ justifyContent: 'space-between', fontWeight: 700, borderTop: '1px solid var(--border)', paddingTop: 8, marginTop: 4 }}>
-                <span>{t('tool.devis.total')}</span>
+                <span>Total TTC</span>
                 <span className="tabular">€{fmt(total)}</span>
               </div>
             </div>
 
-            <div className="hr" style={{ margin: '16px 0' }} />
-
-            <div className="field" style={{ margin: 0 }}>
-              <label className="label">{t('tool.devis.payment.label')}</label>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {PAYMENT_TERMS.map(pt => (
-                  <button key={pt.id} type="button" onClick={() => setPaymentTerms(pt.id)} className="btn btn-sm"
-                    style={{ fontSize: 12, border: '1px solid ' + (paymentTerms === pt.id ? 'var(--fg)' : 'var(--border)'), background: paymentTerms === pt.id ? 'var(--fg)' : 'var(--bg)', color: paymentTerms === pt.id ? '#fff' : 'var(--fg-2)' }}>
-                    {t(pt.key)}
-                  </button>
-                ))}
-              </div>
+            <div className="field" style={{ margin: '16px 0 0' }}>
+              <label className="label">Notes (optionnel)</label>
+              <textarea className="input" value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="Modalités de paiement, coordonnées bancaires, etc." style={{ resize: 'vertical' }} />
             </div>
           </div>
 
@@ -235,7 +285,7 @@ export function DevisTool({ tool, initialData }) {
           </div>
           <CreditGate cost={tool.credits}>
             <button className="btn btn-accent btn-lg btn-block" onClick={generate} disabled={loading}>
-              {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> {t('tool.devis.btn')}</>}
+              {loading ? t('tool.generating') : <><Glyph name="sparkle" size={14} /> Générer la facture</>}
             </button>
           </CreditGate>
         </div>
@@ -256,7 +306,7 @@ export function DevisTool({ tool, initialData }) {
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
             <StreamingBanner loading={loading} hasOutput={!!output} />
             {loading && !output ? (
-              <GeneratingIndicator toolId="devis" />
+              <GeneratingIndicator toolId="facture" />
             ) : output ? (
               loading ? (
                 <pre className="stream-text">{output}<span className="stream-cursor" /></pre>

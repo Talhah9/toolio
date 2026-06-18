@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { TOOLS, getToolText } from '../data/catalog';
 import { useApp } from '../context/AppContext';
 import { useLang } from '../context/LanguageContext';
@@ -18,6 +18,8 @@ import { LinkedinIntelTool } from './tools/LinkedinIntelTool';
 import { ProspectionTool } from './tools/ProspectionTool';
 import { MissionFinderTool } from './tools/MissionFinderTool';
 import { ConverterTool } from './tools/ConverterTool';
+import { TJMTool } from './tools/TJMTool';
+import { FactureTool } from './tools/FactureTool';
 
 const TOOL_COMPONENTS = {
   audit: AuditTool,
@@ -34,11 +36,14 @@ const TOOL_COMPONENTS = {
   prospection: ProspectionTool,
   'mission-finder': MissionFinderTool,
   converter: ConverterTool,
+  tjm:       TJMTool,
+  facture:   FactureTool,
 };
 
 export function ToolPage() {
   const { toolId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { session, loading } = useApp();
   const { lang } = useLang();
 
@@ -83,5 +88,6 @@ export function ToolPage() {
     return null;
   }
 
-  return <Component tool={tool} />;
+  const initialData = location.state?.initialData ?? undefined;
+  return <Component tool={tool} initialData={initialData} />;
 }

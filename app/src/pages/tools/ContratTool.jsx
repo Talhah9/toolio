@@ -15,17 +15,10 @@ import { fillTemplate, CONTRAT_TEMPLATE } from '../../lib/legalTemplates';
 import GeneratingIndicator from '../../components/GeneratingIndicator';
 import StreamingBanner from '../../components/StreamingBanner';
 
+import { loadProfile, saveProfile } from '../../hooks/useFreelanceProfile';
+
 const RATE_TYPE_KEYS = ['total', 'daily', 'hourly'];
 const DEPOSIT_OPTIONS = ['30', '40', '50'];
-const LS_KEY = 'savvly_prestataire_info';
-
-function loadPrest() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
-}
-
-function savePrest(data) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch {}
-}
 
 export function ContratTool({ tool, initialData }) {
   const { credits, logGeneration, session, user } = useApp();
@@ -62,20 +55,20 @@ export function ContratTool({ tool, initialData }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
 
-  // Load prestataire info from localStorage on mount
+  // Load shared freelance profile on mount
   useEffect(() => {
-    const p = loadPrest();
-    if (p.name) setPrestName(p.name);
-    if (p.company) setPrestCompany(p.company);
-    if (p.email) setPrestEmail(p.email);
-    if (p.phone) setPrestPhone(p.phone);
-    if (p.siret) setPrestSiret(p.siret);
-    if (p.address) setPrestAddress(p.address);
+    const p = loadProfile();
+    if (p.nom)       setPrestName(p.nom);
+    if (p.entreprise)setPrestCompany(p.entreprise);
+    if (p.email)     setPrestEmail(p.email);
+    if (p.tel)       setPrestPhone(p.tel);
+    if (p.siret)     setPrestSiret(p.siret);
+    if (p.adresse)   setPrestAddress(p.adresse);
   }, []);
 
-  // Auto-save prestataire info on change
+  // Auto-save shared profile on change
   useEffect(() => {
-    savePrest({ name: prestName, company: prestCompany, email: prestEmail, phone: prestPhone, siret: prestSiret, address: prestAddress });
+    saveProfile({ nom: prestName, entreprise: prestCompany, email: prestEmail, tel: prestPhone, siret: prestSiret, adresse: prestAddress });
   }, [prestName, prestCompany, prestEmail, prestPhone, prestSiret, prestAddress]);
 
   const generate = async () => {

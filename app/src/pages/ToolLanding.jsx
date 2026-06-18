@@ -20,6 +20,8 @@ const SLUG_TO_ID = {
   'linkedin-intelligence':  'linkedin-intel',
   'generateur-images':      'image',
   'convertisseur-fichiers': 'converter',
+  'simulateur-tjm':         'tjm',
+  'facture-freelance':      'facture',
 };
 
 // ── Long-form editorial guide per tool ──────────────────────────

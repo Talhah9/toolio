@@ -181,6 +181,32 @@ export const TOOLS = [
     accent: '#64748B',
     credits: 25, plan: 'pro', glyph: 'arrow-down',
   },
+  {
+    id: 'tjm',
+    name_en: 'TJM Calculator',         name_fr: 'Simulateur TJM',
+    short_en: 'TJM',                   short_fr: 'TJM',
+    desc_en: 'Calculate your ideal day rate based on desired salary, charges, and billable days.',
+    desc_fr: 'Calcule ton TJM idéal selon ton salaire net souhaité, tes charges et tes jours facturables.',
+    intro_fr: 'Calcule ton taux journalier moyen idéal selon ton salaire net souhaité, ton statut juridique et tes jours facturables réels.',
+    intro_en: 'Calculate your ideal day rate based on desired net salary, legal status, and actual billable days.',
+    features_fr: ['Calcul instantané selon ton statut (micro, EURL, SASU, portage)', 'Fourchette optimiste / recommandée / prudente', 'Jours facturables réels (après congés + admin)', 'CA annuel nécessaire'],
+    features_en: ['Instant calculation by legal status', 'Optimistic / recommended / conservative range', 'Real billable days (after leave + admin)', 'Required annual revenue'],
+    accent: '#10B981',
+    credits: 0, plan: 'free', glyph: 'billing', franceOnly: true,
+  },
+  {
+    id: 'facture',
+    name_en: 'Invoice Generator',      name_fr: 'Générateur de facture',
+    short_en: 'Invoice',               short_fr: 'Facture',
+    desc_en: 'Generate a legally compliant French invoice with line items, VAT, and mandatory legal notices.',
+    desc_fr: 'Génère une facture conforme au droit français avec lignes, TVA et mentions légales obligatoires.',
+    intro_fr: 'Génère une facture freelance conforme en quelques secondes — numéro, lignes, TVA, mentions légales et clause de pénalités de retard.',
+    intro_en: 'Generate a compliant French freelance invoice in seconds — number, lines, VAT, legal notices, late payment clause.',
+    features_fr: ['Facture numérotée prête à envoyer', 'Lignes de prestation avec TVA et totaux automatiques', 'Mentions légales obligatoires incluses', 'Clause de pénalités de retard (art. L.441-10 C.com.)'],
+    features_en: ['Numbered invoice ready to send', 'Service lines with VAT and automatic totals', 'Mandatory legal notices included', 'Late payment penalty clause'],
+    accent: '#F59E0B',
+    credits: 10, plan: 'pro', glyph: 'invoice', franceOnly: true,
+  },
 ];
 
 // Returns the localised display fields for a tool.
