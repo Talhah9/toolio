@@ -775,29 +775,41 @@ function UltimateSection({ lang, navigate, reduce }) {
   );
 }
 
-// ── Club Discord section ──────────────────────────────────────
+// ── Club Discord (merged with newsletter) ─────────────────────
 
-const DISCORD_BENEFITS = [
-  'Communauté de 220+ freelances actifs',
+const CLUB_BENEFITS = [
+  '23 ressources PDF offertes (valeur 97€ chacune) — prospection, IA, LinkedIn, automatisation',
+  'Communauté de 220+ freelances actifs sur Discord',
   'Experts dans chaque domaine — dev, assistance virtuelle, marketing, design',
   'Ateliers réguliers en groupe',
   'Entraide et opportunités au quotidien',
-  '23 ressources exclusives offertes (valeur 97€ chacune) — prospection, automatisation, recherche de clients',
 ];
 
-const DISCORD_ICON = (
-  <svg viewBox="0 0 24 24" fill="white" width="36" height="36" aria-hidden="true">
+const DISCORD_SVG = (
+  <svg viewBox="0 0 24 24" fill="white" width="28" height="28" aria-hidden="true">
     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.128 18.115a19.9 19.9 0 0 0 5.993 3.03.077.077 0 0 0 .084-.026c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
   </svg>
 );
 
-function DiscordClubSection() {
+function ClubSection({ reduce }) {
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+    if (!email.includes('@') || !email.includes('.')) {
+      setEmailError('Adresse email invalide');
+      return;
+    }
+    setEmailError('');
     setLoading(true);
     try {
-      const res = await fetch('/api/create-discord-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      const res = await fetch('/api/create-discord-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
       const { url, error } = await res.json();
       if (error) throw new Error(error);
       window.location.href = url;
@@ -808,73 +820,128 @@ function DiscordClubSection() {
   };
 
   return (
-    <section id="discord" aria-label="Club Discord" style={{ background: '#FAFAFA', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px', padding: 'clamp(60px, 8vw, 100px) 24px', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-      <div style={{ maxWidth: 680, margin: '0 auto', textAlign: 'center' }}>
-        <FadeUp>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(88,101,242,0.12)', border: '1px solid rgba(88,101,242,0.25)', borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 800, color: '#5865F2', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-            REJOINS LE CLUB
-          </span>
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 14px', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-            220+ freelances qui avancent ensemble
-          </h2>
-          <p style={{ fontSize: 17, color: '#4B4B6A', margin: '0 0 48px', lineHeight: 1.65 }}>
-            Rejoins la communauté Discord pour 5€ et accède à tout ce qu'il faut pour réussir.
-          </p>
-        </FadeUp>
+    <section id="discord" aria-label="Club Discord" style={{ background: '#FAFAFA', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'visible', backgroundImage: 'linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+      <style>{`
+        @media (max-width: 860px) { .nl-floating-logo { display: none !important; } }
+      `}</style>
 
-        <FadeUp delay={0.1}>
-          <div style={{ background: '#fff', borderRadius: 20, padding: 'clamp(28px, 5vw, 40px) clamp(20px, 5vw, 36px)', boxShadow: '0 8px 48px rgba(15,15,60,0.1)', border: '1px solid rgba(88,101,242,0.12)', maxWidth: 520, margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              <div style={{ width: 64, height: 64, borderRadius: 16, background: '#5865F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {DISCORD_ICON}
-              </div>
-            </div>
+      <div className="nl-wrapper" style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '100px 320px', overflow: 'visible' }}>
+        <div style={{ position: 'relative', maxWidth: 480, width: '100%' }}>
 
-            <div style={{ marginBottom: 28, textAlign: 'center' }}>
-              <div style={{ fontSize: 52, fontWeight: 900, color: '#0F0F1A', lineHeight: 1 }}>5€</div>
-              <div style={{ fontSize: 14, color: '#9CA3AF', marginTop: 4, fontWeight: 500 }}>par mois</div>
-            </div>
-
-            <ul style={{ listStyle: 'none', margin: '0 0 28px', padding: 0, textAlign: 'left' }}>
-              {DISCORD_BENEFITS.map((b, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 0', borderBottom: i < DISCORD_BENEFITS.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#5865F2', color: '#fff', fontSize: 11, fontWeight: 900, flexShrink: 0, marginTop: 2 }}>✓</span>
-                  <span style={{ fontSize: 14, color: '#374151', lineHeight: 1.55 }}>{b}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={handleCheckout}
-              disabled={loading}
-              style={{ width: '100%', background: '#5865F2', color: '#fff', border: 'none', borderRadius: 12, padding: '15px 24px', fontSize: 16, fontWeight: 700, cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.7 : 1, boxShadow: '0 4px 20px rgba(88,101,242,0.35)', transition: 'opacity 0.2s' }}
+          {/* Floating tool logos */}
+          {NL_TOOLS.slice(0, 6).map((tool, i) => (
+            <motion.div
+              key={i}
+              className="nl-floating-logo"
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: reduce ? 0 : tool.delay, ease }}
+              style={{ position: 'absolute', top: tool.top, ...(tool.left !== undefined ? { left: tool.left } : { right: tool.right }), rotate: tool.rotate, zIndex: 10, pointerEvents: 'none' }}
             >
-              {loading ? 'Chargement…' : 'Rejoindre le club — 5€ →'}
-            </button>
-            <p style={{ fontSize: 12, color: '#9CA3AF', margin: '10px 0 0', textAlign: 'center' }}>
-              Paiement sécurisé · Accès immédiat · Lien Discord envoyé par email
-            </p>
-            <p style={{ fontSize: 11, color: '#C4C4D4', margin: '6px 0 0', textAlign: 'center' }}>
-              Pour résilier votre abonnement, contactez-nous à{' '}
-              <a href="mailto:hello@savvly.co" style={{ color: '#C4C4D4' }}>hello@savvly.co</a>
-            </p>
-          </div>
-        </FadeUp>
-
-        <FadeUp delay={0.15}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginTop: 28, maxWidth: 520, margin: '28px auto 0' }}>
-            {[
-              { val: '220+', label: 'Membres actifs' },
-              { val: '23',   label: 'Ressources offertes' },
-              { val: '97€',  label: 'Valeur par ressource' },
-            ].map((s, i) => (
-              <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 12px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: 22, fontWeight: 900, color: '#5865F2' }}>{s.val}</div>
-                <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4, fontWeight: 500 }}>{s.label}</div>
+              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 100, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.08)', whiteSpace: 'nowrap', fontSize: 15, fontWeight: 700, color: '#374151', minWidth: 100 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: tool.bg, color: tool.color, fontSize: tool.label.length > 1 ? 9 : 11, fontWeight: 800, flexShrink: 0, letterSpacing: '-0.02em' }}>
+                  {tool.label}
+                </span>
+                {tool.name}
               </div>
-            ))}
-          </div>
-        </FadeUp>
+            </motion.div>
+          ))}
+
+          {/* Card */}
+          <FadeUp>
+            <form onSubmit={handleCheckout}>
+              <div className="newsletter-card" style={{ background: '#fff', border: '1px solid rgba(88,101,242,0.15)', borderRadius: 20, padding: '40px 36px', textAlign: 'center', boxShadow: '0 8px 40px rgba(15,15,60,0.1)', position: 'relative', zIndex: 2 }}>
+
+                {/* Avatars */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+                  {NL_AVATARS.map((src, i) => (
+                    <img key={i} src={src} alt="" width={44} height={44}
+                      style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -12, position: 'relative', zIndex: NL_AVATARS.length - i, boxShadow: '0 1px 4px rgba(0,0,0,0.15)', flexShrink: 0 }}
+                    />
+                  ))}
+                </div>
+
+                {/* Badge */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(88,101,242,0.1)', border: '1px solid rgba(88,101,242,0.2)', borderRadius: 100, padding: '5px 14px', fontSize: 11, fontWeight: 800, color: '#5865F2', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 14 }}>
+                  REJOINS LE CLUB
+                </div>
+
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0F0F1A', margin: '0 0 10px', lineHeight: 1.3 }}>
+                  220+ freelances qui avancent ensemble
+                </h2>
+                <p style={{ fontSize: 14, color: '#6B6B8A', margin: '0 0 20px', lineHeight: 1.65 }}>
+                  Rejoins la communauté Discord pour <strong style={{ color: '#5865F2' }}>5€/mois</strong> et reçois les ressources dès le paiement.
+                </p>
+
+                {/* Benefits */}
+                <ul style={{ listStyle: 'none', margin: '0 0 22px', padding: 0, textAlign: 'left' }}>
+                  {CLUB_BENEFITS.map((b, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '7px 0', borderBottom: i < CLUB_BENEFITS.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#5865F2', color: '#fff', fontSize: 11, fontWeight: 900, flexShrink: 0, marginTop: 2 }}>✓</span>
+                      <span style={{ fontSize: 13, color: '#374151', lineHeight: 1.55 }}>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Email input */}
+                <div style={{ position: 'relative', marginBottom: 10 }}>
+                  <svg style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }} width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => { setEmail(e.target.value); setEmailError(''); }}
+                    placeholder="ton@email.com"
+                    required
+                    disabled={loading}
+                    style={{ width: '100%', background: '#F9FAFB', border: `1.5px solid ${emailError ? '#EF4444' : '#E5E7EB'}`, borderRadius: 100, padding: '12px 16px 12px 40px', fontSize: 14, color: '#0F0F1A', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                    onFocus={e => { e.target.style.borderColor = '#5865F2'; }}
+                    onBlur={e => { e.target.style.borderColor = emailError ? '#EF4444' : '#E5E7EB'; }}
+                  />
+                </div>
+                {emailError && <p style={{ fontSize: 12, color: '#EF4444', margin: '0 0 8px', textAlign: 'left', paddingLeft: 4 }}>{emailError}</p>}
+
+                {/* CTA */}
+                <motion.button
+                  type="submit"
+                  disabled={loading}
+                  style={{ width: '100%', background: '#5865F2', color: '#fff', border: 'none', borderRadius: 100, padding: '13px 24px', fontWeight: 700, fontSize: 15, cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.7 : 1, boxShadow: '0 4px 20px rgba(88,101,242,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  whileHover={reduce || loading ? {} : { background: '#4752C4' }}
+                  whileTap={reduce || loading ? {} : { scale: 0.97 }}
+                >
+                  {DISCORD_SVG}
+                  {loading ? 'Chargement…' : 'Rejoindre le club — 5€/mois →'}
+                </motion.button>
+
+                <p style={{ fontSize: 12, color: '#9CA3AF', margin: '10px 0 0' }}>
+                  Paiement sécurisé · Ressources + lien Discord envoyés par email après paiement
+                </p>
+                <p style={{ fontSize: 11, color: '#C4C4D4', margin: '5px 0 0' }}>
+                  Pour résilier, contactez{' '}
+                  <a href="mailto:hello@savvly.co" style={{ color: '#C4C4D4' }}>hello@savvly.co</a>
+                </p>
+              </div>
+            </form>
+          </FadeUp>
+
+          {/* Stats */}
+          <FadeUp delay={0.1}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 20 }}>
+              {[
+                { val: '220+', label: 'Membres actifs' },
+                { val: '23',   label: 'Ressources offertes' },
+                { val: '97€',  label: 'Valeur par ressource' },
+              ].map((s, i) => (
+                <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 10px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: 20, fontWeight: 900, color: '#5865F2' }}>{s.val}</div>
+                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 3, fontWeight: 500 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+
+        </div>
       </div>
     </section>
   );
@@ -1856,7 +1923,7 @@ function HeroOutputCard({ t, lang, startIdx = 0 }) {
 // ── Memoized heavy sections ───────────────────────────────────
 const MemoTestimonialCarousel = memo(TestimonialCarousel);
 const MemoFeaturedTools       = memo(FeaturedTools);
-const MemoNewsletterSection   = memo(NewsletterSection);
+const MemoClubSection         = memo(ClubSection);
 
 // ── Landing page ──────────────────────────────────────────────
 
@@ -2003,14 +2070,11 @@ export function Landing() {
         </div>
       </section>
 
-      {/* ── 1b. NEWSLETTER ───────────────────────────────────── */}
-      <MemoNewsletterSection reduce={reduce} />
+      {/* ── 1b. CLUB ─────────────────────────────────────────── */}
+      <MemoClubSection reduce={reduce} />
 
       {/* ── NEW: "L'arme ultime" comparison ──────────────────── */}
       <UltimateSection lang={lang} navigate={navigate} reduce={reduce} />
-
-      {/* ── Club Discord ──────────────────────────────────────── */}
-      <DiscordClubSection />
 
       {/* ── PDF Blueprint example ─────────────────────────────── */}
       <BlueprintSection navigate={navigate} />

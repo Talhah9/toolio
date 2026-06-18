@@ -13,17 +13,22 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Discord checkout not configured — add STRIPE_DISCORD_PRICE_ID to env vars' });
   }
 
+  const { email } = req.body ?? {};
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   try {
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       mode: 'subscription',
       line_items: [{ price: DISCORD_PRICE_ID, quantity: 1 }],
       subscription_data: { metadata: { type: 'discord_access' } },
       metadata: { type: 'discord_access' },
       success_url: `${SITE_URL}/discord-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${SITE_URL}/#discord`,
-    });
+    };
+    if (email && typeof email === 'string' && email.includes('@')) {
+      sessionParams.customer_email = email.trim().toLowerCase();
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     res.json({ url: session.url });
   } catch (err) {

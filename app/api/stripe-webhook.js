@@ -116,11 +116,23 @@ export default async function handler(req, res) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
 
-      // ── Discord club one-time purchase ────────────────────────
+      // ── Discord club subscription ─────────────────────────────
       if (session.metadata?.type === 'discord_access') {
         const customerEmail = session.customer_details?.email || session.customer_email;
-        console.log('[stripe-webhook] discord_access purchase | email:', customerEmail);
+        console.log('[stripe-webhook] discord_access | email:', customerEmail);
+
+        // Save to newsletter_subscribers (ignore duplicate)
         if (customerEmail) {
+          const { error: nlErr } = await supabase
+            .from('newsletter_subscribers')
+            .insert({ email: customerEmail.trim().toLowerCase(), source: 'discord_club' });
+          if (nlErr && nlErr.code !== '23505') {
+            console.error('[stripe-webhook] discord_access newsletter insert error:', nlErr.message);
+          }
+        }
+
+        if (customerEmail) {
+          // 1. Discord welcome email
           await sendEmail(
             customerEmail,
             'Bienvenue dans le club Savvly 🎉',
@@ -141,11 +153,65 @@ export default async function handler(req, res) {
       <p style="margin:24px 0 0;font-size:13px;color:#9CA3AF;">
         Ou copie ce lien : <a href="https://discord.gg/8DvYb5uB6X" style="color:#5865F2;">discord.gg/8DvYb5uB6X</a>
       </p>
+      <p style="margin:16px 0 0;font-size:12px;color:#9CA3AF;">Pour résilier, contacte-nous à <a href="mailto:hello@savvly.co" style="color:#5865F2;">hello@savvly.co</a></p>
     </div>
     <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
       <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
     </div>
   </div>
+</body></html>`
+          );
+
+          // 2. Send the 23 PDF resources
+          const resources = [
+            { n: 1,  name: 'Stack IA — Comment choisir et combiner Gemini, ChatGPT &amp; Claude',      url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource_Stack_IA__Comment_choisir_et_combiner_Gemini_ChatGPT__Claude.pdf' },
+            { n: 2,  name: 'Claude Skills',                                                             url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource_Claude_skills.pdf' },
+            { n: 3,  name: 'Claude x LinkedIn',                                                         url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource_Claude_x_LinkedIn.pdf' },
+            { n: 4,  name: 'Claude — Ressource complète',                                               url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource__Claude.pdf' },
+            { n: 5,  name: 'Formation — Prospection LinkedIn automatisée par l\'IA',                    url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource__FORMATION__Prospection_LinkedIn_automatise_par_lIA.pdf' },
+            { n: 6,  name: 'Pack Prompts ChatGPT Business',                                             url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource_Pack_Prompts_ChatGPT_Business.pdf' },
+            { n: 7,  name: 'Pack Prompts Gemini Business',                                              url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource_Pack_Prompts_Gemini_Business.pdf' },
+            { n: 8,  name: 'Pack Prompts Claude Business',                                              url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource_Pack_Prompts_Claude_Business.pdf' },
+            { n: 9,  name: 'Automatiser ta Newsletter avec l\'IA',                                      url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource__Automatiser_ta_Newsletter_avec_lIA.pdf' },
+            { n: 10, name: 'Apollo.io — Scraping d\'email B2B',                                         url: 'https://ockrknnienwjoercifxq.supabase.co/storage/v1/object/public/Ressources/Ressource__Apollo.io_-_scraping_demail_b2b.pdf' },
+          ];
+          const resourceRows = resources.map(r => `
+    <tr>
+      <td style="padding:12px 16px;border-bottom:1px solid #F3F4F6;vertical-align:middle;">
+        <table cellpadding="0" cellspacing="0" width="100%"><tr>
+          <td style="vertical-align:middle;width:32px;"><div style="width:28px;height:28px;border-radius:50%;background:#5865F2;color:#fff;font-size:12px;font-weight:800;text-align:center;line-height:28px;">${r.n}</div></td>
+          <td style="padding-left:12px;vertical-align:middle;"><span style="font-size:13px;font-weight:600;color:#111827;">${r.name}</span></td>
+          <td style="text-align:right;vertical-align:middle;white-space:nowrap;padding-left:12px;"><a href="${r.url}" style="display:inline-block;background:#5865F2;color:#fff;text-decoration:none;font-size:12px;font-weight:700;padding:6px 14px;border-radius:6px;">Télécharger →</a></td>
+        </tr></table>
+      </td>
+    </tr>`).join('');
+
+          await sendEmail(
+            customerEmail,
+            'Vos ressources offertes avec le club Savvly — 10 PDFs',
+            `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px 48px;"><tr><td align="center">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;">
+    <tr><td style="background:#5865F2;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+      <p style="margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.02em;">Savvly</p>
+    </td></tr>
+    <tr><td style="background:#fff;padding:40px 40px 28px;text-align:center;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+      <h1 style="margin:0 0 12px;font-size:24px;font-weight:900;color:#0F172A;">Tes 10 ressources sont là 🎁</h1>
+      <p style="margin:0;font-size:15px;color:#6B7280;line-height:1.6;">Offertes avec ton abonnement au club Savvly.</p>
+    </td></tr>
+    <tr><td style="background:#fff;padding:0 40px 8px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5E7EB;border-radius:12px;overflow:hidden;">${resourceRows}</table>
+    </td></tr>
+    <tr><td style="background:#fff;padding:28px 40px 36px;text-align:center;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+      <p style="margin:0 0 20px;font-size:14px;color:#6B7280;line-height:1.6;">Ces ressources t'appartiennent. N'oublie pas de rejoindre le Discord aussi !</p>
+      <a href="https://discord.gg/8DvYb5uB6X" style="display:inline-block;background:#5865F2;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:14px 32px;border-radius:10px;">Rejoindre le Discord →</a>
+    </td></tr>
+    <tr><td style="background:#F9FAFB;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;border:1px solid #e5e7eb;border-top:none;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">© 2026 Savvly · <a href="https://savvly.co" style="color:#9CA3AF;">savvly.co</a></p>
+    </td></tr>
+  </table>
+  </td></tr></table>
 </body></html>`
           );
         }
