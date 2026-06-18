@@ -21,6 +21,7 @@ const ShareResult   = lazy(() => import('./pages/ShareResult').then(m => ({ defa
 const Coaching      = lazy(() => import('./pages/Coaching').then(m => ({ default: m.Coaching })));
 const CoachingSuccess = lazy(() => import('./pages/CoachingSuccess').then(m => ({ default: m.CoachingSuccess })));
 const ComingSoon    = lazy(() => import('./pages/ComingSoon').then(m => ({ default: m.ComingSoon })));
+const ToolLanding   = lazy(() => import('./pages/ToolLanding').then(m => ({ default: m.ToolLanding })));
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
 
@@ -77,6 +78,7 @@ export function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/legal" element={<Legal />} />
+            <Route path="/outils/:slug" element={<ToolLanding />} />
             <Route element={<ProtectedRoute />}>
               {/* Main app — with Savvly sidebar */}
               <Route element={<AppShell />}>
