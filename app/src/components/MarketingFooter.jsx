@@ -27,7 +27,7 @@ export function MarketingFooter() {
           <div className="mk-footer-col">
             <h4>{t('footer.col.resources')}</h4>
             <ul>
-              <li><a>{t('footer.link.docs')}</a></li>
+              <li><Link to="/blog">Blog</Link></li>
               <li><a>{t('footer.link.guides')}</a></li>
               <li><a>{t('footer.link.support')}</a></li>
             </ul>

@@ -23,6 +23,8 @@ const CoachingSuccess = lazy(() => import('./pages/CoachingSuccess').then(m => (
 const ComingSoon    = lazy(() => import('./pages/ComingSoon').then(m => ({ default: m.ComingSoon })));
 const ToolLanding      = lazy(() => import('./pages/ToolLanding').then(m => ({ default: m.ToolLanding })));
 const DiscordSuccess   = lazy(() => import('./pages/DiscordSuccess').then(m => ({ default: m.DiscordSuccess })));
+const Blog             = lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
+const BlogPost         = lazy(() => import('./pages/BlogPost').then(m => ({ default: m.BlogPost })));
 
 const ADMIN_EMAIL = 'talhahally974@gmail.com';
 
@@ -81,6 +83,8 @@ export function App() {
             <Route path="/legal" element={<Legal />} />
             <Route path="/outils/:slug" element={<ToolLanding />} />
             <Route path="/discord-success" element={<DiscordSuccess />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route element={<ProtectedRoute />}>
               {/* Main app — with Savvly sidebar */}
               <Route element={<AppShell />}>
