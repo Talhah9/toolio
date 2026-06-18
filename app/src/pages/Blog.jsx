@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { MarketingFooter } from '../components/MarketingFooter';
 import { Logo } from '../components/Logo';
+import { usePageSeo } from '../utils/seo';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -56,13 +57,11 @@ export function Blog() {
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    document.title = 'Blog Savvly — Guides pratiques pour freelances';
-    const meta = document.querySelector('meta[name="description"]');
-    const prev = meta?.content;
-    if (meta) meta.content = 'Guides pratiques, conseils juridiques, LinkedIn et prospection pour freelances français. Tous les articles Savvly.';
-    return () => { document.title = 'Savvly'; if (meta && prev) meta.content = prev; };
-  }, []);
+  usePageSeo({
+    title: 'Blog — Guides pratiques pour freelances',
+    description: 'Guides pratiques, conseils juridiques, LinkedIn et prospection pour freelances français. Contrats, TJM, URSSAF, prospection — tous les articles Savvly.',
+    path: '/blog',
+  });
 
   useEffect(() => {
     supabase

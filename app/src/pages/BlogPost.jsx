@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { createClient } from '@supabase/supabase-js';
 import { MarketingFooter } from '../components/MarketingFooter';
 import { Logo } from '../components/Logo';
+import { usePageSeo } from '../utils/seo';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -65,6 +66,13 @@ export function BlogPost() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
+  usePageSeo(post ? {
+    title: post.title,
+    description: post.meta_description,
+    path: `/blog/${post.slug}`,
+    type: 'article',
+  } : { title: '', description: '', path: `/blog/${slug}` });
+
   useEffect(() => {
     supabase
       .from('blog_posts')
@@ -75,14 +83,6 @@ export function BlogPost() {
         if (error || !data) { setNotFound(true); setLoading(false); return; }
         setPost(data);
         setLoading(false);
-
-        document.title = `${data.title} — Savvly`;
-        let meta = document.querySelector('meta[name="description"]');
-        if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
-        meta.content = data.meta_description;
-
-        let faqScript = document.getElementById('bp-faq-schema');
-        if (faqScript) faqScript.remove();
       });
     return () => { document.title = 'Savvly'; };
   }, [slug]);

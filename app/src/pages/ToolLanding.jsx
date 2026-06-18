@@ -3,6 +3,7 @@ import { useParams, useNavigate, Navigate, Link } from 'react-router-dom';
 import { MarketingNav } from '../components/MarketingNav';
 import { MarketingFooter } from '../components/MarketingFooter';
 import { TOOLS, getToolText } from '../data/catalog';
+import { usePageSeo } from '../utils/seo';
 
 const SLUG_TO_ID = {
   'contrat-freelance':      'contract',
@@ -526,11 +527,10 @@ export function ToolLanding() {
   ];
   const relatedSlugs = RELATED[toolId] || [];
 
-  useSeo(
-    tool ? `${text.name} IA gratuit — Savvly | Toolkit freelance` : 'Savvly',
-    tool ? `${text.intro} Essayez gratuitement sur Savvly, le toolkit IA pour freelances.` : '',
-    faqs,
-  );
+  const seoTitle = tool ? `${text.name} IA gratuit — Savvly | Toolkit freelance` : 'Savvly';
+  const seoDesc  = tool ? `${text.intro} Essayez gratuitement sur Savvly, le toolkit IA pour freelances.` : '';
+  useSeo(seoTitle, seoDesc, faqs);
+  usePageSeo({ title: seoTitle, description: seoDesc, path: `/outils/${slug}` });
 
   if (!tool) return <Navigate to="/" replace />;
 

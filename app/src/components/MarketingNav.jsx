@@ -25,6 +25,7 @@ export function MarketingNav() {
         <nav className="mk-nav-links">
           <a onClick={() => go('/#tools')} style={{ cursor: 'pointer' }}>{t('nav.tools')}</a>
           <a onClick={() => go('/#pricing')} style={{ cursor: 'pointer' }}>{t('nav.pricing')}</a>
+          <a onClick={() => go('/blog')} style={{ cursor: 'pointer' }}>Blog</a>
           <button
             onClick={toggleLang}
             style={{
@@ -62,6 +63,7 @@ export function MarketingNav() {
         <div className="mk-nav-mobile-menu">
           <a className="mk-nav-mobile-item" onClick={() => go('/#tools')}>{t('nav.tools')}</a>
           <a className="mk-nav-mobile-item" onClick={() => go('/#pricing')}>{t('nav.pricing')}</a>
+          <a className="mk-nav-mobile-item" onClick={() => go('/blog')}>Blog</a>
           <a className="mk-nav-mobile-item" onClick={() => go('/auth')}>{t('nav.login')}</a>
           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
             <button
