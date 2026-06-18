@@ -17,8 +17,9 @@ export default async function handler(req, res) {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
+      mode: 'subscription',
       line_items: [{ price: DISCORD_PRICE_ID, quantity: 1 }],
+      subscription_data: { metadata: { type: 'discord_access' } },
       metadata: { type: 'discord_access' },
       success_url: `${SITE_URL}/discord-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${SITE_URL}/#discord`,

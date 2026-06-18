@@ -46,7 +46,7 @@ export function DiscordSuccess() {
             <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
             <h1 style={{ fontSize: 26, fontWeight: 900, color: '#0F0F1A', margin: '0 0 12px' }}>Bienvenue dans le club !</h1>
             <p style={{ fontSize: 15, color: '#4B4B6A', lineHeight: 1.65, margin: '0 0 32px' }}>
-              Ton accès est confirmé. Clique ci-dessous pour rejoindre les 220+ freelances sur Discord.
+              Ton abonnement est confirmé. Clique ci-dessous pour rejoindre les 220+ freelances sur Discord.
               Un email avec ce lien t'a aussi été envoyé.
             </p>
 

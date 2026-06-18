@@ -832,7 +832,7 @@ function DiscordClubSection() {
 
             <div style={{ marginBottom: 28, textAlign: 'center' }}>
               <div style={{ fontSize: 52, fontWeight: 900, color: '#0F0F1A', lineHeight: 1 }}>5€</div>
-              <div style={{ fontSize: 14, color: '#9CA3AF', marginTop: 4, fontWeight: 500 }}>Accès à vie</div>
+              <div style={{ fontSize: 14, color: '#9CA3AF', marginTop: 4, fontWeight: 500 }}>par mois</div>
             </div>
 
             <ul style={{ listStyle: 'none', margin: '0 0 28px', padding: 0, textAlign: 'left' }}>
@@ -853,6 +853,10 @@ function DiscordClubSection() {
             </button>
             <p style={{ fontSize: 12, color: '#9CA3AF', margin: '10px 0 0', textAlign: 'center' }}>
               Paiement sécurisé · Accès immédiat · Lien Discord envoyé par email
+            </p>
+            <p style={{ fontSize: 11, color: '#C4C4D4', margin: '6px 0 0', textAlign: 'center' }}>
+              Pour résilier votre abonnement, contactez-nous à{' '}
+              <a href="mailto:hello@savvly.co" style={{ color: '#C4C4D4' }}>hello@savvly.co</a>
             </p>
           </div>
         </FadeUp>
