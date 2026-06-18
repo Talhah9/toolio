@@ -1615,75 +1615,6 @@ function NewsletterSection({ reduce }) {
   );
 }
 
-// ── New Community section (coral/orange) ──────────────────────
-
-function CommunitySection({ lang, navigate, reduce }) {
-  const { t } = useLang();
-  const stats = [
-    { n: '200+', label: t('landing.community.stat1') },
-  ];
-  return (
-    <FadeUp>
-      <section aria-label="Témoignages clients" style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(79,70,229,0.05) 1px, transparent 1px)', backgroundSize: '28px 28px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '-20%', right: '-5%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(250,208,44,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-        <div className="container" style={{ position: 'relative' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '6px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28 }}>
-              🚀 {t('landing.community.badge')}
-            </span>
-            <h2 style={{ fontSize: 'clamp(30px, 5vw, 54px)', fontWeight: 900, color: '#0F0F1A', margin: '0 0 20px', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              {t('landing.community.h2.line1')}<br /><span style={{ color: '#4F46E5' }}>{t('landing.community.h2.line2')}</span>
-            </h2>
-            <p style={{ fontSize: 17, color: '#6B6B8A', margin: '0 0 40px', lineHeight: 1.65, maxWidth: 540 }}>
-              {t('landing.community.sub')}
-            </p>
-
-            {/* Stats row */}
-            <div className="community-stats" style={{ display: 'flex', gap: 40, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
-              {stats.map(({ n, label }, i) => (
-                <div key={i} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: i === 1 ? '#D97706' : '#0F0F1A', lineHeight: 1 }}>{n}</div>
-                  <div style={{ fontSize: 13, color: '#6B6B8A', marginTop: 6, maxWidth: 130, lineHeight: 1.4 }}>{label}</div>
-                </div>
-              ))}
-            </div>
-
-            <motion.button
-              onClick={() => navigate('/community')}
-              style={{ background: 'linear-gradient(135deg, #4F46E5, #6D28D9)', color: '#fff', border: 'none', borderRadius: 14, padding: '16px 36px', fontWeight: 900, fontSize: 16, cursor: 'pointer', letterSpacing: '0.01em', boxShadow: '0 8px 32px rgba(79,70,229,0.4)' }}
-              whileHover={reduce ? {} : { scale: 1.03, boxShadow: '0 12px 40px rgba(79,70,229,0.5)' }}
-              whileTap={reduce ? {} : { scale: 0.97 }}
-            >
-              {t('landing.community.cta')}
-            </motion.button>
-
-            {/* Discord banner */}
-            <a
-              href="https://discord.gg/8DvYb5uB6X"
-              target="_blank"
-              rel="noreferrer"
-              style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 14, border: '1.5px solid rgba(88,101,242,0.35)', borderRadius: 14, padding: '16px 22px', background: 'rgba(88,101,242,0.04)', maxWidth: 380, width: '100%', textDecoration: 'none', transition: 'border-color 0.15s, background 0.15s', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#5865F2'; e.currentTarget.style.background = 'rgba(88,101,242,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(88,101,242,0.35)'; e.currentTarget.style.background = 'rgba(88,101,242,0.04)'; }}
-            >
-              <svg viewBox="0 0 24 24" fill="#5865F2" width="30" height="30" style={{ flexShrink: 0 }}>
-                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-              </svg>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: '#0F0F1A', marginBottom: 2 }}>200 membres actifs sur Discord</div>
-                <div style={{ fontSize: 13, color: '#5865F2', fontWeight: 600 }}>Rejoindre la communauté →</div>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-    </FadeUp>
-  );
-}
-
 // ── Container scroll — 3D laptop reveal ──────────────────────
 
 const MOCKUP_TOOLS = [
@@ -2371,9 +2302,6 @@ export function Landing() {
           </StaggerGrid>
         </div>
       </section>
-
-      {/* ── 8. COMMUNITY (coral/orange) ──────────────────────── */}
-      <CommunitySection lang={lang} navigate={navigate} reduce={reduce} />
 
       {/* ── 9. COACHING ──────────────────────────────────────── */}
       <FadeUp>
