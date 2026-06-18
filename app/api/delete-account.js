@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { verifyAuth } from './_security.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -8,6 +9,8 @@ export default async function handler(req, res) {
   if (!userId || !userEmail) {
     return res.status(400).json({ error: 'Missing userId or userEmail' });
   }
+
+  if (!await verifyAuth(req, res, userId)) return;
 
   const missing = [];
   if (!process.env.STRIPE_SECRET_KEY)         missing.push('STRIPE_SECRET_KEY');

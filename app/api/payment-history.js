@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { verifyAuth } from './_security.js';
 
 export const config = { maxDuration: 60 };
 
@@ -9,6 +10,8 @@ export default async function handler(req, res) {
   if (!userId || !userEmail) {
     return res.status(400).json({ error: 'Missing userId or userEmail' });
   }
+
+  if (!await verifyAuth(req, res, userId)) return;
 
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error('[payment-history] STRIPE_SECRET_KEY not set');

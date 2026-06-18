@@ -63,7 +63,7 @@ export function Account() {
     if (!session?.user?.id || !user?.email) return;
     fetch('/api/payment-history', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
     })
       .then(r => r.json())
@@ -168,7 +168,7 @@ export function Account() {
                       try {
                         const res = await fetch('/api/reactivate-subscription', {
                           method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
+                          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
                           body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
                         });
                         const json = await res.json();
@@ -290,7 +290,7 @@ export function Account() {
                   try {
                     const res = await fetch('/api/cancel-subscription', {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
                       body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
                     });
                     const json = await res.json();
@@ -352,7 +352,7 @@ export function Account() {
                     try {
                       const res = await fetch('/api/delete-account', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
                         body: JSON.stringify({ userId: session.user.id, userEmail: user.email }),
                       });
                       const json = await res.json();

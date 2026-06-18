@@ -120,7 +120,7 @@ export function Admin() {
       }).then(r => r.json()),
       fetch('/api/payment-history', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ userId: session.user.id, userEmail: user?.email }),
       }).then(r => r.json()),
     ])
