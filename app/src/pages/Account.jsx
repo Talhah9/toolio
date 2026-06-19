@@ -238,6 +238,9 @@ export function Account() {
                         const json = await res.json();
                         if (json.redirectToPricing) { navigate('/pricing'); return; }
                         if (!json.success) throw new Error(json.error || 'Reactivation failed');
+                        // Clear stale cancel state and show renewal date immediately
+                        setStripeCancelAt(null);
+                        if (json.renewalDate) setRenewalDate(json.renewalDate);
                         await refreshCredits();
                         toast(t('account.toast.reactivated'));
                       } catch (err) {

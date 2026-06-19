@@ -47,10 +47,12 @@ export default async function handler(req, res) {
     // Active subscription with cancel_at_period_end=true — can be reversed
     const activeSubs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 1 });
     if (activeSubs.data.length && activeSubs.data[0].cancel_at_period_end) {
-      await stripe.subscriptions.update(activeSubs.data[0].id, { cancel_at_period_end: false });
+      const updated = await stripe.subscriptions.update(activeSubs.data[0].id, { cancel_at_period_end: false });
       console.log('[reactivate] Stripe subscription reactivated:', activeSubs.data[0].id);
       await supabase.from('profiles').update({ cancel_at: null }).eq('id', userId);
-      return res.json({ success: true });
+      const fmt = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      const renewalDate = fmt(new Date(updated.current_period_end * 1000));
+      return res.json({ success: true, renewalDate });
     }
 
     // No active subscription (schedule-cancelled) — can't reactivate, redirect to pricing
