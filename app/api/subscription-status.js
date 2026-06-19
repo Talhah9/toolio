@@ -33,12 +33,14 @@ export default async function handler(req, res) {
 
     // Resolve Stripe customer: profiles.stripe_customer_id first, email fallback
     let customerId = null;
+    let profile = null;
     if (userId) {
-      const { data: profile } = await supabase
+      const { data: _profile } = await supabase
         .from('profiles')
-        .select('stripe_customer_id, email')
+        .select('stripe_customer_id, email, cancel_at')
         .eq('id', userId)
         .maybeSingle();
+      profile = _profile;
 
       customerId = profile?.stripe_customer_id ?? null;
       if (!customerId) {
@@ -57,9 +59,16 @@ export default async function handler(req, res) {
       customerId = customers.data[0]?.id ?? null;
     }
 
-    if (!customerId) return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
-
     const fmt = (d) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    if (!customerId) {
+      const dbCancelAt = profile?.cancel_at ? new Date(profile.cancel_at) : null;
+      if (dbCancelAt && dbCancelAt.getTime() > Date.now()) {
+        return res.json({ renewalDate: null, cancelAt: fmt(dbCancelAt), isCancelling: true });
+      }
+      return res.json({ renewalDate: null, cancelAt: null, isCancelling: false });
+    }
+
     const nowSec = Math.floor(Date.now() / 1000);
     const minSec = nowSec + 86400; // must have > 24 h remaining
 
@@ -106,6 +115,14 @@ export default async function handler(req, res) {
       const sub = activeCancelled[0];
       const cancelTs = sub.cancel_at ? sub.cancel_at * 1000 : sub.current_period_end * 1000;
       return res.json({ renewalDate: null, cancelAt: fmt(new Date(cancelTs)), isCancelling: true });
+    }
+
+    // Last resort: use DB cancel_at if it's still in the future (survives customer migrations)
+    const dbCancelAt = userId && profile?.cancel_at ? new Date(profile.cancel_at) : null;
+    if (dbCancelAt && dbCancelAt.getTime() > Date.now()) {
+      const cancelAtStr = fmt(dbCancelAt);
+      console.log('[subscription-status] falling back to DB cancel_at for', customerId, '→', cancelAtStr);
+      return res.json({ renewalDate: null, cancelAt: cancelAtStr, isCancelling: true });
     }
 
     console.log('[subscription-status] no valid Savvly sub for', customerId);

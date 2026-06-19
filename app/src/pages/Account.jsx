@@ -11,7 +11,7 @@ import { loadProfile, saveProfile } from '../hooks/useFreelanceProfile';
 
 export function Account() {
   const navigate = useNavigate();
-  const { user, session, credits, plan, isPro, refreshCredits, signOut } = useApp();
+  const { user, session, credits, plan, isPro, cancelAt: ctxCancelAt, refreshCredits, signOut } = useApp();
   const { lang, t } = useLang();
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
@@ -44,8 +44,14 @@ export function Account() {
   const [renewalDate, setRenewalDate] = useState(null);
   const [stripeCancelAt, setStripeCancelAt] = useState(null);
 
-  // Cancellation date comes exclusively from Stripe via /api/subscription-status
-  const effectiveCancelAt = stripeCancelAt;
+  // Format raw DB cancel_at (ISO string) into locale display string
+  const fmtDate = (iso) => iso
+    ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+    : null;
+
+  // Stripe API result wins; fall back to DB cancel_at already in context
+  const ctxCancelAtFmt = ctxCancelAt && new Date(ctxCancelAt) > new Date() ? fmtDate(ctxCancelAt) : null;
+  const effectiveCancelAt = stripeCancelAt || ctxCancelAtFmt;
 
   // Load subscription status from Stripe (renewal date + cancel info)
   useEffect(() => {
