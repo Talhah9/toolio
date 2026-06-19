@@ -167,7 +167,10 @@ export function AppProvider({ children }) {
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/dashboard` },
+      // Redirect to /auth (whitelisted in Supabase) — Auth.jsx's SIGNED_IN listener
+      // then navigates to /dashboard. Redirecting straight to /dashboard breaks mobile
+      // OAuth because Supabase's whitelist rejects the URL and falls back to site root.
+      options: { redirectTo: `${window.location.origin}/auth` },
     });
     if (error) throw error;
   };

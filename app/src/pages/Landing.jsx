@@ -698,9 +698,17 @@ function UltimateSection({ lang, navigate, reduce }) {
   ];
 
   return (
-    <section aria-label="Offre et avantages" style={{ background: '#FDFCF7', padding: '100px 24px 80px', borderTop: '1px solid #EDE9D8' }}>
+    <section aria-label="Offre et avantages" style={{ background: '#FDFCF7', padding: '80px 24px 64px', borderTop: '1px solid #EDE9D8' }}>
+      <style>{`
+        @media (max-width: 700px) {
+          .ultimate-grid { grid-template-columns: 1fr !important; }
+          .ultimate-table-header,
+          .ultimate-table-row { grid-template-columns: 1fr 70px 70px !important; }
+          .ultimate-section { padding: 56px 16px 48px !important; }
+        }
+      `}</style>
       <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(79,70,229,0.08)', border: '1px solid rgba(79,70,229,0.2)', borderRadius: 100, padding: '5px 16px', fontSize: 11, fontWeight: 800, color: '#4F46E5', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
             {t('landing.ultimate.badge')}
           </span>
@@ -709,18 +717,18 @@ function UltimateSection({ lang, navigate, reduce }) {
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
+        <div className="ultimate-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, alignItems: 'center', maxWidth: 1000, margin: '0 auto' }}>
           {/* Comparison table */}
           <FadeUp>
             <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 4px 32px rgba(15,15,60,0.07)', border: '1px solid #EDE9D8' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', background: '#F7F7FF', padding: '10px 16px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #EDE9D8' }}>
+              <div className="ultimate-table-header" style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', background: '#F7F7FF', padding: '10px 16px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #EDE9D8' }}>
                 <span style={{ color: '#6B6B8A' }}>{t('landing.ultimate.col.feature')}</span>
                 <span style={{ textAlign: 'center', color: '#9CA3AF' }}>{t('landing.ultimate.col.others')}</span>
                 <span style={{ textAlign: 'center', color: '#4F46E5' }}>Savvly</span>
               </div>
               {rows.map(([label, others, savvly], i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', padding: '8px 16px', borderBottom: i < rows.length - 1 ? '1px solid #F3F4F6' : 'none', alignItems: 'center' }}>
-                  <span style={{ fontSize: 13, color: '#2D2D4A', fontWeight: 500 }}>{label}</span>
+                <div key={i} className="ultimate-table-row" style={{ display: 'grid', gridTemplateColumns: '1fr 88px 88px', padding: '8px 16px', borderBottom: i < rows.length - 1 ? '1px solid #F3F4F6' : 'none', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, color: '#2D2D4A', fontWeight: 500, lineHeight: 1.3 }}>{label}</span>
                   <span style={{ textAlign: 'center', fontSize: 16 }}>
                     {others ? '✓' : <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>}
                   </span>
@@ -747,7 +755,6 @@ function UltimateSection({ lang, navigate, reduce }) {
               onError={(e) => console.error('Video error:', e)}
               style={{
                 width: '100%',
-                maxWidth: 600,
                 borderRadius: 16,
                 boxShadow: '0 24px 60px rgba(79,70,229,0.2)',
                 border: '2px solid rgba(79,70,229,0.3)',
