@@ -67,9 +67,17 @@ export function ProspectionTool({ tool, initialData }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
   const resultRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const handleScroll = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 50);
+  };
   useEffect(() => {
-    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
-  }, [rawOutput]);
+    if (autoScroll && resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [rawOutput, autoScroll]);
 
   const hasOutput = Object.keys(sections).length > 0;
 
@@ -81,6 +89,7 @@ export function ProspectionTool({ tool, initialData }) {
     setLoading(true);
     setSections({});
     setRawOutput('');
+    setAutoScroll(true);
     try {
       const fullText = await streamGenerate(
         { toolId: tool.id, input: { niche, target, channel, tone, pain: pain || undefined }, session, lang },
@@ -299,7 +308,7 @@ export function ProspectionTool({ tool, initialData }) {
               </div>
             )}
 
-            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+            <div ref={resultRef} className="result-body" onScroll={handleScroll}>
               <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
               {loading && !rawOutput ? (
                 <GeneratingIndicator toolId="prospection" />

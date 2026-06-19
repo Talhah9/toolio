@@ -92,9 +92,17 @@ export function LinkedinIntelTool({ tool }) {
   const fileRef = useRef(null);
   const navigate = useNavigate();
   const resultRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const handleScroll = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 50);
+  };
   useEffect(() => {
-    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
-  }, [rawOutput]);
+    if (autoScroll && resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [rawOutput, autoScroll]);
 
   const hasOutput = Object.keys(sections).length > 0;
 
@@ -132,6 +140,7 @@ export function LinkedinIntelTool({ tool }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setSections({});
     setRawOutput('');
+    setAutoScroll(true);
 
     let profileSummary = '';
     if (profileImage) {
@@ -409,7 +418,7 @@ export function LinkedinIntelTool({ tool }) {
               </div>
             )}
 
-            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+            <div ref={resultRef} className="result-body" onScroll={handleScroll}>
             <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
             {loading && !rawOutput ? (
               <GeneratingIndicator toolId="linkedin-intel" />

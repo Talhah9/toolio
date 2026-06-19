@@ -53,9 +53,17 @@ export function DevisTool({ tool, initialData }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
   const resultRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const handleScroll = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 50);
+  };
   useEffect(() => {
-    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
-  }, [output]);
+    if (autoScroll && resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [output, autoScroll]);
 
   const updateLine = (id, field, value) =>
     setLines(ls => ls.map(l => l.id === id ? { ...l, [field]: value } : l));
@@ -78,6 +86,7 @@ export function DevisTool({ tool, initialData }) {
 
     setLoading(true);
     setOutput('');
+    setAutoScroll(true);
     try {
       const today = new Date().toLocaleDateString('fr-FR');
       const input = {
@@ -258,7 +267,7 @@ export function DevisTool({ tool, initialData }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+            <div ref={resultRef} className="result-body" onScroll={handleScroll}>
               <StreamingBanner loading={loading} hasOutput={!!output} />
               {loading && !output ? (
                 <GeneratingIndicator toolId="devis" />

@@ -55,9 +55,17 @@ export function ContratTool({ tool, initialData }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
   const resultRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const handleScroll = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 50);
+  };
   useEffect(() => {
-    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
-  }, [streamingRaw]);
+    if (autoScroll && resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [streamingRaw, autoScroll]);
 
   // Load shared freelance profile on mount
   useEffect(() => {
@@ -84,6 +92,7 @@ export function ContratTool({ tool, initialData }) {
     setLoading(true);
     setOutput('');
     setStreamingRaw('');
+    setAutoScroll(true);
 
     try {
       const today = new Date().toLocaleDateString('fr-FR');
@@ -299,7 +308,7 @@ export function ContratTool({ tool, initialData }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            <div ref={resultRef} className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+            <div ref={resultRef} className="result-body" onScroll={handleScroll}>
               <StreamingBanner loading={loading} hasOutput={!!streamingRaw} />
               {loading && !streamingRaw ? (
                 <GeneratingIndicator toolId="contract" />

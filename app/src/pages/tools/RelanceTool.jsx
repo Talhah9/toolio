@@ -46,9 +46,17 @@ export function RelanceTool({ tool }) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
   const resultRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const handleScroll = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    setAutoScroll(el.scrollHeight - el.scrollTop - el.clientHeight < 50);
+  };
   useEffect(() => {
-    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
-  }, [output]);
+    if (autoScroll && resultRef.current) {
+      resultRef.current.scrollTop = resultRef.current.scrollHeight;
+    }
+  }, [output, autoScroll]);
 
   useEffect(() => {
     if (dueDate) setDaysLate(calcDaysLate(dueDate));
@@ -75,6 +83,7 @@ export function RelanceTool({ tool }) {
     if (credits < tool.credits) { toast(t('tool.error.credits')); return; }
     setLoading(true);
     setOutput('');
+    setAutoScroll(true);
     try {
       const context = buildContext();
       const fullText = await streamGenerate(
@@ -240,7 +249,7 @@ export function RelanceTool({ tool }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+            <div ref={resultRef} className="result-body" onScroll={handleScroll}>
               <StreamingBanner loading={loading} hasOutput={!!output} />
               {loading && !output ? (
                 <GeneratingIndicator toolId="relance" />
