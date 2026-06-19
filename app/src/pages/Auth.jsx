@@ -20,7 +20,7 @@ function translateAuthError(error) {
 export function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, loading, signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
+  const { user, loading: ctxLoading, signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
   const { t, lang } = useLang();
 
   // Check hash synchronously so the first render already shows the reset form.
@@ -47,10 +47,10 @@ export function Auth() {
   // context: once AppContext finishes loading with a session, navigate away.
   // Guard: don't redirect if this is a password-recovery link (mode === 'reset').
   useEffect(() => {
-    if (!loading && user && mode !== 'reset') {
+    if (!ctxLoading && user && mode !== 'reset') {
       navigate('/dashboard', { replace: true });
     }
-  }, [loading, user, mode, navigate]);
+  }, [ctxLoading, user, mode, navigate]);
 
   // Still register onAuthStateChange for:
   // - PASSWORD_RECOVERY links (fires after mount on hash-based tokens)
