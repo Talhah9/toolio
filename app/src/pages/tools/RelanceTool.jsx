@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -45,6 +45,10 @@ export function RelanceTool({ tool }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
+  const resultRef = useRef(null);
+  useEffect(() => {
+    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
+  }, [output]);
 
   useEffect(() => {
     if (dueDate) setDaysLate(calcDaysLate(dueDate));
@@ -236,18 +240,20 @@ export function RelanceTool({ tool }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            <StreamingBanner loading={loading} hasOutput={!!output} />
-            {loading && !output ? (
-              <GeneratingIndicator toolId="relance" />
-            ) : output ? (
-              loading ? (
-                <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
+            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+              <StreamingBanner loading={loading} hasOutput={!!output} />
+              {loading && !output ? (
+                <GeneratingIndicator toolId="relance" />
+              ) : output ? (
+                loading ? (
+                  <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
+                ) : (
+                  <MarkdownResult>{output}</MarkdownResult>
+                )
               ) : (
-                <MarkdownResult>{output}</MarkdownResult>
-              )
-            ) : (
-              <div className="result-empty">{t('tool.result.placeholder')}</div>
-            )}
+                <div className="result-empty">{t('tool.result.placeholder')}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

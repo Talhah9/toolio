@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { loadProfile } from '../../hooks/useFreelanceProfile';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
@@ -57,6 +57,11 @@ export function LegalTool({ tool, initialData }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
+
+  const resultRef = useRef(null);
+  useEffect(() => {
+    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
+  }, [streamingRaw]);
 
   const buildBaseVars = () => {
     const today = new Date().toLocaleDateString('fr-FR');
@@ -299,7 +304,7 @@ export function LegalTool({ tool, initialData }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            <div className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+            <div ref={resultRef} className="result-body" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
               <StreamingBanner loading={loading} hasOutput={!!streamingRaw} />
               {loading && !streamingRaw ? (
                 <GeneratingIndicator toolId="legal" />

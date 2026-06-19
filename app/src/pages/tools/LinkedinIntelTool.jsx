@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
@@ -91,6 +91,10 @@ export function LinkedinIntelTool({ tool }) {
   const [toast, ToastEl] = useToast();
   const fileRef = useRef(null);
   const navigate = useNavigate();
+  const resultRef = useRef(null);
+  useEffect(() => {
+    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
+  }, [rawOutput]);
 
   const hasOutput = Object.keys(sections).length > 0;
 
@@ -405,6 +409,7 @@ export function LinkedinIntelTool({ tool }) {
               </div>
             )}
 
+            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
             <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
             {loading && !rawOutput ? (
               <GeneratingIndicator toolId="linkedin-intel" />
@@ -444,6 +449,7 @@ export function LinkedinIntelTool({ tool }) {
             ) : (
               <div className="result-empty">{t('tool.result.placeholder')}</div>
             )}
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
@@ -54,6 +54,10 @@ export function LinkedinTool({ tool, initialData }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
+  const resultRef = useRef(null);
+  useEffect(() => {
+    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
+  }, [output]);
 
   const charCount = output.length;
   const overLimit = charCount > LI_LIMIT;
@@ -164,21 +168,23 @@ export function LinkedinTool({ tool, initialData }) {
               </div>
             </div>
             {viewerOpen && <ResultViewer output={output} toolName={lang === 'fr' ? tool.name_fr : tool.name_en} userEmail={user?.email} onClose={() => setViewerOpen(false)} />}
-            <StreamingBanner loading={loading} hasOutput={!!output} />
-            {loading && !output ? (
-              <GeneratingIndicator toolId="linkedin-content" />
-            ) : output ? (
-              <>
-                {loading ? (
-                  <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
-                ) : (
-                  <MarkdownResult>{output}</MarkdownResult>
-                )}
-                <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', fontSize: 12, color: overLimit ? '#EF4444' : 'var(--fg-4)', display: 'flex', justifyContent: 'flex-end' }}>
-                  {charCount} / {LI_LIMIT} {overLimit && t('tool.linkedin.overlimit')}
-                </div>
-              </>
-            ) : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+              <StreamingBanner loading={loading} hasOutput={!!output} />
+              {loading && !output ? (
+                <GeneratingIndicator toolId="linkedin-content" />
+              ) : output ? (
+                <>
+                  {loading ? (
+                    <pre className="stream-text">{output}<span className="stream-cursor" /></pre>
+                  ) : (
+                    <MarkdownResult>{output}</MarkdownResult>
+                  )}
+                  <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', fontSize: 12, color: overLimit ? '#EF4444' : 'var(--fg-4)', display: 'flex', justifyContent: 'flex-end' }}>
+                    {charCount} / {LI_LIMIT} {overLimit && t('tool.linkedin.overlimit')}
+                  </div>
+                </>
+              ) : <div className="result-empty">{t('tool.result.placeholder')}</div>}
+            </div>
           </div>
         </div>
       </div>

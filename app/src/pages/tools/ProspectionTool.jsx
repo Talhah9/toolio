@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MarkdownResult } from '../../components/MarkdownResult';
 import { ResultViewer } from '../../components/ResultViewer';
 import { ToolShell } from '../../components/ToolShell';
@@ -66,6 +66,10 @@ export function ProspectionTool({ tool, initialData }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [toast, ToastEl] = useToast();
+  const resultRef = useRef(null);
+  useEffect(() => {
+    if (resultRef.current) resultRef.current.scrollTop = resultRef.current.scrollHeight;
+  }, [rawOutput]);
 
   const hasOutput = Object.keys(sections).length > 0;
 
@@ -295,16 +299,18 @@ export function ProspectionTool({ tool, initialData }) {
               </div>
             )}
 
-            <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
-            {loading && !rawOutput ? (
-              <GeneratingIndicator toolId="prospection" />
-            ) : rawOutput && loading ? (
-              <pre className="stream-text">{rawOutput}<span className="stream-cursor" /></pre>
-            ) : hasOutput ? (
-              <MarkdownResult>{getTabContent(activeTab)}</MarkdownResult>
-            ) : (
-              <div className="result-empty">{t('tool.result.placeholder')}</div>
-            )}
+            <div ref={resultRef} style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 260px)', scrollBehavior: 'smooth' }}>
+              <StreamingBanner loading={loading} hasOutput={!!rawOutput} />
+              {loading && !rawOutput ? (
+                <GeneratingIndicator toolId="prospection" />
+              ) : rawOutput && loading ? (
+                <pre className="stream-text">{rawOutput}<span className="stream-cursor" /></pre>
+              ) : hasOutput ? (
+                <MarkdownResult>{getTabContent(activeTab)}</MarkdownResult>
+              ) : (
+                <div className="result-empty">{t('tool.result.placeholder')}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
