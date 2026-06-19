@@ -20,7 +20,7 @@ function translateAuthError(error) {
 export function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
+  const { user, loading, signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useApp();
   const { t, lang } = useLang();
 
   // Check hash synchronously so the first render already shows the reset form.
@@ -42,8 +42,19 @@ export function Auth() {
   const [confirmSent, setConfirmSent] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
 
-  // Fallback: catch PASSWORD_RECOVERY if it fires after mount
-  // Also handles SIGNED_IN (covers OAuth redirect back to /auth instead of /dashboard)
+  // After OAuth redirect, SIGNED_IN fires during Supabase client init — before this
+  // component mounts — so onAuthStateChange never catches it. Instead, watch the
+  // context: once AppContext finishes loading with a session, navigate away.
+  // Guard: don't redirect if this is a password-recovery link (mode === 'reset').
+  useEffect(() => {
+    if (!loading && user && mode !== 'reset') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [loading, user, mode, navigate]);
+
+  // Still register onAuthStateChange for:
+  // - PASSWORD_RECOVERY links (fires after mount on hash-based tokens)
+  // - SIGNED_IN from email/password login (fires synchronously in submit handler)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
@@ -51,7 +62,7 @@ export function Auth() {
         setError('');
       }
       if (event === 'SIGNED_IN') {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     });
     return () => subscription.unsubscribe();
