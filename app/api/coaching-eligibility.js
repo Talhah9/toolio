@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     // Fetch profile
     const { data: profile } = await supabase
       .from('profiles')
-      .select('plan, stripe_customer_id, email, coaching_claimed')
+      .select('plan, stripe_customer_id, email, coaching_claimed, subscription_started_at')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -41,7 +41,17 @@ export default async function handler(req, res) {
       return res.json({ eligible: false, coaching_claimed: true, days_since_first_payment: 999, days_remaining: 0 });
     }
 
-    // Resolve Stripe customer
+    // Prefer the canonical start date stored in profiles (immune to Stripe customer changes)
+    if (profile.subscription_started_at) {
+      const startTs = new Date(profile.subscription_started_at).getTime() / 1000;
+      const daysSince = Math.floor((Date.now() / 1000 - startTs) / 86400);
+      const daysRemaining = Math.max(0, 60 - daysSince);
+      const eligible = daysSince >= 60;
+      console.log('[coaching-eligibility] using subscription_started_at:', { userId: user.id, subscription_started_at: profile.subscription_started_at, daysSince });
+      return res.json({ eligible, coaching_claimed: false, days_since_first_payment: daysSince, days_remaining: daysRemaining });
+    }
+
+    // Fallback: derive start date from first successful Stripe charge
     let customerId = profile.stripe_customer_id;
     if (!customerId) {
       const customers = await stripe.customers.list({ email: profile.email || user.email, limit: 1 });
@@ -51,7 +61,6 @@ export default async function handler(req, res) {
       return res.json({ eligible: false, coaching_claimed: false, days_since_first_payment: 0, days_remaining: 60 });
     }
 
-    // Fetch all charges and find the first successful one
     const charges = await stripe.charges.list({ customer: customerId, limit: 100 });
     const firstCharge = charges.data
       .filter(c => c.paid && c.amount > 0)
@@ -65,12 +74,14 @@ export default async function handler(req, res) {
     const daysRemaining = Math.max(0, 60 - daysSince);
     const eligible = daysSince >= 60;
 
-    return res.json({
-      eligible,
-      coaching_claimed: false,
-      days_since_first_payment: daysSince,
-      days_remaining: daysRemaining,
-    });
+    // Persist start date so future customer changes don't reset the clock
+    await supabase
+      .from('profiles')
+      .update({ subscription_started_at: new Date(firstCharge.created * 1000).toISOString() })
+      .eq('id', user.id);
+
+    console.log('[coaching-eligibility] derived from Stripe, saved subscription_started_at:', { userId: user.id, firstChargeDate: new Date(firstCharge.created * 1000).toISOString(), daysSince });
+    return res.json({ eligible, coaching_claimed: false, days_since_first_payment: daysSince, days_remaining: daysRemaining });
   } catch (err) {
     console.error('[coaching-eligibility] error:', err.message);
     return res.status(500).json({ error: err.message });
