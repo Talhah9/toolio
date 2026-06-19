@@ -123,6 +123,18 @@ La DGFiP devrait appliquer des amendes en cas de non-conformité après les date
 
 Cela dit, se mettre en conformité maintenant évite tout risque — et les solutions sont accessibles.
 
+## Notre recommandation : anticipez avec Indy
+
+La conformité à la facturation électronique demande du temps — immatriculation, tests techniques, mise en conformité RGPD et sécurité. Plutôt que d'attendre la dernière minute, nous vous recommandons fortement de choisir dès maintenant une Plateforme Agréée reconnue.
+
+Indy est officiellement immatriculée Plateforme Agréée par la DGFiP et propose une solution 100% gratuite et 100% conforme pour les indépendants et micro-entreprises.
+
+À partir du 1er septembre 2026, toutes les entreprises assujetties à la TVA devront pouvoir recevoir leurs factures via une Plateforme Agréée. L'émission deviendra obligatoire progressivement selon la taille de l'entreprise.
+
+Savvly génère votre devis professionnel en quelques secondes. Indy assure votre conformité facturation électronique. Les deux outils se complètent parfaitement pour votre activité freelance.
+
+> [Découvrir Indy →](https://www.indy.fr)
+
 ---
 
 > **Génère tes documents juridiques et administratifs conformes**

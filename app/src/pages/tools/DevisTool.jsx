@@ -254,6 +254,12 @@ export function DevisTool({ tool, initialData }) {
         </div>
 
         <div>
+          {output && !loading && (
+            <div style={{ marginBottom: 12, padding: '12px 16px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8, fontSize: 13, color: '#1E40AF', lineHeight: 1.6 }}>
+              💡 <strong>Bon à savoir</strong> : à partir du 1er septembre 2026, la facturation électronique devient obligatoire en France. La conformité demande du temps à mettre en place — nous vous recommandons <a href="https://www.indy.fr" target="_blank" rel="noopener noreferrer" style={{ color: '#1D4ED8' }}>Indy</a>, Plateforme Agréée par la DGFiP, pour rester en règle gratuitement.{' '}
+              <a href="https://www.indy.fr" target="_blank" rel="noopener noreferrer" style={{ color: '#1D4ED8', fontSize: 12, display: 'inline-block', marginTop: 4 }}>En savoir plus sur Indy →</a>
+            </div>
+          )}
           <div className="result-zone">
             <div className="result-head">
               <span className="muted" style={{ fontSize: 13 }}>{t('tool.result')}</span>
